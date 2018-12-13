@@ -222,7 +222,9 @@ class Socket
 
 	/***********************************************/
 
-	protected $userContext = [];
+	protected
+		$userContext = []
+		, $hub = NULL;
 
 	protected function onConnect($client, $clientIndex)
 	{
@@ -270,28 +272,52 @@ class Socket
 					, $received
 				));
 
+				if(!$this->hub)
+				{
+					$this->hub = new \SeanMorris\Kalisti\Hub;	
+				}
+
 				if(!isset($this->userContext[$clientIndex]))
 				{
+					$agent = new \SeanMorris\Kalisti\Agent;
+
+					$agent->register($this->hub);
+					$this->hub->unsubscribe('*', $agent);
+					$agent->expose(function($content, $output, $origin, $channel, $originalChannel) use($client){
+						var_dump($content, $originalChannel);
+						$this->send(
+							json_encode($content)
+							, $client
+						);
+					});
+
+
 					$this->userContext[$clientIndex] = [
-						'clientIndex' => $clientIndex
-						, 'client'    => $client
+						'__clientIndex' => $clientIndex
+						, '__client'    => $client
+						, '__hub'       => $this->hub
+						, '__agent'     => $agent
+						, '__authed'    => TRUE
 					];
 				}
 
-				$path     = new \SeanMorris\Ids\Path(...preg_split('/\s+/', $received));
-				$routes   = new EntryRoute;
-				$request  = new \SeanMorris\Ids\Request(['path' => $path]);
-				$router   = new \SeanMorris\Ids\Router($request, $routes);
+				$routes  = new EntryRoute;
+				$path    = new \SeanMorris\Ids\Path(...preg_split('/\s+/', $received));
+				$request = new \SeanMorris\Ids\Request(['path' => $path]);
+				$router  = new \SeanMorris\Ids\Router($request, $routes);
 
 				$router->setContext($this->userContext[$clientIndex]);
 				$response = $router->route();
-				
-				$this->send(
-					json_encode($response)
-					, $client
-				);
+			
+				if($response !== NULL)
+				{
+					$this->send(
+						json_encode($response)
+						, $client
+					);
 
-				var_dump($response, $this->userContext[$clientIndex]);
+					var_dump($response);
+				}	
 
 				break;
 		}

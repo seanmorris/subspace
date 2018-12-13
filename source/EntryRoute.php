@@ -2,18 +2,8 @@
 namespace SeanMorris\SubSpace;
 class EntryRoute implements \SeanMorris\Ids\Routable
 {
-	public function construct()
-	{
-		$this->hub = new \SeanMorris\Kalisti\Hub;
-	}
-
 	public function motd($router)
 	{
-		$client = $router->contextGet('__client');
-		$count  = $router->contextGet('__count');
-
-		$router->contextSet('__count', $count + 1);
-
 		return 'Welcome to the subspace server!';
 	}
 
@@ -87,9 +77,9 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 
 	public function pub($router)
 	{
-		$args   = $router->path()->consumeNodes();
-		$server = $router->contextGet('__server');
-		$client = $router->contextGet('__client');
+		$args  = $router->path()->consumeNodes();
+		$hub   = $router->contextGet('__hub');
+		$agent = $router->contextGet('__agent');
 
 		if(!$router->contextGet('__authed'))
 		{
@@ -107,15 +97,15 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 
 		$channelName = array_shift($args);
 
-		$server->publish(implode(' ', $args), $channelName, $client);
+		$hub->publish($channelName, implode(' ', $args), $agent);
 	}
 
 	public function sub($router)
 	{
-		$args   = $router->path()->consumeNodes();
-		$server = $router->contextGet('__server');
-		$client = $router->contextGet('__client');
-		
+		$args  = $router->path()->consumeNodes();
+		$hub   = $router->contextGet('__hub');
+		$agent = $router->contextGet('__agent');
+
 		if(!$router->contextGet('__authed'))
 		{
 			return [
@@ -130,21 +120,16 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 			];
 		}
 
-		$channels = $server->getChannels($args[0], $client);
-
-		foreach($channels as $channelName => $channelClass)
-		{
-			$server->subscribe($channelName, $client);
-		}
+		$hub->subscribe($args[0], $agent);
 
 		return $this->subs($router);
 	}
 
 	public function subs($router)
 	{
-		$args   = $router->path()->consumeNodes();
-		$server = $router->contextGet('__server');
-		$client = $router->contextGet('__client');
+		$args  = $router->path()->consumeNodes();
+		$hub   = $router->contextGet('__hub');
+		$agent = $router->contextGet('__agent');
 		
 		if(!$router->contextGet('__authed'))
 		{
@@ -153,29 +138,23 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 			];
 		}
 
-		$channels = array_keys(array_filter(
-			$server->subscriptions($client)
-		));
+		$channels = array_keys(array_filter($hub->subscriptions($agent)));
 
-		$channels = array_map(
-			function($channel)
+		$channels = array_map(function($channel){
+			if(is_numeric($channel))
 			{
-				if(is_numeric($channel))
-				{
-					return '0x' . strtoupper(
-						str_pad(
-							dechex($channel)
-							, 4
-							, 0
-							, STR_PAD_LEFT
-						)
-					);
-				}
-
-				return $channel;
+				return '0x' . strtoupper(
+					str_pad(
+						dechex($channel)
+						, 4
+						, 0
+						, STR_PAD_LEFT
+					)
+				);
 			}
-			, $channels
-		);
+
+			return $channel;
+		}, $channels);
 
 		return ['subscriptions' => $channels];
 	}
@@ -189,9 +168,9 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 			];
 		}
 
-		$args   = $router->path()->consumeNodes();
-		$server = $router->contextGet('__server');
-		$client = $router->contextGet('__client');
+		$args  = $router->path()->consumeNodes();
+		$hub   = $router->contextGet('__hub');
+		$agent = $router->contextGet('__agent');
 
 		if(count($args) < 1)
 		{
@@ -200,11 +179,11 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 			];
 		}
 
-		$channels = $server->getChannels($args[0], $client);
+		$channels = $hub->getChannels($args[0]);
 
 		foreach($channels as $channelName => $channelClass)
 		{
-			$server->unsubscribe($channelName, $client);
+			$hub->unsubscribe($channelName, $agent);
 		}
 
 		return $this->subs($router);
@@ -212,8 +191,8 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 
 	public function channels($router)
 	{
-		$args     = $router->path()->consumeNodes();
-		$server   = $router->contextGet('__server');
+		$args = $router->path()->consumeNodes();
+		$hub  = $router->contextGet('__hub');
 
 		// unset($channels['*']);
 
@@ -234,7 +213,7 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 
 				return $channel;
 			}
-			, array_keys($server->channels())
+			, array_keys($hub->channels())
 		)];
 
 		return [
