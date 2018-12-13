@@ -130,13 +130,12 @@ class Socket
 		return;
 	}
 
-	public function send($message)
+	public function send($message, $client, $typeByte = 0x1)
 	{
 		// Send data to clients
+		fwrite(STDERR, $message);
 
 		$length   = strlen($message);
-
-		$typeByte = 0x1;
 
 		$typeByte += 128;
 
@@ -153,17 +152,7 @@ class Socket
 			$encoded = pack('CCNN', $typeByte, 127, 0, $length) . $message;
 		}
 
-		foreach($this->clients as $client)
-		{
-			if(!$client)
-			{
-				continue;
-			}
-
-			fwrite($client, $encoded);
-
-			fwrite(STDERR, $encoded);
-		}
+		fwrite($client, $encoded);
 	}
 
 	protected function decode($message)
@@ -233,6 +222,8 @@ class Socket
 
 	/***********************************************/
 
+	protected $userContext = [];
+
 	protected function onConnect($client, $clientIndex)
 	{
 		fwrite(STDERR, sprintf("#%d joined.\n", $clientIndex));
@@ -272,24 +263,39 @@ class Socket
 				// $response = NULL;
 				// break;
 			case(static::MESSAGE_TYPES['text']):
-				// $path = new \SeanMorris\Ids\Path(...preg_split('/\s+/', $received));
-				// $routes   = new Route;
-				// $request  = new \SeanMorris\Ids\Request(['path' => $path]);
-				// $router   = new \SeanMorris\Ids\Router($request, $routes);
-
-				// $router->setContext($this->userContext[$client->id]);
-
-				// $response = $router->route();
 				fwrite(STDERR, sprintf(
 					"%d[%d]: \"%s\"\n"
 					, $clientIndex
 					, $type
 					, $received
 				));
+
+				if(!isset($this->userContext[$clientIndex]))
+				{
+					$this->userContext[$clientIndex] = [
+						'clientIndex' => $clientIndex
+						, 'client'    => $client
+					];
+				}
+
+				$path     = new \SeanMorris\Ids\Path(...preg_split('/\s+/', $received));
+				$routes   = new EntryRoute;
+				$request  = new \SeanMorris\Ids\Request(['path' => $path]);
+				$router   = new \SeanMorris\Ids\Router($request, $routes);
+
+				$router->setContext($this->userContext[$clientIndex]);
+				$response = $router->route();
+				
+				$this->send(
+					json_encode($response)
+					, $client
+				);
+
+				var_dump($response, $this->userContext[$clientIndex]);
+
 				break;
 		}
 
-		$this->send($response, $client, $this);
 	}
 }
 
