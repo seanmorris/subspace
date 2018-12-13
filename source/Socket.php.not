@@ -1,0 +1,197 @@
+<?php
+
+// Set up the socket
+
+$keyFile    = '/etc/letsencrypt/live/example.com/privkey.pem';
+$chainFile  = '/etc/letsencrypt/live/example.com/chain.pem';
+
+$keyFile    = '/home/sean/ssl_test/privkey.pem';
+$chainFile  = '/home/sean/ssl_test/chain.pem';
+$passphrase = '';
+$address    = '0.0.0.0:9999';
+
+$context = stream_context_create([
+	'ssl'=>[
+		'local_cert'    => $chainFile
+		, 'local_pk'    => $keyFile
+		, 'passphrase'  => $passphrase
+		, 'verify_peer' => FALSE
+	]
+]);
+
+$socket = stream_socket_server(
+	$address
+	, $errorNumber
+	, $errorString
+	, STREAM_SERVER_BIND|STREAM_SERVER_LISTEN
+	, $context
+);
+
+// Set an error handler
+
+$errorHandler = set_error_handler(
+	function($errCode, $message, $file, $line, $context) use(&$errorHandler) {
+		if(substr($message, -9) == 'timed out')
+		{
+			return;
+		}
+
+		fwrite(STDERR, sprintf(
+			"[%d] '%s' in %s:%d\n"
+			, $errCode
+			, $message
+			, $file
+			, $line
+		));
+
+		if($errorHandler)
+		{
+			$errorHandler($errCode, $message, $file, $line, $context);
+		}
+	}
+);
+
+$clients = [];
+
+while(TRUE)
+{
+	// Listen for connections
+
+	if($newStream = stream_socket_accept($socket, 0))
+	{
+		stream_set_blocking($newStream, TRUE);
+
+		stream_socket_enable_crypto(
+			$newStream
+			, TRUE
+			, STREAM_CRYPTO_METHOD_SSLv23_SERVER
+		);
+
+		$incomingHeaders = fread($newStream, 2**16);
+
+		if(preg_match('#^Sec-WebSocket-Key: (\S+)#mi', $incomingHeaders, $match))
+		{
+			stream_set_blocking($newStream, FALSE);
+
+			fwrite(
+				$newStream
+				, "HTTP/1.1 101 Switching Protocols\r\n"
+					. "Upgrade: websocket\r\n"
+					. "Connection: Upgrade\r\n"
+					. "Sec-WebSocket-Accept: " . base64_encode(
+						sha1(
+							$match[1] . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
+							, TRUE
+						)
+					)
+					. "\r\n\r\n"
+			);
+
+			fwrite(STDERR, 'Accepted client!');
+
+			$clients[] = $newStream;
+		}
+		else
+		{
+			stream_socket_shutdown($newStream, STREAM_SHUT_RDWR);
+		}
+	}
+
+	// Get data from clients
+
+	$messages = [];
+
+	foreach($clients as $i => $client)
+	{
+		if(!$client)
+		{
+			continue;
+		}
+
+		while($message = fread($client, 2**16))
+		{
+			fwrite(STDERR, 'Accepted message!');
+
+			$type = ord($message[0]);
+
+			if($type > 128)
+			{
+				$type -= 128;
+			}
+
+			if($type == 0x1)
+			{
+				$length = ord($message[1]);
+
+				if($length <= 126)
+				{
+					$mask = substr($message, 4, 4);
+					$data = substr($message, 8);
+				}
+				else if($length == 127)
+				{
+					$mask = substr($message, 10, 4);
+					$data = substr($message, 14);
+				}
+				else
+				{
+					$mask = substr($message, 2, 4);
+					$data = substr($message, 6);
+				}
+
+				$decoded = '';
+
+				for ($i = 0; $i < strlen($data); ++$i)
+				{
+					$decoded .= $data[$i] ^ $mask[$i%4];
+				}
+
+				$messages[] = $decoded;
+
+				fwrite(STDERR, $decoded);
+			}
+			else if ($type == 0x8)
+			{
+				stream_socket_shutdown($client, STREAM_SHUT_RDWR);
+
+				$clients[$i] = FALSE;
+			}
+		}
+	}
+
+	// Send data to clients
+
+	foreach($messages as $message)
+	{
+		$length   = strlen($message);
+
+		$typeByte = 0x1;
+
+		$typeByte += 128;
+
+		if($length < 126)
+		{
+			$encoded = pack('CC', $typeByte, $length) . $message;
+		}
+		else if($length < 65536)
+		{
+			$encoded = pack('CCn', $typeByte, 126, $length) . $message;
+		}
+		else
+		{
+			$encoded = pack('CCNN', $typeByte, 127, 0, $length) . $message;
+		}
+
+		foreach($clients as $client)
+		{
+			if(!$client)
+			{
+				continue;
+			}
+
+			fwrite($client, $encoded);
+
+			fwrite(STDERR, $encoded);
+		}
+	}
+}
