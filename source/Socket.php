@@ -152,7 +152,10 @@ class Socket
 			$encoded = pack('CCNN', $typeByte, 127, 0, $length) . $message;
 		}
 
-		fwrite($client, $encoded);
+		if(get_resource_type($client) == 'stream')
+		{
+			fwrite($client, $encoded);
+		}
 	}
 
 	protected function decode($message)
@@ -224,7 +227,8 @@ class Socket
 
 	protected
 		$userContext = []
-		, $hub = NULL;
+		, $hub       = NULL
+		, $agents    = [];
 
 	protected function onConnect($client, $clientIndex)
 	{
@@ -242,28 +246,125 @@ class Socket
 		$received = $this->decode($message);
 		$response = NULL;
 
+		if(!$this->hub)
+		{
+			$this->hub = new \SeanMorris\Kalisti\Hub;	
+		}
+
+		if(!isset($this->agents[$clientIndex]))
+		{
+			$this->agents[$clientIndex] = new \SeanMorris\Kalisti\Agent;
+		}
+
+		$agent = $this->agents[$clientIndex];
+
+		if(!isset($this->userContext[$clientIndex]))
+		{
+			$agent->register($this->hub);
+
+			$this->hub->unsubscribe('*', $agent);
+
+			$agent->expose(function($content, $output, $origin, $channel, $originalChannel) use($client){
+				// var_dump($origin, $channel, $originalChannel);
+
+				if(is_numeric($channel->name) || preg_match('/^\d+-\d+$/', $channel->name))
+				{
+					$typeByte = static::MESSAGE_TYPES['binary'];
+					
+					$header = pack(
+						'vvv'
+						, $origin
+							? 1
+							: 0
+						, $origin
+							? $origin->id
+							: 0
+						, $channel->name
+					);
+
+					if(is_numeric($content))
+					{
+						if(is_int($content))
+						{
+							$content = pack('l', $content);
+						}
+						else if(is_float($content))
+						{
+							$content = pack('e', $content);
+						}
+					}
+
+					$outgoing = $header . $content;
+				}
+				else
+				{
+					$typeByte = static::MESSAGE_TYPES['text'];
+
+					$originType = NULL;
+
+					if(!$origin)
+					{
+						$originType = 'server';
+						$originId   = NULL;
+					}
+					else if($origin instanceof \SeanMorris\Kalisti\Agent)
+					{
+						$originType = 'user';
+						$originId   = $origin->id;
+					}
+
+					$message = [
+						'message'  => $content
+						, 'origin' => $originType
+					];
+
+					if(isset($originId))
+					{
+						$message['originId'] = $originId;
+					}
+
+					if(isset($channel))
+					{
+						$message['channel'] = $channel->name;
+
+						if(isset($originalChannel) && $channel !== $originalChannel)
+						{
+							$message['originalChannel'] = $originalChannel;
+						}
+					}
+
+					$outgoing = json_encode($message);			
+				}
+
+				$this->send($outgoing, $client, $typeByte);
+			});
+
+			$this->userContext[$clientIndex] = [
+				'__clientIndex' => $clientIndex
+				, '__client'    => $client
+				, '__hub'       => $this->hub
+				, '__agent'     => $agent
+				, '__authed'    => TRUE
+			];
+		}
+
+		$response = NULL;
+
 		switch($type)
 		{
 			case(static::MESSAGE_TYPES['binary']):
-				// $channels  = $this->channels();
-				// $channelId = unpack('vchan', $message, 0)['chan'];
+				$channelId = ord($received[0]) + (ord($received[1]) << 8);
 
-				// $finalMessage = '';
+				$finalMessage = '';
 
-				// for($i = 2; $i < strlen($message); $i++)
-				// {
-				// 	$finalMessage .= $message[$i];
-				// }
+				for($i = 2; $i < strlen($received); $i++)
+				{
+					$finalMessage .= $received[$i];
+				}
 
-				// $channels = $this->getChannels($channelId);
+				$this->hub->publish($channelId, $finalMessage, $agent);
 
-				// foreach($channels as $channel)
-				// {
-				// 	$channel->send($finalMessage, $client);
-				// }
-
-				// $response = NULL;
-				// break;
+				break;
 			case(static::MESSAGE_TYPES['text']):
 				fwrite(STDERR, sprintf(
 					"%d[%d]: \"%s\"\n"
@@ -271,35 +372,6 @@ class Socket
 					, $type
 					, $received
 				));
-
-				if(!$this->hub)
-				{
-					$this->hub = new \SeanMorris\Kalisti\Hub;	
-				}
-
-				if(!isset($this->userContext[$clientIndex]))
-				{
-					$agent = new \SeanMorris\Kalisti\Agent;
-
-					$agent->register($this->hub);
-					$this->hub->unsubscribe('*', $agent);
-					$agent->expose(function($content, $output, $origin, $channel, $originalChannel) use($client){
-						var_dump($content, $originalChannel);
-						$this->send(
-							json_encode($content)
-							, $client
-						);
-					});
-
-
-					$this->userContext[$clientIndex] = [
-						'__clientIndex' => $clientIndex
-						, '__client'    => $client
-						, '__hub'       => $this->hub
-						, '__agent'     => $agent
-						, '__authed'    => TRUE
-					];
-				}
 
 				$routes  = new EntryRoute;
 				$path    = new \SeanMorris\Ids\Path(...preg_split('/\s+/', $received));
@@ -309,19 +381,18 @@ class Socket
 				$router->setContext($this->userContext[$clientIndex]);
 				$response = $router->route();
 			
-				if($response !== NULL)
-				{
-					$this->send(
-						json_encode($response)
-						, $client
-					);
-
-					var_dump($response);
-				}	
-
 				break;
 		}
 
+		if($response !== NULL)
+		{
+			$this->send(
+				json_encode($response)
+				, $client
+			);
+
+			var_dump($response);
+		}
 	}
 }
 
