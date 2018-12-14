@@ -4,7 +4,9 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 {
 	public function motd($router)
 	{
-		return 'Welcome to the subspace server!';
+		$clientId = $router->contextGet('__clientIndex');
+
+		return sprintf('Welcome to the subspace server, %d!', $clientId);
 	}
 
 	public function time($router)
@@ -193,6 +195,7 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 	{
 		$args = $router->path()->consumeNodes();
 		$hub  = $router->contextGet('__hub');
+		$args  = $router->path()->consumeNodes();
 
 		// unset($channels['*']);
 
@@ -213,12 +216,8 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 
 				return $channel;
 			}
-			, array_keys($hub->channels())
+			, array_keys($hub->getChannels($args[0] ?? '*'))
 		)];
-
-		return [
-			'channels' => array_keys($channels)
-		];
 	}
 
 	public function commands()

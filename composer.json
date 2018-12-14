@@ -15,6 +15,9 @@
         "seanmorris/presskit": "dev-master",
         "seanmorris/kalisti": "dev-master"
     },
+    "require-dev": {
+        "simpletest/simpletest": "dev-master"
+    },
     "autoload": {
 		"psr-4": {
 			"SeanMorris\\SubSpace\\Test\\": "test/",

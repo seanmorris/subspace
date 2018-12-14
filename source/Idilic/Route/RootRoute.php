@@ -4,9 +4,11 @@ class RootRoute implements \SeanMorris\Ids\Routable
 {
 	const FREQUENCY = 120;
 
-	public function derange()
+	public function compa($router)
 	{
-		var_dump(\SeanMorris\Kalisti\Channel::deRange('a:5-10:b:0-3:a:5-10:b:0-3:a:5-10:b:0-3'));
+		$args = $router->path()->consumeNodes();
+
+		var_dump(\SeanMorris\Kalisti\Channel::compareNames(...$args));
 	}
 
 	public function server()

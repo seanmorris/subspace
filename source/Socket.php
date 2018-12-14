@@ -265,8 +265,6 @@ class Socket
 			$this->hub->unsubscribe('*', $agent);
 
 			$agent->expose(function($content, $output, $origin, $channel, $originalChannel) use($client){
-				// var_dump($origin, $channel, $originalChannel);
-
 				if(is_numeric($channel->name) || preg_match('/^\d+-\d+$/', $channel->name))
 				{
 					$typeByte = static::MESSAGE_TYPES['binary'];
@@ -390,8 +388,6 @@ class Socket
 				json_encode($response)
 				, $client
 			);
-
-			var_dump($response);
 		}
 	}
 }
