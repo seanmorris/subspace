@@ -3804,11 +3804,20 @@ var RootView = exports.RootView = function (_View) {
 				_this3.args.output.push('<< auth [token censored]');
 				_this3.socket.send('auth ' + token);
 
-				_this3.args.output.push('<< sub 1');
+				_this3.args.output.push('<< sub 1	');
 				_this3.socket.send('sub 1');
 
 				return true;
 			});
+		}
+	}, {
+		key: 'submit',
+		value: function submit(event) {
+			console.log(event);
+
+			event.preventDefault();
+
+			this.interpret(this.args.input);
 		}
 	}]);
 
@@ -4235,7 +4244,7 @@ var Socket = exports.Socket = function () {
 });
 
 ;require.register("root.tmp.html", function(exports, require, module) {
-module.exports = "<div class = \"top\" cv-on = \"click:focus(event)\">\n\t<div class = \"menu\"></div>\n\t<div class = \"terminal\">\n\t\t<div class = \"output\" cv-each = \"output:line:l\" cv-ref = \"output:curvature/base/Tag\">\n\t\t\t<p>[[line]]</p>\n\t\t</div>\n\t\t<div class = \"bottom\">\n\t\t\t<div>[[prompt]]&nbsp;</div>\n\t\t\t<div>\n\t\t\t\t<input cv-bind = \"input\" cv-ref = \"input:curvature/base/Tag\"/>\n\t\t\t\t<input cv-bind = \"input\" name = \"pw-input\" type = \"password\" cv-ref = \"password:curvature/base/Tag\"/>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n</div>"
+module.exports = "<div class = \"top\" cv-on = \"click:focus(event)\">\n\t<div class = \"menu\"></div>\n\t<div class = \"terminal\">\n\t\t<div class = \"output\" cv-each = \"output:line:l\" cv-ref = \"output:curvature/base/Tag\">\n\t\t\t<p>[[line]]</p>\n\t\t</div>\n\t\t<div class = \"bottom\">\n\t\t\t<div>[[prompt]]&nbsp;</div>\n\t\t\t<div>\n\t\t\t\t<form cv-on = \"submit:submit(event)\">\n\t\t\t\t\t<textarea name = \"plain-input\" cv-bind = \"input\" cv-ref = \"input:curvature/base/Tag\"></textarea>\n\t\t\t\t\t\n\t\t\t\t\t<input name = \"new-pw\" cv-bind = \"input\" type = \"password\" cv-ref = \"password:curvature/base/Tag\" autofill=\"off\"/>\n\t\t\t\t</form>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n</div>"
 });
 
 ;require.register("___globals___", function(exports, require, module) {

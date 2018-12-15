@@ -64,9 +64,14 @@ body {
 	max-width: 100%;
 }
 
-.terminal input {
+.terminal input,
+.terminal textarea {
 	font-family: 'Unispace', monospace;
+	pointer-events: none;
 	width: 100%;
+	height: 1em;
+	resize: none;
+	overflow: hidden;
 	border: none;
 	background: black;
 	color: white;

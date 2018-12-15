@@ -7,8 +7,11 @@
 		<div class = "bottom">
 			<div>[[prompt]]&nbsp;</div>
 			<div>
-				<input cv-bind = "input" cv-ref = "input:curvature/base/Tag"/>
-				<input cv-bind = "input" name = "pw-input" type = "password" cv-ref = "password:curvature/base/Tag"/>
+				<form cv-on = "submit:submit(event)">
+					<textarea name = "plain-input" cv-bind = "input" cv-ref = "input:curvature/base/Tag"></textarea>
+					
+					<input name = "new-pw" cv-bind = "input" type = "password" cv-ref = "password:curvature/base/Tag" autofill="off"/>
+				</form>
 			</div>
 		</div>
 	</div>
