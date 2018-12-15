@@ -3804,6 +3804,9 @@ var RootView = exports.RootView = function (_View) {
 				_this3.args.output.push('<< auth [token censored]');
 				_this3.socket.send('auth ' + token);
 
+				_this3.args.output.push('<< sub 0');
+				_this3.socket.send('sub 0');
+
 				return true;
 			});
 		}

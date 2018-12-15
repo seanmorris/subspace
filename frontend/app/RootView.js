@@ -333,6 +333,9 @@ export class RootView extends View
 			this.args.output.push('<< auth [token censored]');
 			this.socket.send(`auth ${token}`);
 
+			this.args.output.push('<< sub 0');
+			this.socket.send(`sub 0`);
+
 			return true;
 		});
 	}
