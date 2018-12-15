@@ -3558,7 +3558,7 @@ var RootView = exports.RootView = function (_View) {
 			}
 		});
 
-		_this.socket = _Socket.Socket.get('ws://localhost:9999');
+		_this.socket = _Socket.Socket.get('ws://' + location.hostname + ':9999');
 
 		_this.auth().then(function () {
 			_this.onTimeout(10, function () {

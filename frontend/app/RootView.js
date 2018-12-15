@@ -51,7 +51,7 @@ export class RootView extends View
 			}
 		});
 
-		this.socket = Socket.get('ws://localhost:9999');
+		this.socket = Socket.get(`ws://${location.hostname}:9999`);
 
 		this.auth().then(()=>{
 			this.onTimeout(10, ()=>{
