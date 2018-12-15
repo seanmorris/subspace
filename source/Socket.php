@@ -343,7 +343,7 @@ class Socket
 				, '__client'    => $client
 				, '__hub'       => $this->hub
 				, '__agent'     => $agent
-				, '__authed'    => TRUE
+				, '__authed'    => FALSE
 			];
 		}
 
@@ -352,17 +352,20 @@ class Socket
 		switch($type)
 		{
 			case(static::MESSAGE_TYPES['binary']):
-				$channelId = ord($received[0]) + (ord($received[1]) << 8);
+				if(isset($this->userContext[$clientIndex])
+					&& $this->userContext[$clientIndex]['__authed']
+				){
+					$channelId = ord($received[0]) + (ord($received[1]) << 8);
 
-				$finalMessage = '';
+					$finalMessage = '';
 
-				for($i = 2; $i < strlen($received); $i++)
-				{
-					$finalMessage .= $received[$i];
+					for($i = 2; $i < strlen($received); $i++)
+					{
+						$finalMessage .= $received[$i];
+					}
+
+					$this->hub->publish($channelId, $finalMessage, $agent);
 				}
-
-				$this->hub->publish($channelId, $finalMessage, $agent);
-
 				break;
 			case(static::MESSAGE_TYPES['text']):
 				// fwrite(STDERR, sprintf(

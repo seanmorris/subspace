@@ -7,7 +7,8 @@ import { BinaryMessageView } from 'BinaryMessageView';
 import { TextMessageView } from 'TextMessageView';
 import { ByteView } from 'ByteView';
 
-
+import { Login } from 'Login';
+import { Register } from 'Register';
 
 export class RootView extends View
 {
@@ -19,38 +20,37 @@ export class RootView extends View
 		this.template    = require('./root.tmp');
 		this.args.input  = '';
 		this.args.output = [];
+		this.args.passwordMode = false;
+
+		this.localLock   = null;
+		this.args.prompt = '<<';
 
 		this.max = 1024;
+
+		this.history = [];
+		this.historyCursor = -1;
 
 		args.output.___after___.push((t,k,o,a)=>{
 			if(k === 'push')
 			{
 				this.onTimeout(10, ()=>{
-					window.scrollTo(0,document.body.scrollHeight);
+					window.scrollTo({
+						top: document.body.scrollHeight
+						, left: 0
+						, behavior: 'smooth'
+					});
 				});
 			}
 		});
 
 		this.socket = Socket.get('ws://localhost:9999');
 
-		this.args.output.push(`<< motd`);
-
-		this.socket.send('motd');
-		this.socket.send('help');
-
-		// this.onTimeout(100, ()=>{
-		// 	this.args.output.push(`<< sub 0`);
-		// 	this.socket.send('sub 0');
-		// });
-
-		// this.onTimeout(200, ()=>{
-		// 	this.args.output.push(`<< pub 0`);
-		// 	this.socket.send('pub 0');
-		// });
-
-		// this.socket.subscribe('message:console', (event, message, channel, origin, originId, originalChannel, packet)=>{
-		// 	console.log(JSON.parse(event.data));
-		// });
+		this.auth().then(()=>{
+			this.onTimeout(10, ()=>{
+				this.socket.send('motd');
+				this.args.output.push(`<< motd`);
+			});
+		});
 
 		this.socket.subscribe('message', (event, message, channel, origin, originId, originalChannel, packet)=>{
 			if(typeof event.data == 'string')
@@ -59,7 +59,7 @@ export class RootView extends View
 
 				if(typeof received == 'object')
 				{
-					 received = JSON.stringify(received,null,2);
+					 received = JSON.stringify(received,null,4);
 				}
 
 				this.args.output.push(new TextMessageView({
@@ -132,21 +132,96 @@ export class RootView extends View
 			}
 		}, {wait: 1});
 
+		keyboard.keys.bindTo('Escape', (v)=>{
+			if(v == 1)
+			{
+				if(this.localLock)
+				{
+					this.args.output.push(`:: Killed.`);
+				}
+				this.localLock = false;
+				this.args.prompt = '::';
+				this.args.passwordMode = false;
+			}
+		}, {wait: 1});
+
+		keyboard.keys.bindTo('ArrowUp', (v)=>{
+			if(v == 1)
+			{
+				this.historyCursor++;
+
+				if(this.historyCursor >= this.history.length)
+				{
+					this.historyCursor--;
+					return;
+				}
+
+				this.args.input = this.history[this.historyCursor];
+			}
+		}, {wait: 1});
+
+		keyboard.keys.bindTo('ArrowDown', (v)=>{
+			if(v == 1)
+			{
+				this.historyCursor--;
+
+				if(this.historyCursor <= -1)
+				{
+					this.historyCursor++;
+					this.args.input = '';
+					return;
+				}
+
+				this.args.input = this.history[this.historyCursor];
+			}
+		}, {wait: 1});
 
 	}
 
 	postRender()
 	{
-		this.focus();		
+		this.args.bindTo('passwordMode', (v)=>{
+			if(v)
+			{
+				this.tags.input.element.style.display = 'none';
+				this.tags.password.element.style.display = 'unset';
+			}
+			else
+			{
+				this.tags.input.element.style.display = 'unset';
+				this.tags.password.element.style.display = 'none';				
+			}
+
+			this.focus();
+		},{wait:0});
 	}
 
 	focus()
 	{
+		if(window.getSelection().toString())
+		{
+			return;
+		}
+
+		if(this.args.passwordMode)
+		{
+			this.tags.password.element.focus();
+			return;
+		}
 		this.tags.input.element.focus();
 	}
 
 	interpret(command)
 	{
+		if(this.localLock)
+		{
+			this.localLock.pass(command, this);
+			return;
+		}
+
+		this.history.unshift(command);
+		this.historyCursor = -1;
+
 		if(command.substring(0,1) !== '/')
 		{
 			this.socket.send(command);
@@ -157,18 +232,23 @@ export class RootView extends View
 			{
 				this.args.output.shift();
 			}
+
+			this.args.input = '';
+
+			return;
 		}
+
+		// let original = command;
+		this.args.output.push(`:: ${command}`);
 
 		command  = command.substring(1);
 		let args = command.split(' ');
 		command  = args.shift();
 
-		console.log(command);
 
 		switch(command)
 		{
 			case 'pub':
-				console.log(args);
 				let channel = parseInt(args.shift(), 16);
 				let data    = [];
 
@@ -195,8 +275,57 @@ export class RootView extends View
 
 				this.socket.send(new Uint8Array(bytes));
 				break;
+
+			case 'login':
+				this.args.output.push(':: Escape to cancel');
+				this.localLock = new Login;
+				this.args.prompt = '::';
+				this.localLock.init(this);
+				this.args.prompt = '::';
+				break;
+
+			case 'register':
+				this.args.output.push(':: Escape to cancel');
+				this.localLock = new Register;
+				this.args.prompt = '::';
+				this.localLock.init(this);
+				break;
+
+			case 'auth':
+				this.auth();
+				break;
+
+			case 'clear':
+				while(this.args.output.length)
+				{
+					this.args.output.pop();
+				}
+				break;
+
+			case 'commands':
+				this.args.output.push(JSON.stringify({
+					'/pub': 'CHAN BYTES... Publish raw bytes to a channel (hexadecimal)'
+					, '/auth': 'Run the auth proceedure'
+					, '/login': 'Run the login proceedure'
+					, '/register': 'Run the register proceedure'
+					, '/clear': 'Clear the terminal'
+				}, null ,4));
+				break;
 		}
 
 		this.args.input = '';
+	}
+
+	auth()
+	{
+		return fetch('/auth?api').then((response)=>{
+			return response.text();
+		}).then((token)=>{
+			this.args.output.push(`:: /auth`);
+			this.args.output.push('<< auth [token censored]');
+			this.socket.send(`auth ${token}`);
+
+			return true;
+		});
 	}
 }

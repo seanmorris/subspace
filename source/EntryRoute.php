@@ -9,6 +9,10 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 	{
 		$clientId = $router->contextGet('__clientIndex');
 
+		return new \SeanMorris\SubSpace\Idilic\View\Motd([
+			'name' => sprintf('#0x%04x', $clientId)
+		]);
+
 		return sprintf('Welcome to the subspace server, #0x%04x!', $clientId);
 	}
 
@@ -55,7 +59,9 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 	 */
 	public function auth($router)
 	{
-		$args = $router->path()->consumeNodes();
+		$args     = $router->path()->consumeNodes();
+		$clientId = $router->contextGet('__clientIndex');
+
 
 		if($router->contextGet('__authed'))
 		{
@@ -71,16 +77,16 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 			];
 		}
 
-		if(\SeanMorris\Dromez\Jwt\Token::verify($args[0]))
+		if($tokenContent = \SeanMorris\SubSpace\JwtToken::verify($args[0]))
 		{
 			fwrite(STDERR, sprintf(
 				"Client #%d authentiated!\n"
-				, $client->id
+				, $clientId
 			));
 
 			$router->contextSet('__authed', TRUE);
 
-			return sprintf('authed');
+			return 'authed.';
 		}
 	}
 
@@ -321,8 +327,19 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 		return new \SeanMorris\SubSpace\Idilic\View\Help;
 	}
 
+
+	/**
+	 * Print the Manual.
+	 */
+	public function manual()
+	{
+		return new \SeanMorris\SubSpace\Idilic\View\Manual;
+	}
+
 	public function _dynamic($router)
 	{
+		// $args = $router->path()->consumeNodes();
+
 		$command = $router->path()->getNode();
 
 		if($command == '?')
@@ -331,5 +348,103 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 		}
 
 		return FALSE;
+	}
+
+	/**
+	 * Use /register instead. Type "manual" for more info.
+	 * Create a persistent user account.
+	 */
+	public function register($router)
+	{
+		if($user = $router->contextGet('__persistent'))
+		{
+			return ['error' => sprintf(
+				'Already logged in in as %s.'
+				, $user->username
+			)];
+		}
+
+		$args = $router->path()->consumeNodes();
+
+		if(!$router->contextGet('__authed'))
+		{
+			return ['error' => 'You need to auth before you can register.'];
+		}
+
+		if(count($args) < 3)
+		{
+			return ['error' => 'Usage: register USERNAME PASSWORD EMAIL.'];
+		}
+
+		if(!filter_var($args[2], FILTER_VALIDATE_EMAIL))
+		{
+			return ['error' => 'Please supply a valid email in position 3.'];
+		}
+
+		$user = \SeanMorris\Access\User::loadOneByUsername($args[0]);
+
+		if($user)
+		{
+			return ['error' => 'Username exists.'];
+		}
+
+		$user = new \SeanMorris\Access\User;
+
+		$user->consume([
+			'username'   => $args[0]
+			, 'password' => $args[1]
+			, 'email'    => $args[2]
+		]);
+
+		if($user->save())
+		{
+			$router->contextSet('__persistent', $user);
+
+			return ['success' => 'Persistent user account created!'];
+		}
+
+		return [
+			'error' => 'Unknown.'
+		];
+	}
+
+	/**
+	 * Use /login instead. Type "manual" for more info.
+	 * Login to your account.
+	 */
+	public function login($router)
+	{
+		if($user = $router->contextGet('__persistent'))
+		{
+			return ['error' => sprintf(
+				'Already logged in as %s.'
+				, $user->username
+			)];
+		}
+
+		$args = $router->path()->consumeNodes();
+
+		if(count($args) < 2)
+		{
+			return ['error' => 'Usage: register USERNAME PASSWORD.'];
+		}
+
+		$user = \SeanMorris\Access\User::loadOneByUsername($args[0]);
+
+		if(!$user)
+		{
+			return ['error' => 'User not found.'];
+		}
+
+		if($user->login($args[1]))
+		{
+			$router->contextSet('__persistent', $user);
+
+			return ['success' => 'Logged in!'];
+		}
+		else
+		{
+			return ['error' => 'Bad password.'];
+		}
 	}
 }

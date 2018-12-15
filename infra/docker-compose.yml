@@ -1,0 +1,133 @@
+version: '3'
+
+services:
+  
+  app.subspace.seanmorr.is:
+    build:
+      context: ../
+      dockerfile: infra/app.Dockerfile
+    image: app.subspace.seanmorr.is
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ../:/app
+    depends_on:
+      - database.subspace.seanmorr.is
+
+  worker.subspace.seanmorr.is:
+    build:
+      context: ../
+      dockerfile: infra/worker.Dockerfile
+    image: worker.seanmorr.is
+    restart: on-failure
+    volumes:
+      - ../:/app
+    depends_on:
+      - database.subspace.seanmorr.is
+  
+  # proxy.seanmorr.is:
+  #   build:
+  #     context: ../
+  #     dockerfile: infra/app.Dockerfile
+  #   image: proxy.seanmorr.is
+  #   restart: always
+  #   ports:
+  #     - "9998:80"
+  #   volumes:
+  #     - ../:/app
+  #   depends_on:
+  #     - app.seanmorr.is
+
+  socket.subspace.seanmorr.is:
+    build:
+      context: ../
+      dockerfile: infra/socket.Dockerfile
+    image: socket.subspace.seanmorr.is
+    restart: always
+    ports:
+      - "9999:9999"
+    volumes:
+      - ../:/app
+    depends_on:
+      - database.subspace.seanmorr.is
+
+  # warm-daemon:
+  #   build:
+  #     context: ../
+  #     dockerfile: infra/warmer.Dockerfile
+  #   image: warm-daemon.seanmorr.is
+  #   restart: always
+  #   volumes:
+  #     - ../:/app
+  #   depends_on:
+  #     - database
+  #     - rabbit
+
+  updater.seanmorr.is:
+    build:
+      context: ../
+      dockerfile: infra/updater.Dockerfile
+    image: updater.seanmorr.is
+    restart: on-failure
+    volumes:
+      - ../:/app
+    depends_on:
+      - database.subspace.seanmorr.is
+    
+  database.subspace.seanmorr.is:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - "9996:3306"
+    volumes:
+      - schema.subspace.seanmorr.is:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'supersecret'
+      MYSQL_USER: 'subspace'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_DATABASE: 'subspace'
+    command: ['mysqld', '--character-set-server=utf8mb4']
+
+  # rabbit:
+  #   image: "rabbitmq:3-management"
+  #   environment:
+  #     RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+  #     RABBITMQ_DEFAULT_USER: "rabbitmq"
+  #     RABBITMQ_DEFAULT_PASS: "rabbitmq"
+  #     RABBITMQ_DEFAULT_VHOST: "/"
+  #   ports:
+  #     - "15672:15672"
+  #     - "5672:5672"
+  #   labels:
+  #     NAME: "rabbitmq1"
+  #   volumes:
+  #     - "./enabled_plugins:/etc/rabbitmq/enabled_plugins"
+  #     #- "./rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro"
+  #     #- "./autocluster-0.4.1.ez:/usr/lib/rabbitmq/lib/rabbitmq_server-3.5.5/plugins/autocluster-0.4.1.ez"
+
+  # watcher.seanmorr.is:
+  #   build:
+  #     context: ../
+  #     dockerfile: infra/watcher.Dockerfile
+  #   image: watcher.seanmorr.is
+  #   restart: always
+  #   ports:
+  #     - "9485:9485"
+  #     - "3333:3333"
+  #   volumes:
+  #     - ../:/app
+
+  # mail:
+  #   image: namshi/smtp
+  #   ports:
+  #    - "8081:80"
+  #   environment:
+  #     - DISABLE_IPV6=true
+  #     - GMAIL_USER=${GMAIL_USERNAME}
+  #     - GMAIL_PASSWORD=${GMAIL_PASSWORD}
+  #   restart: always
+
+volumes:
+  schema.subspace.seanmorr.is:
+    driver: "local"
