@@ -219,6 +219,11 @@ export class RootView extends View
 		this.tags.input.element.focus();
 	}
 
+	submit(event)
+	{
+		this.interpret(this.args.input);
+	}
+
 	interpret(command)
 	{
 		if(this.localLock)
@@ -338,14 +343,5 @@ export class RootView extends View
 
 			return true;
 		});
-	}
-
-	submit(event)
-	{
-		console.log(event);
-
-		event.preventDefault();
-
-		this.interpret(this.args.input);
 	}
 }
