@@ -58,7 +58,8 @@ body {
 	display: inline-block;
 }
 
-.terminal .output p > span.text {
+.terminal .output p,
+.terminal .output p > span:last-child {
 	white-space: pre-wrap;
 	max-width: 100%;
 }

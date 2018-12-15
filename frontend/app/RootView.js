@@ -33,7 +33,15 @@ export class RootView extends View
 		args.output.___after___.push((t,k,o,a)=>{
 			if(k === 'push')
 			{
-				this.onTimeout(10, ()=>{
+				this.onTimeout(16, ()=>{
+					window.scrollTo({
+						top: document.body.scrollHeight
+						, left: 0
+						, behavior: 'smooth'
+					});
+				});
+
+				this.onTimeout(48, ()=>{
 					window.scrollTo({
 						top: document.body.scrollHeight
 						, left: 0
@@ -307,7 +315,7 @@ export class RootView extends View
 					'/pub': 'CHAN BYTES... Publish raw bytes to a channel (hexadecimal)'
 					, '/auth': 'Run the auth proceedure'
 					, '/login': 'Run the login proceedure'
-					, '/register': 'Run the register proceedure'
+					, '/register': 'Run the registration proceedure'
 					, '/clear': 'Clear the terminal'
 				}, null ,4));
 				break;
