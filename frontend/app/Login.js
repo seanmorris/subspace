@@ -27,12 +27,12 @@ export class Login
 		if(this.stack.length == 2)
 		{
 			terminal.args.input = '';
-			terminal.args.output.push(':: Checking...');
-
 			terminal.localLock = false;
 			terminal.args.prompt = '<<';
 
+			terminal.args.output.push(`<< login ${this.stack[0]} [password censored]`);	
 			terminal.socket.send(`login ${this.stack[0]} ${this.stack[1]}`);
+			terminal.args.output.push(':: Checking...');
 		}
 	}
 }

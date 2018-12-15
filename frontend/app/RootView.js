@@ -9,6 +9,7 @@ import { ByteView } from 'ByteView';
 
 import { Login } from 'Login';
 import { Register } from 'Register';
+import { Cornfield } from 'Cornfield';
 
 export class RootView extends View
 {
@@ -148,7 +149,7 @@ export class RootView extends View
 					this.args.output.push(`:: Killed.`);
 				}
 				this.localLock = false;
-				this.args.prompt = '::';
+				this.args.prompt = '<<';
 				this.args.passwordMode = false;
 			}
 		}, {wait: 1});
@@ -315,13 +316,19 @@ export class RootView extends View
 				}
 				break;
 
+			case 'cornfield':
+				this.localLock = new Cornfield(this);
+				this.args.prompt = '::';
+				break;
+
 			case 'commands':
 				this.args.output.push(JSON.stringify({
 					'/pub': 'CHAN BYTES... Publish raw bytes to a channel (hexadecimal)'
-					, '/auth': 'Run the auth proceedure'
-					, '/login': 'Run the login proceedure'
-					, '/register': 'Run the registration proceedure'
-					, '/clear': 'Clear the terminal'
+					, '/auth': 'Run the auth procedure.'
+					, '/login': 'Run the login procedure.'
+					, '/register': 'Run the registration procedure.'
+					, '/clear': 'Clear the terminal.'
+					, '/cornfield': 'Play Cornfield.'
 				}, null ,4));
 				break;
 		}

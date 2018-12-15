@@ -3345,7 +3345,64 @@ var Config = exports.Config = function Config() {
 Config.title = 'SubSpace 0.2.0a';
 });
 
-require.register("Login.js", function(exports, require, module) {
+require.register("Cornfield.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Cornfield = exports.Cornfield = function () {
+	function Cornfield(terminal) {
+		_classCallCheck(this, Cornfield);
+
+		terminal.args.output.push(':: Welcome to Cornfield');
+		terminal.args.output.push(':: You are in a cornfield.');
+		terminal.args.output.push(':: You see corn.');
+		terminal.args.output.push(':: Move? [north south east west]');
+		terminal.args.output.push(':: Look?');
+	}
+
+	_createClass(Cornfield, [{
+		key: 'pass',
+		value: function pass(command, terminal) {
+			command = command.toLowerCase();
+
+			switch (command) {
+				case 'look':
+					terminal.args.output.push(':: You found an ear of corn.');
+					break;
+				case 'n':
+				case 'north':
+					terminal.args.output.push(':: You moved north.');
+					break;
+				case 's':
+				case 'south':
+					terminal.args.output.push(':: You moved south.');
+					break;
+				case 'e':
+				case 'east':
+					terminal.args.output.push(':: You moved east.');
+					break;
+				case 'w':
+				case 'west':
+					terminal.args.output.push(':: You moved west.');
+					break;
+			}
+
+			terminal.args.input = '';
+		}
+	}]);
+
+	return Cornfield;
+}();
+});
+
+;require.register("Login.js", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3386,12 +3443,12 @@ var Login = exports.Login = function () {
 
 			if (this.stack.length == 2) {
 				terminal.args.input = '';
-				terminal.args.output.push(':: Checking...');
-
 				terminal.localLock = false;
 				terminal.args.prompt = '<<';
 
+				terminal.args.output.push('<< login ' + this.stack[0] + ' [password censored]');
 				terminal.socket.send('login ' + this.stack[0] + ' ' + this.stack[1]);
+				terminal.args.output.push(':: Checking...');
 			}
 		}
 	}]);
@@ -3466,6 +3523,7 @@ var Register = exports.Register = function () {
 
 				terminal.args.output.push(':: Trying to register ' + this.stack[0] + ' <' + this.stack[1] + '>...');
 
+				terminal.args.output.push('<< register ' + this.stack[0] + ' [password censored] ' + this.stack[1]);
 				terminal.socket.send('register ' + this.stack[0] + ' ' + this.stack[2] + ' ' + this.stack[1]);
 
 				terminal.localLock = false;
@@ -3507,6 +3565,8 @@ var _ByteView = require('ByteView');
 var _Login = require('Login');
 
 var _Register = require('Register');
+
+var _Cornfield = require('Cornfield');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -3633,7 +3693,7 @@ var RootView = exports.RootView = function (_View) {
 					_this.args.output.push(':: Killed.');
 				}
 				_this.localLock = false;
-				_this.args.prompt = '::';
+				_this.args.prompt = '<<';
 				_this.args.passwordMode = false;
 			}
 		}, { wait: 1 });
@@ -3784,13 +3844,19 @@ var RootView = exports.RootView = function (_View) {
 					}
 					break;
 
+				case 'cornfield':
+					this.localLock = new _Cornfield.Cornfield(this);
+					this.args.prompt = '::';
+					break;
+
 				case 'commands':
 					this.args.output.push(JSON.stringify({
 						'/pub': 'CHAN BYTES... Publish raw bytes to a channel (hexadecimal)',
-						'/auth': 'Run the auth proceedure',
-						'/login': 'Run the login proceedure',
-						'/register': 'Run the registration proceedure',
-						'/clear': 'Clear the terminal'
+						'/auth': 'Run the auth procedure.',
+						'/login': 'Run the login procedure.',
+						'/register': 'Run the registration procedure.',
+						'/clear': 'Clear the terminal.',
+						'/cornfield': 'Play Cornfield.'
 					}, null, 4));
 					break;
 			}

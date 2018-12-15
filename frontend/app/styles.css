@@ -31,9 +31,6 @@ body {
 .bottom {
 	display: flex;
 	flex-direction: row;
-
-	margin-top: 0.5em;
-	margin-bottom: 0.5em;
 }
 
 .bottom div:last-child {
@@ -64,12 +61,11 @@ body {
 	max-width: 100%;
 }
 
-.terminal input,
-.terminal textarea {
+.terminal input {
 	font-family: 'Unispace', monospace;
 	pointer-events: none;
 	width: 100%;
-	height: 1em;
+	height: 1.25em;
 	resize: none;
 	overflow: hidden;
 	border: none;

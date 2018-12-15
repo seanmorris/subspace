@@ -55,6 +55,7 @@ export class Register
 
 			terminal.args.output.push(`:: Trying to register ${this.stack[0]} <${this.stack[1]}>...`);
 
+			terminal.args.output.push(`<< register ${this.stack[0]} [password censored] ${this.stack[1]}`);	
 			terminal.socket.send(`register ${this.stack[0]} ${this.stack[2]} ${this.stack[1]}`);
 
 			terminal.localLock = false;
