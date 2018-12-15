@@ -2,21 +2,60 @@
 namespace SeanMorris\SubSpace;
 class EntryRoute implements \SeanMorris\Ids\Routable
 {
+	/**
+	 * Print the Message of the Day.
+	 */
 	public function motd($router)
 	{
 		$clientId = $router->contextGet('__clientIndex');
 
-		return sprintf('Welcome to the subspace server, %d!', $clientId);
+		return sprintf('Welcome to the subspace server, #0x%04x!', $clientId);
 	}
 
+	/**
+	 * Roll a 64 bit die.
+	 */
+	public function random()
+	{
+		return rand(PHP_INT_MIN,PHP_INT_MAX);
+	}
+
+	public function seq($router)
+	{
+		$agent = $router->contextGet('__agent');
+
+		if(!$agent)
+		{
+			return;
+		}
+
+		foreach(range(0,255) as $i)
+		{
+
+		}
+	}
+
+	/**
+	 * Get the current time.
+	 */
 	public function time($router)
 	{
-		return ['time' => microtime(TRUE)];
+		$args = $router->path()->consumeNodes();
+
+		if($args[0] ?? FALSE)
+		{
+			return ['time' => microtime(TRUE)];
+		}
+
+		return (int) round(microtime(TRUE) * 1000);
 	}
 
+	/**
+	 * Auth via JWT.
+	 */
 	public function auth($router)
 	{
-		$args   = $router->path()->consumeNodes();
+		$args = $router->path()->consumeNodes();
 
 		if($router->contextGet('__authed'))
 		{
@@ -45,6 +84,9 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 		}
 	}
 
+	/**
+	 * Get/Set your nickname.
+	 */
 	public function nick($router)
 	{
 		$args   = $router->path()->consumeNodes();
@@ -77,6 +119,9 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 		];
 	}
 
+	/**
+	 * Publish a message to a channel individually or by a selector.
+	 */
 	public function pub($router)
 	{
 		$args  = $router->path()->consumeNodes();
@@ -102,6 +147,9 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 		$hub->publish($channelName, implode(' ', $args), $agent);
 	}
 
+	/**
+	 * Subscribe to a channel individually or by a selector.
+	 */
 	public function sub($router)
 	{
 		$args  = $router->path()->consumeNodes();
@@ -127,6 +175,9 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 		return $this->subs($router);
 	}
 
+	/**
+	 * List your current subscriptions.
+	 */
 	public function subs($router)
 	{
 		$args  = $router->path()->consumeNodes();
@@ -160,7 +211,10 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 
 		return ['subscriptions' => $channels];
 	}
-
+	
+	/**
+	 * Unsubscribe from a channel individually or by a selector.
+	 */
 	public function unsub($router)
 	{
 		if(!$router->contextGet('__authed'))
@@ -191,6 +245,9 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 		return $this->subs($router);
 	}
 
+	/**
+	 * List available channels on the server.
+	 */
 	public function channels($router)
 	{
 		$args = $router->path()->consumeNodes();
@@ -220,17 +277,59 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 		)];
 	}
 
+	/**
+	 * Lists available commands.
+	 */
 	public function commands()
 	{
 		$reflection = new \ReflectionClass(get_class());
 		$methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
-		
-		return ['commands' => array_map(
-			function($method)
+
+		$_methods = [];
+
+		foreach($methods as $method)
+		{
+			if($method->name[0] == '_')
 			{
-				return $method->name;
+				continue;
 			}
-			, $methods
-		)];
+
+			if($comment = $method->getDocComment())
+			{
+				$comment = substr($comment, 3);
+				$comment = trim($comment);
+				$comment = substr($comment, 2);
+				$comment = substr($comment, 0, strlen($comment)-3);
+				$comment = trim($comment);
+
+				$_methods[$method->name] = $comment;
+
+				continue;
+			}
+
+			$_methods[$method->name] = '';
+		}
+
+		return ['commands' => $_methods];
+	}
+
+	/**
+	 * Print the help page.
+	 */
+	public function help()
+	{
+		return new \SeanMorris\SubSpace\Idilic\View\Help;
+	}
+
+	public function _dynamic($router)
+	{
+		$command = $router->path()->getNode();
+
+		if($command == '?')
+		{
+			return $this->help($router);
+		}
+
+		return FALSE;
 	}
 }

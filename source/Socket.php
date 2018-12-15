@@ -133,7 +133,7 @@ class Socket
 	public function send($message, $client, $typeByte = 0x1)
 	{
 		// Send data to clients
-		fwrite(STDERR, $message);
+		// fwrite(STDERR, 'Sending ' . $message);
 
 		$length   = strlen($message);
 
@@ -232,7 +232,7 @@ class Socket
 
 	protected function onConnect($client, $clientIndex)
 	{
-		fwrite(STDERR, sprintf("#%d joined.\n", $clientIndex));
+		// fwrite(STDERR, sprintf("#%d joined.\n", $clientIndex));
 	}
 
 	protected function onDisconnect($client, $clientIndex)
@@ -265,6 +265,7 @@ class Socket
 			$this->hub->unsubscribe('*', $agent);
 
 			$agent->expose(function($content, $output, $origin, $channel, $originalChannel) use($client){
+
 				if(is_numeric($channel->name) || preg_match('/^\d+-\d+$/', $channel->name))
 				{
 					$typeByte = static::MESSAGE_TYPES['binary'];
@@ -364,12 +365,12 @@ class Socket
 
 				break;
 			case(static::MESSAGE_TYPES['text']):
-				fwrite(STDERR, sprintf(
-					"%d[%d]: \"%s\"\n"
-					, $clientIndex
-					, $type
-					, $received
-				));
+				// fwrite(STDERR, sprintf(
+				// 	"%d[%d]: \"%s\"\n"
+				// 	, $clientIndex
+				// 	, $type
+				// 	, $received
+				// ));
 
 				$routes  = new EntryRoute;
 				$path    = new \SeanMorris\Ids\Path(...preg_split('/\s+/', $received));
@@ -378,15 +379,35 @@ class Socket
 
 				$router->setContext($this->userContext[$clientIndex]);
 				$response = $router->route();
+
+				if($response instanceof \SeanMorris\Theme\View)
+				{
+					$response = (string) $response;
+				}
 			
 				break;
 		}
 
-		if($response !== NULL)
+		if(is_integer($response))
+		{
+			$this->send(
+				pack(
+					'vvvP'
+					, 0
+					, 0
+					, 0
+					, $response
+				)
+				, $client
+				, static::MESSAGE_TYPES['binary']
+			);
+		}
+		else if($response !== NULL)
 		{
 			$this->send(
 				json_encode($response)
 				, $client
+				, static::MESSAGE_TYPES['text']
 			);
 		}
 	}
@@ -399,13 +420,13 @@ $errorHandler = set_error_handler(
 			return;
 		}
 
-		fwrite(STDERR, sprintf(
-			"[%d] '%s' in %s:%d\n"
-			, $errCode
-			, $message
-			, $file
-			, $line
-		));
+		// fwrite(STDERR, sprintf(
+		// 	"[%d] '%s' in %s:%d\n"
+		// 	, $errCode
+		// 	, $message
+		// 	, $file
+		// 	, $line
+		// ));
 
 		if($errorHandler)
 		{

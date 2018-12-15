@@ -98,6 +98,20 @@ export class Socket
 				return;
 			}
 
+			if(typeof packet !== 'object')
+			{
+				callback(
+					event
+					, event.data
+					, null
+					, 'server'
+					, 0
+					, null
+					, packet
+				);
+				return;
+			}
+
 			if(!wildType)
 			{
 				callback(
@@ -200,18 +214,25 @@ export class Socket
 
 	send(message)
 	{
-		if(this.socket.readyState === this.socket.CONNECTING)
+		if(this.socket.readyState !== this.socket.OPEN)
 		{
 			return new Promise((accept, reject) => {
 				let connectionOpened = ((c) => (event) => {
+					
 					while(this.openQueue.length)
 					{
-						this.send(this.openQueue.shift());
+						let message = this.openQueue.shift();
+
+						setTimeout(()=>{
+							this.send(message);
+						}, 100 * (this.openQueue.length + 1));
+
 					}
 
 					this.socket.removeEventListener('open', c);
 
 					accept();
+					
 				})(connectionOpened);
 
 				this.socket.addEventListener('open', connectionOpened);
