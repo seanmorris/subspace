@@ -22,7 +22,7 @@ class Socket
 		$keyFile    = '/home/sean/ssl_test/privkey.pem';
 		$chainFile  = '/home/sean/ssl_test/chain.pem';
 		$passphrase = '';
-		$address    = '0.0.0.0:9999';
+		$address    = '0.0.0.0:9998';
 
 		$context = stream_context_create([]);
 		// $context = stream_context_create([

@@ -46,7 +46,7 @@ services:
     image: socket.subspace.seanmorr.is
     restart: always
     ports:
-      - "9999:9999"
+      - "9998:9998"
     volumes:
       - ../:/app
     depends_on:
