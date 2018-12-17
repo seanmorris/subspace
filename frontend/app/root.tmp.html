@@ -1,17 +1,28 @@
-<div class = "top" cv-on = "click:focus(event)">
-	<div class = "menu"></div>
-	<div class = "terminal">
-		<div class = "output" cv-each = "output:line:l" cv-ref = "output:curvature/base/Tag">
-			<p>[[line]]</p>
-		</div>
-		<div class = "bottom">
-			<div>[[prompt]]&nbsp;</div>
-			<div>
-				<input cv-bind = "input" cv-ref = "input:curvature/base/Tag"/>
-				<input cv-bind = "input" name = "pw-input" type = "password" cv-ref = "password:curvature/base/Tag"/>
+<div class = "main [[inverted]]" cv-on = "click:focus(event)">
+	<div class = "top">
+		<div class = "menu"></div>
+		<div class = "terminal">
+			<div class = "output" cv-each = "output:line:l" cv-ref = "output:curvature/base/Tag">
+				<p>[[line]]</p>
+			</div>
+			<div class = "bottom">
+				<div>[[prompt]]&nbsp;</div>
+				<div>
+					<input
+						type = "text"
+						cv-on = "keydown:test(event)"
+						cv-bind = "input"
+						cv-ref = "input:curvature/base/Tag"/>
+					<input
+						name = "pw-input"
+						type = "password"
+						cv-on = "keydown:test(event)"
+						cv-bind = "input"
+						cv-ref = "password:curvature/base/Tag"/>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-<div class = "submit" cv-on = "click:submit(event)">submit</div>
+	<div class = "scanlines"></div>
+</div>

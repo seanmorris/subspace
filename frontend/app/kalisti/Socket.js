@@ -223,10 +223,7 @@ export class Socket
 					{
 						let message = this.openQueue.shift();
 
-						setTimeout(()=>{
-							this.send(message);
-						}, 100 * (this.openQueue.length + 1));
-
+						this.send(message);
 					}
 
 					this.socket.removeEventListener('open', c);

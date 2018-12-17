@@ -100,6 +100,7 @@ class Socket
 
 			while($message = fread($client, 2**16))
 			{
+				\SeanMorris\Ids\Log::debug('Got message', $message);
 				$type = $this->dataType($message);
 
 				switch($type)
@@ -160,55 +161,70 @@ class Socket
 
 	protected function decode($message)
 	{
+		$messages = [];
+
 		if($message === FALSE)
 		{
 			return;
 		}
 
-		$type = $this->dataType($message);
+		while($message)
+		{	
+			$decoded = FALSE;
+			$type    = $this->dataType($message);
 
-		$return = FALSE;
+			switch($type)
+			{
+				case(static::MESSAGE_TYPES['close']):
+					break;
+				case(static::MESSAGE_TYPES['text']):
+				case(static::MESSAGE_TYPES['binary']):
+					$length = ord($message[1]) & 127;
 
-		switch($type)
-		{
-			case(static::MESSAGE_TYPES['close']):
-				break;
-			case(static::MESSAGE_TYPES['text']):
-			case(static::MESSAGE_TYPES['binary']):
-				$length = ord($message[1]) & 127;
+					if($length == 126)
+					{
+						$length = unpack('n', substr($message, 2, 2))[1];
+						\SeanMorris\Ids\Log::debug('Message length', $length);
+						$masks = substr($message, 4, 4);
+						$data = substr($message, 8);
+					}
+					else if($length == 127)
+					{
+						$length = unpack('P', substr($message, 2, 8))[1];
+						\SeanMorris\Ids\Log::debug('Message length', $length);
+						$masks = substr($message, 10, 4);
+						$data = substr($message, 14);
+					}
+					else
+					{
+						\SeanMorris\Ids\Log::debug('Message length', $length);
+						$masks = substr($message, 2, 4);
+						$data = substr($message, 6);
+					}
 
-				if($length == 126)
-				{
-					$masks = substr($message, 4, 4);
-					$data = substr($message, 8);
-				}
-				else if($length == 127)
-				{
-					$masks = substr($message, 10, 4);
-					$data = substr($message, 14);
-				}
-				else
-				{
-					$masks = substr($message, 2, 4);
-					$data = substr($message, 6);
-				}
+					$decoded = '';
 
-				$return = '';
+					for ($i = 0; $i < $length; ++$i)
+					{
+						$decoded .= $data[$i] ^ $masks[$i%4];
+					}
 
-				for ($i = 0; $i < strlen($data); ++$i)
-				{
-					$return .= $data[$i] ^ $masks[$i%4];
-				}
-				break;
-			case(static::MESSAGE_TYPES['ping']):
-				fwrite(STDERR, 'Received a ping!');
-				break;
-			case(static::MESSAGE_TYPES['pong']):
-				fwrite(STDERR, 'Received a pong!');
-				break;
+					$message = substr($data, $length);
+					break;
+				case(static::MESSAGE_TYPES['ping']):
+					fwrite(STDERR, 'Received a ping!');
+					break;
+				case(static::MESSAGE_TYPES['pong']):
+					fwrite(STDERR, 'Received a pong!');
+					break;
+			}
+
+			$messages[] = $decoded;
 		}
 
-		return $return;
+		\SeanMorris\Ids\Log::debug('Decoded', $messages);
+
+		return $messages;
 	}
 
 	protected function dataType($message)
@@ -243,7 +259,7 @@ class Socket
 	protected function onReceive($message, $client, $clientIndex)
 	{
 		$type     = $this->dataType($message);
-		$received = $this->decode($message);
+		$messages = $this->decode($message);
 		$response = NULL;
 
 		if(!$this->hub)
@@ -349,69 +365,72 @@ class Socket
 
 		$response = NULL;
 
-		switch($type)
+		foreach($messages as $m)
 		{
-			case(static::MESSAGE_TYPES['binary']):
-				if(isset($this->userContext[$clientIndex])
-					&& $this->userContext[$clientIndex]['__authed']
-				){
-					$channelId = ord($received[0]) + (ord($received[1]) << 8);
+			switch($type)
+			{
+				case(static::MESSAGE_TYPES['binary']):
+					if(isset($this->userContext[$clientIndex])
+						&& $this->userContext[$clientIndex]['__authed']
+					){
+						$channelId = ord($m[0]) + (ord($m[1]) << 8);
 
-					$finalMessage = '';
+						$finalMessage = '';
 
-					for($i = 2; $i < strlen($received); $i++)
-					{
-						$finalMessage .= $received[$i];
+						for($i = 2; $i < strlen($m); $i++)
+						{
+							$finalMessage .= $m[$i];
+						}
+
+						$this->hub->publish($channelId, $finalMessage, $agent);
 					}
+					break;
+				case(static::MESSAGE_TYPES['text']):
+					// fwrite(STDERR, sprintf(
+					// 	"%d[%d]: \"%s\"\n"
+					// 	, $clientIndex
+					// 	, $type
+					// 	, $m
+					// ));
 
-					$this->hub->publish($channelId, $finalMessage, $agent);
-				}
-				break;
-			case(static::MESSAGE_TYPES['text']):
-				// fwrite(STDERR, sprintf(
-				// 	"%d[%d]: \"%s\"\n"
-				// 	, $clientIndex
-				// 	, $type
-				// 	, $received
-				// ));
+					$routes  = new EntryRoute;
+					$path    = new \SeanMorris\Ids\Path(...preg_split('/\s+/', $m));
+					$request = new \SeanMorris\Ids\Request(['path' => $path]);
+					$router  = new \SeanMorris\Ids\Router($request, $routes);
 
-				$routes  = new EntryRoute;
-				$path    = new \SeanMorris\Ids\Path(...preg_split('/\s+/', $received));
-				$request = new \SeanMorris\Ids\Request(['path' => $path]);
-				$router  = new \SeanMorris\Ids\Router($request, $routes);
+					$router->setContext($this->userContext[$clientIndex]);
+					$response = $router->route();
 
-				$router->setContext($this->userContext[$clientIndex]);
-				$response = $router->route();
+					if($response instanceof \SeanMorris\Theme\View)
+					{
+						$response = (string) $response;
+					}
+				
+					break;
+			}
 
-				if($response instanceof \SeanMorris\Theme\View)
-				{
-					$response = (string) $response;
-				}
-			
-				break;
-		}
-
-		if(is_integer($response))
-		{
-			$this->send(
-				pack(
-					'vvvP'
-					, 0
-					, 0
-					, 0
-					, $response
-				)
-				, $client
-				, static::MESSAGE_TYPES['binary']
-			);
-		}
-		else if($response !== NULL)
-		{
-			$this->send(
-				json_encode($response)
-				, $client
-				, static::MESSAGE_TYPES['text']
-			);
+			if(is_integer($response))
+			{
+				$this->send(
+					pack(
+						'vvvP'
+						, 0
+						, 0
+						, 0
+						, $response
+					)
+					, $client
+					, static::MESSAGE_TYPES['binary']
+				);
+			}
+			else if($response !== NULL)
+			{
+				$this->send(
+					json_encode($response)
+					, $client
+					, static::MESSAGE_TYPES['text']
+				);
+			}
 		}
 	}
 }

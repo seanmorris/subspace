@@ -20,7 +20,7 @@ export class Login
 		{
 			terminal.args.passwordMode = true;
 			terminal.args.input = '';
-			terminal.args.output.push(':: Please type your password');
+			terminal.args.output.push(':: Please type your password [censored]');
 			return;
 		}
 

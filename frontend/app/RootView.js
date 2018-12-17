@@ -21,7 +21,9 @@ export class RootView extends View
 		this.template    = require('./root.tmp');
 		this.args.input  = '';
 		this.args.output = [];
+		this.args.inverted = '';
 		this.args.passwordMode = false;
+		this.localEcho = true;
 
 		this.localLock   = null;
 		this.args.prompt = '<<';
@@ -71,9 +73,12 @@ export class RootView extends View
 					 received = JSON.stringify(received,null,4);
 				}
 
-				this.args.output.push(new TextMessageView({
-					message: received
-				}));
+				if(this.localEcho)
+				{
+					this.args.output.push(new TextMessageView({
+						message: received
+					}));
+				}
 			}
 			else if(event.data instanceof ArrayBuffer)
 			{
@@ -114,16 +119,20 @@ export class RootView extends View
 						.padStart(2, '0');
 				});
 
-				this.args.output.push(new BinaryMessageView({
-					header:new ByteView({
-						separator: ''
-						, bytes:    headerBytes
-					})
-					, message: new ByteView({
-						separator: ' '
-						, bytes:   bytes.slice(messageIndex)
-					})
-				}));
+				if(this.localEcho)
+				{
+					this.args.output.push(new BinaryMessageView({
+						header:new ByteView({
+							separator: ''
+							, bytes:    headerBytes
+						})
+						, message: new ByteView({
+							separator: ' '
+							, bytes:   bytes.slice(messageIndex)
+						})
+					}));
+				}
+
 
 				while(this.args.output.length > this.max)
 				{
@@ -134,10 +143,10 @@ export class RootView extends View
 
 		let keyboard = new Keyboard;
 
-		keyboard.keys.bindTo('Enter', (v)=>{
+		keyboard.keys.bindTo((v,k)=>{
 			if(v == 1)
 			{
-				this.interpret(this.args.input);
+				// alert(k);
 			}
 		}, {wait: 1});
 
@@ -229,6 +238,14 @@ export class RootView extends View
 	{
 		if(this.localLock)
 		{
+			if(command == '/quit')
+			{
+				this.localLock = false;
+				this.args.prompt = '<<';
+				this.args.output.push(`:: Killed.`);
+				this.args.input = '';
+				return;
+			}
 			this.localLock.pass(command, this);
 			return;
 		}
@@ -258,7 +275,6 @@ export class RootView extends View
 		command  = command.substring(1);
 		let args = command.split(' ');
 		command  = args.shift();
-
 
 		switch(command)
 		{
@@ -316,9 +332,25 @@ export class RootView extends View
 				}
 				break;
 
+			case 'echo':
+				if(args.length)
+				{
+					this.localEcho = parseInt(args[0]);
+				}
+				this.args.output.push(`Echo is ${this.localEcho?'on':'off'}`);
+				break;
+
 			case 'cornfield':
 				this.localLock = new Cornfield(this);
 				this.args.prompt = '::';
+				break;
+
+			case 'light':
+				this.args.inverted = 'inverted';
+				break;
+
+			case 'dark':
+				this.args.inverted = '';
 				break;
 
 			case 'commands':
@@ -328,6 +360,9 @@ export class RootView extends View
 					, '/login': 'Run the login procedure.'
 					, '/register': 'Run the registration procedure.'
 					, '/clear': 'Clear the terminal.'
+					, '/echo': '[1|0] Enable/Disable/Check localEcho.'
+					, '/light': 'Light theme.'
+					, '/dark': 'Dark theme.'
 					, '/cornfield': 'Play Cornfield.'
 				}, null ,4));
 				break;
@@ -347,5 +382,16 @@ export class RootView extends View
 
 			return true;
 		});
+	}
+
+	test(event)
+	{
+		if(event.key == 'Enter')
+		{
+			this.onTimeout(0, ()=>{
+				this.interpret(this.args.input);
+				this.args.input = '';				
+			});
+		}
 	}
 }

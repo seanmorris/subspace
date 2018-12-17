@@ -3302,7 +3302,7 @@ var ByteView = exports.ByteView = function (_View) {
 
 		_this.args.separator = _this.args.separator || '';
 
-		_this.template = '<span\n\t\t\tcv-each = "bytes:byte:b"\n\t\t\tcv-carry = "separator"\n\t\t\tstyle = "display: block"\n\t\t\t"><span\n\t\t\t\tcv-on = "cvDomAttached:color(event, byte, $view)"\n\t\t\t\tcv-ref = "byte:curvature/base/Tag"\n\t\t\t\t\n\t\t\t>[[byte]][[separator]]</span></span>';
+		_this.template = '<span\n\t\t\tcv-each = "bytes:byte:b"\n\t\t\tcv-carry = "separator"\n\t\t\tstyle = "display: block;"\n\t\t\t"><span\n\t\t\t\tcv-on = "cvDomAttached:color(event, byte, $view)"\n\t\t\t\tcv-ref = "byte:curvature/base/Tag"\n\t\t\t\t\n\t\t\t>[[byte]][[separator]]</span></span>';
 		return _this;
 	}
 
@@ -3321,7 +3321,11 @@ var ByteView = exports.ByteView = function (_View) {
 				return;
 			}
 
-			$view.tags.byte.element.style.color = "hsl(" + 360 * hue / 0xFF + ",70%,70%)";;
+			var color = "hsl(" + 360 * hue / 0xFF + ",70%,70%)";
+
+			$view.tags.byte.element.style.color = color;
+
+			$view.tags.byte.element.style['text-shadow'] = '2px 0px 5px ' + color + ', -2px 0px 5px ' + color;
 		}
 	}]);
 
@@ -3358,6 +3362,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Cornfield = exports.Cornfield = function () {
 	function Cornfield(terminal) {
+		var _this = this;
+
 		_classCallCheck(this, Cornfield);
 
 		terminal.args.output.push(':: Welcome to Cornfield');
@@ -3365,32 +3371,72 @@ var Cornfield = exports.Cornfield = function () {
 		terminal.args.output.push(':: You see corn.');
 		terminal.args.output.push(':: Move? [north south east west]');
 		terminal.args.output.push(':: Look?');
+
+		terminal.localEcho = false;
+
+		this.socket = terminal.socket;
+
+		this.socket.subscribe('message:cornfield:game', function (e, m, o, i) {});
+
+		this.socket.subscribe('message:cornfield:chat', function (e, m, c, o, i) {
+			terminal.args.output.push('!! <' + i + '> ' + m);
+		});
+
+		this.socket.subscribe('message:cornfield:users:ping', function (e, m, o, i) {
+			_this.socket.publish('cornfield:users:pong', 'pong!');
+		});
+
+		this.socket.subscribe('message:cornfield:users:pong', function (e, m, o, i) {});
 	}
 
 	_createClass(Cornfield, [{
 		key: 'pass',
-		value: function pass(command, terminal) {
-			command = command.toLowerCase();
+		value: function pass(input, terminal) {
+			var args = input.split(' ');
+			var command = args.shift();
+			console.log(command);
 
-			switch (command) {
+			switch (command.toLowerCase()) {
+				case 'ping':
+					this.socket.publish('cornfield:users:ping', 'ping!');
+					break;
+
 				case 'look':
 					terminal.args.output.push(':: You found an ear of corn.');
+					this.socket.publish('cornfield:game', 'l');
 					break;
+
 				case 'n':
 				case 'north':
 					terminal.args.output.push(':: You moved north.');
+					this.socket.publish('cornfield:game', 'n');
 					break;
+
 				case 's':
 				case 'south':
 					terminal.args.output.push(':: You moved south.');
+					this.socket.publish('cornfield:game', 's');
 					break;
+
 				case 'e':
 				case 'east':
 					terminal.args.output.push(':: You moved east.');
+					this.socket.publish('cornfield:game', 'e');
 					break;
+
 				case 'w':
 				case 'west':
 					terminal.args.output.push(':: You moved west.');
+					this.socket.publish('cornfield:game', 'w');
+					break;
+
+				case 't':
+				case 'talk':
+				case 'say':
+					// let chatMessage = 'ok';
+					var chatMessage = args.join(' ');
+					terminal.args.output.push('!! <you> ' + chatMessage);
+					this.socket.publish('cornfield:chat', chatMessage);
 					break;
 			}
 
@@ -3437,7 +3483,7 @@ var Login = exports.Login = function () {
 			if (this.stack.length == 1) {
 				terminal.args.passwordMode = true;
 				terminal.args.input = '';
-				terminal.args.output.push(':: Please type your password');
+				terminal.args.output.push(':: Please type your password [censored]');
 				return;
 			}
 
@@ -3588,7 +3634,9 @@ var RootView = exports.RootView = function (_View) {
 		_this.template = require('./root.tmp');
 		_this.args.input = '';
 		_this.args.output = [];
+		_this.args.inverted = '';
 		_this.args.passwordMode = false;
+		_this.localEcho = true;
 
 		_this.localLock = null;
 		_this.args.prompt = '<<';
@@ -3635,9 +3683,11 @@ var RootView = exports.RootView = function (_View) {
 					received = JSON.stringify(received, null, 4);
 				}
 
-				_this.args.output.push(new _TextMessageView.TextMessageView({
-					message: received
-				}));
+				if (_this.localEcho) {
+					_this.args.output.push(new _TextMessageView.TextMessageView({
+						message: received
+					}));
+				}
 			} else if (event.data instanceof ArrayBuffer) {
 				var bytesArray = new Uint8Array(event.data);
 
@@ -3662,16 +3712,18 @@ var RootView = exports.RootView = function (_View) {
 					return x.toString(16).toUpperCase().padStart(2, '0');
 				});
 
-				_this.args.output.push(new _BinaryMessageView.BinaryMessageView({
-					header: new _ByteView.ByteView({
-						separator: '',
-						bytes: headerBytes
-					}),
-					message: new _ByteView.ByteView({
-						separator: ' ',
-						bytes: bytes.slice(messageIndex)
-					})
-				}));
+				if (_this.localEcho) {
+					_this.args.output.push(new _BinaryMessageView.BinaryMessageView({
+						header: new _ByteView.ByteView({
+							separator: '',
+							bytes: headerBytes
+						}),
+						message: new _ByteView.ByteView({
+							separator: ' ',
+							bytes: bytes.slice(messageIndex)
+						})
+					}));
+				}
 
 				while (_this.args.output.length > _this.max) {
 					_this.args.output.shift();
@@ -3681,9 +3733,9 @@ var RootView = exports.RootView = function (_View) {
 
 		var keyboard = new _Keyboard.Keyboard();
 
-		keyboard.keys.bindTo('Enter', function (v) {
+		keyboard.keys.bindTo(function (v, k) {
 			if (v == 1) {
-				_this.interpret(_this.args.input);
+				// alert(k);
 			}
 		}, { wait: 1 });
 
@@ -3767,6 +3819,13 @@ var RootView = exports.RootView = function (_View) {
 		key: 'interpret',
 		value: function interpret(command) {
 			if (this.localLock) {
+				if (command == '/quit') {
+					this.localLock = false;
+					this.args.prompt = '<<';
+					this.args.output.push(':: Killed.');
+					this.args.input = '';
+					return;
+				}
 				this.localLock.pass(command, this);
 				return;
 			}
@@ -3844,9 +3903,24 @@ var RootView = exports.RootView = function (_View) {
 					}
 					break;
 
+				case 'echo':
+					if (args.length) {
+						this.localEcho = parseInt(args[0]);
+					}
+					this.args.output.push('Echo is ' + (this.localEcho ? 'on' : 'off'));
+					break;
+
 				case 'cornfield':
 					this.localLock = new _Cornfield.Cornfield(this);
 					this.args.prompt = '::';
+					break;
+
+				case 'light':
+					this.args.inverted = 'inverted';
+					break;
+
+				case 'dark':
+					this.args.inverted = '';
 					break;
 
 				case 'commands':
@@ -3856,6 +3930,9 @@ var RootView = exports.RootView = function (_View) {
 						'/login': 'Run the login procedure.',
 						'/register': 'Run the registration procedure.',
 						'/clear': 'Clear the terminal.',
+						'/echo': '[1|0] Enable/Disable/Check localEcho.',
+						'/light': 'Light theme.',
+						'/dark': 'Dark theme.',
 						'/cornfield': 'Play Cornfield.'
 					}, null, 4));
 					break;
@@ -3877,6 +3954,18 @@ var RootView = exports.RootView = function (_View) {
 
 				return true;
 			});
+		}
+	}, {
+		key: 'test',
+		value: function test(event) {
+			var _this4 = this;
+
+			if (event.key == 'Enter') {
+				this.onTimeout(0, function () {
+					_this4.interpret(_this4.args.input);
+					_this4.args.input = '';
+				});
+			}
 		}
 	}]);
 
@@ -4244,16 +4333,11 @@ var Socket = exports.Socket = function () {
 				return new Promise(function (accept, reject) {
 					var connectionOpened = function (c) {
 						return function (event) {
-							var _loop = function _loop() {
-								var message = _this.openQueue.shift();
-
-								setTimeout(function () {
-									_this.send(message);
-								}, 100 * (_this.openQueue.length + 1));
-							};
 
 							while (_this.openQueue.length) {
-								_loop();
+								var _message = _this.openQueue.shift();
+
+								_this.send(_message);
 							}
 
 							_this.socket.removeEventListener('open', c);
@@ -4303,7 +4387,7 @@ var Socket = exports.Socket = function () {
 });
 
 ;require.register("root.tmp.html", function(exports, require, module) {
-module.exports = "<div class = \"top\" cv-on = \"click:focus(event)\">\n\t<div class = \"menu\"></div>\n\t<div class = \"terminal\">\n\t\t<div class = \"output\" cv-each = \"output:line:l\" cv-ref = \"output:curvature/base/Tag\">\n\t\t\t<p>[[line]]</p>\n\t\t</div>\n\t\t<div class = \"bottom\">\n\t\t\t<div>[[prompt]]&nbsp;</div>\n\t\t\t<div>\n\t\t\t\t<input cv-bind = \"input\" cv-ref = \"input:curvature/base/Tag\"/>\n\t\t\t\t<input cv-bind = \"input\" name = \"pw-input\" type = \"password\" cv-ref = \"password:curvature/base/Tag\"/>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n</div>\n\n<div class = \"submit\" cv-on = \"click:submit(event)\">submit</div>"
+module.exports = "<div class = \"main [[inverted]]\" cv-on = \"click:focus(event)\">\n\t<div class = \"top\">\n\t\t<div class = \"menu\"></div>\n\t\t<div class = \"terminal\">\n\t\t\t<div class = \"output\" cv-each = \"output:line:l\" cv-ref = \"output:curvature/base/Tag\">\n\t\t\t\t<p>[[line]]</p>\n\t\t\t</div>\n\t\t\t<div class = \"bottom\">\n\t\t\t\t<div>[[prompt]]&nbsp;</div>\n\t\t\t\t<div>\n\t\t\t\t\t<input\n\t\t\t\t\t\ttype = \"text\"\n\t\t\t\t\t\tcv-on = \"keydown:test(event)\"\n\t\t\t\t\t\tcv-bind = \"input\"\n\t\t\t\t\t\tcv-ref = \"input:curvature/base/Tag\"/>\n\t\t\t\t\t<input\n\t\t\t\t\t\tname = \"pw-input\"\n\t\t\t\t\t\ttype = \"password\"\n\t\t\t\t\t\tcv-on = \"keydown:test(event)\"\n\t\t\t\t\t\tcv-bind = \"input\"\n\t\t\t\t\t\tcv-ref = \"password:curvature/base/Tag\"/>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n\n\t<div class = \"scanlines\"></div>\n</div>\n"
 });
 
 ;require.register("___globals___", function(exports, require, module) {

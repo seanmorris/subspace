@@ -1,36 +1,56 @@
 *{
 	margin: 0px;
 	padding: 0px;
+	transition: filter 0.5s ease-out, text-shadow 0s 0s;
 }
 
 html {
-	padding: 1em;
 	box-sizing: border-box;
-}
-
-html, body {
+	background: white;
 	height: 100%;
 }
 
+html, body {
+	min-height: 100%;
+}
+
 body {
+	display: flex;
 	overflow-y:scroll;
+	flex-direction: column;
+	color: white;
+	font-size: 1.5em;
+	/*font-size: 4vh;*/
+	/*font-size: 2vw;*/
+	line-height: 1.25em;
+	font-weight: bold;
+}
+
+.main {
 	display: flex;
 	flex-direction: column;
-	background: black;
-	color: white;
-	font-size: 1em;
-	line-height: 1.25em;
+	flex: 1;
+	/*filter:invert(100%);*/
+	text-shadow: 2px 0px 5px #FFF
+		, -2px 0px 5px #FFF;
+}
+
+.top .scanlines {
+	opacity: 1;
 }
 
 .top {
+	flex: 1;
 	display: flex;
 	flex-direction: row;
 	flex-grow: 1;
+	min-height: 100%;
 }
 
 .bottom {
 	display: flex;
 	flex-direction: row;
+	padding-bottom: 1em;
 }
 
 .bottom div:last-child {
@@ -38,8 +58,10 @@ body {
 }
 
 .terminal {
+	padding: 1em;
+	background: black;
 	font-family: 'Unispace', monospace;
-	font-weight: normal;
+	font-weight: bold;
 	font-style: normal;
 	width: 100%;
 }
@@ -62,6 +84,7 @@ body {
 }
 
 .terminal input {
+	text-shadow: 2px 0px 5px #FFF, -2px 0px 5px #FFF;
 	font-family: 'Unispace', monospace;
 	pointer-events: none;
 	width: 100%;
@@ -75,6 +98,7 @@ body {
 	outline: none;
 	padding: 0px;
 	box-sizing: border-box;
+	font-weight: bold;
 }
 
 .submit {
@@ -88,9 +112,51 @@ body {
 	padding-left: 2em;
 	padding-right: 2em;
 	user-select: none;
+	cursor: pointer;
 }
 
 .submit:active {
 	right: 0.8em;
 	bottom: 0.8em;
+}
+
+.scanlines{
+	pointer-events: none;
+	background-image: url(scanline.png);
+	opacity: 0.5;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	animation-name: scan;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	mix-blend-mode: darken;
+}
+
+@keyframes scan {
+	from {
+		background-position: 0px 0px;
+	}
+	to {
+		background-position: 0px -18px;
+	}
+}
+
+.inverted {
+	filter: invert(1);
+	text-shadow: none !important;
+	transition: filter 0.2s ease-out, text-shadow 0s;
+}
+
+.inverted span,
+.inverted input {
+	text-shadow: none !important;
+	transition: filter 0.2s ease-out, text-shadow 0s;
+}
+
+.inverted .scanlines {
+	opacity: 0.64;
 }

@@ -2,7 +2,7 @@
 namespace SeanMorris\SubSpace\Idilic\Route;
 class RootRoute implements \SeanMorris\Ids\Routable
 {
-	const FREQUENCY = 120;
+	const FREQUENCY = 60;
 
 	public function compa($router)
 	{

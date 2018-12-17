@@ -208,6 +208,8 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 	 */
 	public function subs($router)
 	{
+		\SeanMorris\Ids\Log::debug('Listing subscriptions');
+
 		$args  = $router->path()->consumeNodes();
 		$hub   = $router->contextGet('__hub');
 		$agent = $router->contextGet('__agent');
@@ -220,6 +222,8 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 		}
 
 		$channels = array_keys(array_filter($hub->subscriptions($agent)));
+
+		\SeanMorris\Ids\Log::debug($channels);
 
 		$channels = array_map(function($channel){
 			if(is_numeric($channel))
