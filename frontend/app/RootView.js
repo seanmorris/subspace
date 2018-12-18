@@ -388,9 +388,10 @@ export class RootView extends View
 	{
 		if(event.key == 'Enter')
 		{
+			let command = this.args.input;
+			this.args.input = '';
 			this.onTimeout(0, ()=>{
-				this.interpret(this.args.input);
-				this.args.input = '';				
+				this.interpret(command);
 			});
 		}
 	}
