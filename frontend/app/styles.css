@@ -20,9 +20,7 @@ body {
 	flex-direction: column;
 	color: white;
 	font-size: 1.5em;
-	/*font-size: 4vh;*/
-	/*font-size: 2vw;*/
-	line-height: 1.125em;
+	line-height: 1.25em;
 }
 
 .main {
@@ -48,7 +46,6 @@ body {
 .bottom {
 	display: flex;
 	flex-direction: row;
-	padding-bottom: 1em;
 }
 
 .bottom div:last-child {
@@ -56,12 +53,13 @@ body {
 }
 
 .terminal {
-	padding: 1em;
 	background: black;
 	font-family: 'Unispace', monospace;
 	font-weight: normal;
 	font-style: normal;
 	width: 100%;
+	padding: 1em;
+	box-sizing: border-box;
 }
 
 .terminal .output p {
@@ -69,16 +67,19 @@ body {
 	display: flex;
 	flex: 1;
 	flex-wrap: nowrap;
+	width: 100%;
 }
 
 .terminal .output p > span {
 	display: inline-block;
+	flex-basis: fill;
 }
 
 .terminal .output p,
 .terminal .output p > span:last-child {
 	white-space: pre-wrap;
-	max-width: 100%;
+	overflow-wrap: break-word;
+	min-width: 0px;
 }
 
 .terminal input {
@@ -161,8 +162,4 @@ body {
 .melting {
 	line-height: initial;
 	font-family: DejaVu;
-}
-span.text {
-	/*break-after: all;*/
-	display: block;
 }

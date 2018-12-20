@@ -89,7 +89,7 @@ class Socket
 
 		// Get data from clients
 
-		$messages = [];
+		$partials = [];
 
 		foreach($this->clients as $i => $client)
 		{
@@ -129,7 +129,7 @@ class Socket
 							}
 							else if($length == 127)
 							{
-								$length = unpack('P', substr($rawBytes, 2, 8))[1];
+								$length = unpack('J', substr($rawBytes, 2, 8))[1];
 								\SeanMorris\Ids\Log::debug('Message length', $length);
 								$masks = substr($rawBytes, 10, 4);
 								$data = substr($rawBytes, 14);
@@ -148,18 +148,25 @@ class Socket
 									$remaining = $length - strlen($data);
 								
 									\SeanMorris\Ids\Log::debug(sprintf(
-										'Getting %d remaining bytes.'
+										'Getting %d remaining bytes...'
 										, $remaining
 									));
 
 									while($remaining > 0
 										&& ($newBytes = fread($client, $remaining))
 									){
+										\SeanMorris\Ids\Log::debug(sprintf(
+											'Got %d bytes...'
+											, strlen($newBytes)
+										));
 										$data .= $newBytes;
 									}
 
 									if(!isset($data[$ii]))
 									{
+										\SeanMorris\Ids\Log::debug(sprintf(
+											'Nope.'											, $remaining
+										));
 										$this->send(
 											json_encode([
 												'message' => 'Message dropped.'
@@ -198,11 +205,21 @@ class Socket
 
 								fclose($client);
 
-								return FALSE;
 							}
+							return FALSE;
 							break;
 						default:
 							\SeanMorris\Ids\Log::debug('Rejecting...');
+							if($client)
+							{
+								$this->onDisconnect($client, $i);
+
+								unset( $this->clients[$i] );
+
+								fclose($client);
+							}
+							
+							return FALSE;
 							break;
 					}
 					

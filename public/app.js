@@ -3953,13 +3953,14 @@ var RootView = exports.RootView = function (_View) {
 			var file = event.target.files[0];
 
 			fileReader.addEventListener('load', function (event) {
-				var arrayBuffer = event.target.result;
-
-				console.log(new Uint8Array(arrayBuffer));
-
 				_this3.args.output.push(':: Sending ' + file.name + '...');
 
-				_this3.socket.publish(_this3.fileChannel, new Uint8Array(arrayBuffer));
+				if (_this3.fileChannel == parseInt(_this3.fileChannel)) {
+					_this3.socket.publish(_this3.fileChannel, new Uint8Array(event.target.result));
+				} else {
+					console.log(event.target);
+					_this3.socket.publish(_this3.fileChannel, new TextDecoder("utf-8").decode(event.target.result));
+				}
 
 				_this3.fileChannel = false;
 				field.value = '';

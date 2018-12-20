@@ -227,18 +227,29 @@ export class RootView extends View
 		let file       = event.target.files[0];
 
 		fileReader.addEventListener('load', (event)=>{
-			let arrayBuffer = event.target.result;
-
-			console.log(new Uint8Array(arrayBuffer));
-
 			this.args.output.push(
 				`:: Sending ${file.name}...`
 			);
 
-			this.socket.publish(
-				this.fileChannel
-				, new Uint8Array(arrayBuffer)
-			);
+			if(this.fileChannel == parseInt(this.fileChannel))
+			{
+				this.socket.publish(
+					this.fileChannel
+					, new Uint8Array(
+						event.target.result
+					)
+				);
+			}
+			else
+			{
+				console.log(event.target);
+				this.socket.publish(
+					this.fileChannel
+					, (new TextDecoder("utf-8")).decode(
+						event.target.result
+					)
+				);
+			}
 
 			this.fileChannel = false;
 			field.value = '';
