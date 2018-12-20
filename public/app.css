@@ -1,1 +1,200 @@
-@font-face{font-family:Unispace;font-weight:400;src:url('/unispace rg.ttf')}@font-face{font-family:Unispace;font-weight:900;src:url('/unispace bd.ttf')}*{margin:0;padding:0;transition:filter .5s ease-out,text-shadow 0s 0s}html{box-sizing:border-box;background:#fff;height:100%}body,html{min-height:100%}body{display:flex;overflow-y:scroll;flex-direction:column;color:#fff;font-size:1.5em;line-height:1.125em;font-weight:700}.main{display:flex;flex-direction:column;flex:1;text-shadow:-2px 0 5px #fff,2px 0 5px #fff}.top .scanlines{opacity:1}.top{flex:1;display:flex;flex-direction:row;flex-grow:1;min-height:100%}.bottom{display:flex;flex-direction:row;padding-bottom:1em}.bottom div:last-child{flex-grow:1}.terminal{padding:1em;background:#000;font-family:Unispace,monospace;font-weight:700;font-style:normal;width:100%}.terminal .output p{margin:0;display:flex;flex:1;flex-wrap:nowrap}.terminal .output p>span{display:inline-block}.terminal .output p,.terminal .output p>span:last-child{white-space:pre-wrap;max-width:100%}.terminal input{text-shadow:-3px 0 4px #faa,3px 0 4px #aff;font-family:Unispace,monospace;pointer-events:none;width:100%;height:1.25em;resize:none;overflow:hidden;border:none;background:#000;color:#fff;font-size:1em;outline:0;padding:0;box-sizing:border-box;font-weight:700}.submit{font-family:Unispace,monospace;position:fixed;right:1em;bottom:1em;background-color:rgba(255,255,255,.8);color:#000;padding:1em;padding-left:2em;padding-right:2em;user-select:none;cursor:pointer}.submit:active{right:.8em;bottom:.8em}.scanlines{pointer-events:none;background-image:url(scanline.png);opacity:.5;position:fixed;top:0;left:0;width:100%;height:100%;animation-name:scan;animation-duration:3s;animation-iteration-count:infinite;animation-timing-function:linear;mix-blend-mode:darken}@keyframes scan{from{background-position:0 0}to{background-position:0 -12px}}.inverted{filter:invert(1);text-shadow:none!important;transition:filter .2s ease-out,text-shadow 0s}.inverted input,.inverted span{text-shadow:none!important;transition:filter .2s ease-out,text-shadow 0s}.inverted .scanlines{opacity:.64}
+@font-face {
+	font-family: 'Unispace';
+	font-weight:  normal;
+	src:          url('/unispace rg.ttf');
+}
+
+@font-face {
+	font-family: 'Unispace';
+	font-weight:  900;
+	src:          url('/unispace bd.ttf');
+}
+
+@font-face {
+	font-family: 'UniFont';
+	font-weight:  normal;
+	src:          url('/unifont_csur-11.0.02.ttf');
+}
+
+@font-face {
+	font-family: 'Junicode';
+	font-weight:  normal;
+	src:          url('/Junicode.woff');
+}
+
+@font-face {
+	font-family: 'DejaVu';
+	font-weight:  normal;
+	src:          url('/DejaVuSansMono-webfont.ttf');
+}
+
+*{
+	margin: 0px;
+	padding: 0px;
+	transition: filter 0.5s ease-out, text-shadow 0s 0s;
+}
+
+html {
+	box-sizing: border-box;
+	background: white;
+	height: 100%;
+}
+
+html, body {
+	min-height: 100%;
+}
+
+body {
+	display: flex;
+	overflow-y:scroll;
+	flex-direction: column;
+	color: white;
+	font-size: 1.5em;
+	/*font-size: 4vh;*/
+	/*font-size: 2vw;*/
+	line-height: 1.125em;
+}
+
+.main {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	/*filter:invert(100%);*/
+	text-shadow: -2px 0px 5px #FFF, 2px 0px 5px #FFF;
+}
+
+.top .scanlines {
+	opacity: 1;
+}
+
+.top {
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+	flex-grow: 1;
+	min-height: 100%;
+}
+
+.bottom {
+	display: flex;
+	flex-direction: row;
+	padding-bottom: 1em;
+}
+
+.bottom div:last-child {
+	flex-grow: 1;
+}
+
+.terminal {
+	padding: 1em;
+	background: black;
+	font-family: 'Unispace', monospace;
+	font-weight: normal;
+	font-style: normal;
+	width: 100%;
+}
+
+.terminal .output p {
+	margin: 0px;
+	display: flex;
+	flex: 1;
+	flex-wrap: nowrap;
+}
+
+.terminal .output p > span {
+	display: inline-block;
+}
+
+.terminal .output p,
+.terminal .output p > span:last-child {
+	white-space: pre-wrap;
+	max-width: 100%;
+}
+
+.terminal input {
+	text-shadow: -3px 0px 4px #FAA, 3px 0px 4px #AFF;
+	font-family: 'Unispace', monospace;
+	pointer-events: none;
+	width: 100%;
+	height: 1.125em;
+	resize: none;
+	overflow: hidden;
+	border: none;
+	background: black;
+	color: white;
+	font-size: 1em;
+	outline: none;
+	padding: 0px;
+	box-sizing: border-box;
+	font-weight: /*bold*/;
+}
+
+.submit {
+	font-family: 'Unispace', monospace;
+	position: fixed;
+	right: 1em;
+	bottom: 1em;
+	background-color: rgba(255,255,255,0.8);
+	color:black;
+	padding: 1em;
+	padding-left: 2em;
+	padding-right: 2em;
+	user-select: none;
+	cursor: pointer;
+}
+
+.submit:active {
+	right: 0.8em;
+	bottom: 0.8em;
+}
+
+.scanlines{
+	pointer-events: none;
+	background-image: url(scanline.png);
+	opacity: 0.4;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	animation-name: scan;
+	animation-duration: 5s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	mix-blend-mode: darken;
+}
+
+@keyframes scan {
+	from {
+		background-position: 0px 0px;
+	}
+	to {
+		background-position: 0px -12px;
+	}
+}
+
+.inverted {
+	filter: invert(1);
+	text-shadow: none !important;
+	transition: filter 0.2s ease-out, text-shadow 0s;
+}
+
+.inverted span,
+.inverted input {
+	text-shadow: none !important;
+	transition: filter 0.2s ease-out, text-shadow 0s;
+}
+
+.inverted .scanlines {
+	opacity: 0.64;
+}
+.melting {
+	line-height: initial;
+	font-family: DejaVu;
+}
+span.text {
+	/*break-after: all;*/
+	display: block;
+}
+
+/*# sourceMappingURL=app.css.map*/

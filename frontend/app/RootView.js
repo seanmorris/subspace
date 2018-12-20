@@ -6,6 +6,7 @@ import { Socket } from 'kalisti/Socket';
 import { BinaryMessageView } from 'BinaryMessageView';
 import { TextMessageView } from 'TextMessageView';
 import { ByteView } from 'ByteView';
+import { MeltingText } from 'MeltingText';
 
 import { Login } from 'Login';
 import { Register } from 'Register';
@@ -214,8 +215,45 @@ export class RootView extends View
 		},{wait:0});
 	}
 
-	focus()
+	fileLoaded(event)
 	{
+		if(this.fileChannel === false)
+		{
+			return;
+		}
+
+		let fileReader = new FileReader();
+		let field      = event.target;
+		let file       = event.target.files[0];
+
+		fileReader.addEventListener('load', (event)=>{
+			let arrayBuffer = event.target.result;
+
+			console.log(new Uint8Array(arrayBuffer));
+
+			this.args.output.push(
+				`:: Sending ${file.name}...`
+			);
+
+			this.socket.publish(
+				this.fileChannel
+				, new Uint8Array(arrayBuffer)
+			);
+
+			this.fileChannel = false;
+			field.value = '';
+		});
+
+		fileReader.readAsArrayBuffer(file)
+	}
+
+	focus(event)
+	{
+		if(event && event.target.name == 'INPUT')
+		{
+			return;
+		}
+
 		if(window.getSelection().toString())
 		{
 			return;
@@ -226,6 +264,7 @@ export class RootView extends View
 			this.tags.password.element.focus();
 			return;
 		}
+
 		this.tags.input.element.focus();
 	}
 
@@ -351,6 +390,25 @@ export class RootView extends View
 
 			case 'dark':
 				this.args.inverted = '';
+				break;
+
+
+			case 'file':
+				if(!args.length)
+				{
+					this.args.output.push(
+						`:: Error: Please supply a channel to publish file.`
+					);
+					break;
+				}
+				this.fileChannel = args[0];
+				this.tags.file.element.click();
+				break;
+
+			case 'z':
+				this.args.output.push(
+					new MeltingText({input:'lmao!'})
+				);
 				break;
 
 			case 'commands':

@@ -74,7 +74,7 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 		if($router->contextGet('__authed'))
 		{
 			return [
-				'error' => 'authed.'
+				'error' => sprintf('0x%04x already authed.', $clientId)
 			];
 		}
 

@@ -9,3 +9,21 @@
 	font-weight:  900;
 	src:          url('/unispace bd.ttf');
 }
+
+@font-face {
+	font-family: 'UniFont';
+	font-weight:  normal;
+	src:          url('/unifont_csur-11.0.02.ttf');
+}
+
+@font-face {
+	font-family: 'Junicode';
+	font-weight:  normal;
+	src:          url('/Junicode.woff');
+}
+
+@font-face {
+	font-family: 'DejaVu';
+	font-weight:  normal;
+	src:          url('/DejaVuSansMono-webfont.ttf');
+}
