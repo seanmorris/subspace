@@ -4018,7 +4018,7 @@ var RootView = exports.RootView = function (_View) {
 				_this3.args.output.push(':: Sending ' + file.name + '...');
 
 				if (_this3.fileChannel == parseInt(_this3.fileChannel)) {
-					_this3.socket.publish(_this3.fileChannel, new Uint8Array(event.target.result));
+					_this3.socket.publish(_this3.fileChannel, event.target.result);
 				} else {
 					console.log(event.target);
 					_this3.socket.publish(_this3.fileChannel, new TextDecoder("utf-8").decode(event.target.result));
@@ -4555,8 +4555,9 @@ var Socket = exports.Socket = function () {
 		key: 'publish',
 		value: function publish(channel, message) {
 			if (channel == parseInt(channel)) {
-
-				if (message.byteLength) {
+				if (message instanceof ArrayBuffer) {
+					message = new Uint8Array(message);
+				} else if (message.byteLength) {
 					message = new Uint8Array(message.buffer);
 				} else if (!Array.isArray(message)) {
 					message = [message];
@@ -4564,17 +4565,12 @@ var Socket = exports.Socket = function () {
 
 				var channelBytes = new Uint8Array(new Uint16Array([channel]).buffer);
 
-				var bytes = [];
+				var sendBuffer = new Uint8Array(channelBytes.byteLength + message.byteLength);
 
-				for (var i in channelBytes) {
-					bytes[i] = channelBytes[i];
-				}
+				sendBuffer.set(channelBytes, 0);
+				sendBuffer.set(message, channelBytes.byteLength);
 
-				for (var _i = 0; _i < message.length; _i++) {
-					bytes[_i + 2] = message[_i];
-				}
-
-				this.send(new Uint8Array(bytes));
+				this.send(sendBuffer);
 
 				return;
 			}

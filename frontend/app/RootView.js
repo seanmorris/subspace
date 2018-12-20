@@ -236,9 +236,7 @@ export class RootView extends View
 			{
 				this.socket.publish(
 					this.fileChannel
-					, new Uint8Array(
-						event.target.result
-					)
+					, event.target.result
 				);
 			}
 			else
