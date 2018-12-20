@@ -171,8 +171,9 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 		}
 
 		$channelName = array_shift($args);
+		$message     = implode(' ', $args);
 
-		$hub->publish($channelName, implode(' ', $args), $agent);
+		$hub->publish($channelName, $message, $agent);
 	}
 
 	/**

@@ -11,6 +11,7 @@ import { MeltingText } from 'MeltingText';
 import { Login } from 'Login';
 import { Register } from 'Register';
 import { Cornfield } from 'Cornfield';
+import { Image } from 'Image';
 
 export class RootView extends View
 {
@@ -392,6 +393,11 @@ export class RootView extends View
 
 			case 'cornfield':
 				this.localLock = new Cornfield(this);
+				this.args.prompt = '::';
+				break;
+
+			case 'image':
+				this.localLock = new Image(this);
 				this.args.prompt = '::';
 				break;
 

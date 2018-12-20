@@ -3448,6 +3448,66 @@ var Cornfield = exports.Cornfield = function () {
 }();
 });
 
+;require.register("Image.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.Image = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _View = require('curvature/base/View');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Image = exports.Image = function () {
+	function Image(terminal) {
+		_classCallCheck(this, Image);
+
+		terminal.args.output.push(':: Listening for images on channel 0xFF');
+
+		terminal.localEcho = false;
+
+		this.socket = terminal.socket;
+
+		this.socket.subscribe('message:255', function (e, m, o, i) {
+			console.log(m);
+			terminal.args.output.push('Got one.');
+			var blob = new Blob([new Uint8Array(m)]);
+			var url = URL.createObjectURL(blob);
+
+			var view = new _View.View();
+
+			view.template = '<img cv-attr = "src:image" />';
+			view.args.image = url;
+
+			terminal.args.output.push(view);
+		});
+	}
+
+	_createClass(Image, [{
+		key: 'pass',
+		value: function pass(input, terminal) {
+			var args = input.split(' ');
+			var command = args.shift();
+			console.log(command);
+
+			switch (command.toLowerCase()) {
+				case 'ping':
+					this.socket.publish('cornfield:users:ping', 'ping!');
+					break;
+			}
+
+			terminal.args.input = '';
+		}
+	}]);
+
+	return Image;
+}();
+});
+
 ;require.register("Login.js", function(exports, require, module) {
 'use strict';
 
@@ -3755,6 +3815,8 @@ var _Login = require('Login');
 var _Register = require('Register');
 
 var _Cornfield = require('Cornfield');
+
+var _Image = require('Image');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -4088,6 +4150,11 @@ var RootView = exports.RootView = function (_View) {
 
 				case 'cornfield':
 					this.localLock = new _Cornfield.Cornfield(this);
+					this.args.prompt = '::';
+					break;
+
+				case 'image':
+					this.localLock = new _Image.Image(this);
 					this.args.prompt = '::';
 					break;
 
