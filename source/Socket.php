@@ -17,6 +17,10 @@ class Socket
 
 	public function __construct()
 	{
+		// $this->hub = new \SeanMorris\Kalisti\Hub;	
+		// $this->localAgent = new \SeanMorris\Kalisti\Agent;
+		// $this->localAgent->register($this->hub);
+
 		$keyFile    = '/etc/letsencrypt/live/example.com/privkey.pem';
 		$chainFile  = '/etc/letsencrypt/live/example.com/chain.pem';
 
@@ -512,11 +516,10 @@ class Socket
 			});
 
 			$this->userContext[$clientIndex] = [
-				'__clientIndex' => $clientIndex
-				, '__client'    => $client
-				, '__hub'       => $this->hub
-				, '__agent'     => $agent
-				, '__authed'    => FALSE
+				'__client'   => $client
+				, '__hub'    => $this->hub
+				, '__agent'  => $agent
+				, '__authed' => FALSE
 			];
 		}
 

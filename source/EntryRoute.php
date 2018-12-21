@@ -7,7 +7,7 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 	 */
 	public function motd($router)
 	{
-		$clientId = $router->contextGet('__clientIndex');
+		$clientId = $router->contextGet('__agent')->id;
 
 		$uid  = sprintf('0x%04x', $clientId);
 		$name = NULL;
@@ -69,7 +69,7 @@ class EntryRoute implements \SeanMorris\Ids\Routable
 	public function auth($router)
 	{
 		$args     = $router->path()->consumeNodes();
-		$clientId = $router->contextGet('__clientIndex');
+		$clientId = $router->contextGet('__agent')->id;
 
 		if($router->contextGet('__authed'))
 		{

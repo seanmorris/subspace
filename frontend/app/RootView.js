@@ -395,7 +395,7 @@ export class RootView extends View
 				break;
 
 			case 'image':
-				this.localLock = new Image(this);
+				this.localLock = new Image(this, args);
 				this.args.prompt = '::';
 				break;
 

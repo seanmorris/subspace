@@ -3463,28 +3463,44 @@ var _View = require('curvature/base/View');
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Image = exports.Image = function () {
-	function Image(terminal) {
+	function Image(terminal, args) {
 		_classCallCheck(this, Image);
-
-		terminal.args.output.push(':: Listening for images on channel 0xFF');
 
 		terminal.localEcho = false;
 
 		this.socket = terminal.socket;
 
-		this.socket.subscribe('message:255', function (e, m, o, i) {
-			console.log(m);
+		var channel = 0;
+
+		if (args.length) {
+			channel = args[0];
+		}
+
+		this.socket.subscribe('message:' + channel, function (e, m, o, i) {
+			console.log(m, o, i);
 			terminal.args.output.push('Got one.');
 			var blob = new Blob([new Uint8Array(m)]);
 			var url = URL.createObjectURL(blob);
 
 			var view = new _View.View();
 
-			view.template = '<img cv-attr = "src:image" />';
-			view.args.image = url;
+			view.template = '<img cv-attr = "src:img" cv-ref = "img:curvature/base/Tag" />';
+
+			view.postRender = function () {
+				var img = view.tags.img.element;
+				var imageLoad = function imageLoad(event) {
+					img.removeEventListener('load', imageLoad);
+					URL.revokeObjectURL(url);
+				};
+				img.addEventListener('load', imageLoad);
+			};
 
 			terminal.args.output.push(view);
+
+			view.args.img = url;
 		});
+
+		terminal.args.output.push(':: Listening for images on channel ' + channel);
 	}
 
 	_createClass(Image, [{
@@ -4154,7 +4170,7 @@ var RootView = exports.RootView = function (_View) {
 					break;
 
 				case 'image':
-					this.localLock = new _Image.Image(this);
+					this.localLock = new _Image.Image(this, args);
 					this.args.prompt = '::';
 					break;
 
@@ -4513,7 +4529,9 @@ var Socket = exports.Socket = function () {
 					}
 
 					if ((typeof packet === 'undefined' ? 'undefined' : _typeof(packet)) !== 'object') {
-						callback(event, event.data, null, 'server', 0, null, packet);
+						if (channel === '') {
+							callback(event, event.data, null, 'server', 0, null, packet);
+						}
 						return;
 					}
 

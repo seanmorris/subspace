@@ -100,15 +100,18 @@ export class Socket
 
 			if(typeof packet !== 'object')
 			{
-				callback(
-					event
-					, event.data
-					, null
-					, 'server'
-					, 0
-					, null
-					, packet
-				);
+				if(channel === '')
+				{
+					callback(
+						event
+						, event.data
+						, null
+						, 'server'
+						, 0
+						, null
+						, packet
+					);
+				}
 				return;
 			}
 
