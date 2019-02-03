@@ -19,7 +19,7 @@ services:
     build:
       context: ../
       dockerfile: infra/worker.Dockerfile
-    image: r.cfcr.io/seanmorris/worker.seanmorr.is
+    image: r.cfcr.io/seanmorris/worker.subspace.seanmorr.is
     restart: on-failure
     volumes:
       - ../:/app
