@@ -39,11 +39,11 @@ services:
     depends_on:
       - database.subspace.seanmorr.is
 
-  updater.seanmorr.is:
+  updater.subspace.seanmorr.is:
     build:
       context: ../
       dockerfile: infra/updater.Dockerfile
-    image: r.cfcr.io/seanmorris/updater.seanmorr.is
+    image: r.cfcr.io/seanmorris/updater.subspace.seanmorr.is
     restart: on-failure
     volumes:
       - ../:/app
