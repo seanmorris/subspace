@@ -15,7 +15,8 @@ RUN docker-php-ext-install xmlrpc
 RUN apt-get install -y sendmail
 
 RUN apt-get install wget
-RUN wget http://pear.php.net/go-pear.phar
+# RUN wget http://pear.php.net/go-pear.phar
+RUN wget https://github.com/pear/pearweb_phars/blob/master/go-pear.phar?raw=true -qO- > go-pear.phar
 RUN php go-pear.phar
 
 RUN pecl install yaml -y
