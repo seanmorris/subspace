@@ -8,17 +8,25 @@
 			<div class = "bottom">
 				<div>[[prompt]]&nbsp;</div>
 				<div>
-					<input
-						type = "text"
-						cv-on = "keydown:test(event)"
-						cv-bind = "input"
-						cv-ref = "input:curvature/base/Tag"/>
-					<input
-						name = "pw-input"
-						type = "password"
-						cv-on = "keydown:test(event)"
-						cv-bind = "input"
-						cv-ref = "password:curvature/base/Tag"/>
+
+					<form cv-on = "submit:cancel(event)">
+						<input
+							cv-on        = "keydown:test(event)"
+							cv-bind      = "input"
+							autocomplete = "off"
+							cv-ref       = "input:curvature/base/Tag"/>
+					</form>
+
+					<form cv-on = "submit:cancel(event)">
+						<input
+							name         = "pw-input"
+							type         = "password"
+							cv-on        = "keydown:test(event)"
+							cv-bind      = "input"
+							autocomplete = "one-time-code"
+							cv-ref       = "password:curvature/base/Tag"/>
+					</form>
+
 					<input
 						name  = "file-input"
 						type  = "file"

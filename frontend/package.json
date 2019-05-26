@@ -1,8 +1,8 @@
 {
-  "name": "brunch-app",
-  "description": "Brunch.io application",
-  "private": true,
-  "author": "Brunch",
+  "name": "subspace-console",
+  "description": "Subspace Debugging CLI",
+  "private": false,
+  "author": "Sean Morris",
   "version": "0.0.1",
   "repository": "",
   "scripts": {
@@ -10,7 +10,8 @@
     "build": "brunch build --production"
   },
   "dependencies": {
-    "curvature": "^0.0.9"
+    "curvature": "^0.0.31",
+    "subspace-client": "^0.0.3"
   },
   "devDependencies": {
     "auto-reload-brunch": "^2",

@@ -1,7 +1,8 @@
+import { Config } from 'Config';
 import { View } from 'curvature/base/View';
 import { Keyboard } from 'curvature/input/Keyboard';
 
-import { Socket } from 'kalisti/Socket';
+import { Socket } from 'subspace-client/Socket';
 
 import { BinaryMessageView } from 'BinaryMessageView';
 import { TextMessageView } from 'TextMessageView';
@@ -56,7 +57,7 @@ export class RootView extends View
 			}
 		});
 
-		this.socket = Socket.get(`ws://${location.hostname}:9998`);
+		this.socket = Socket.get(Config.socketHost);
 
 		this.auth().then(()=>{
 			this.onTimeout(10, ()=>{
@@ -466,6 +467,14 @@ export class RootView extends View
 			this.onTimeout(0, ()=>{
 				this.interpret(command);
 			});
+
+			console.log(command);
 		}
+	}
+
+	cancel(event)
+	{
+		event.preventDefault();
+		event.stopPropagation();
 	}
 }

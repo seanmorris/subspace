@@ -29,7 +29,7 @@ services:
   socket.subspace.seanmorr.is:
     build:
       context: ../
-      dockerfile: infra/socket.Dockerfile
+      dockerfile: vendor/seanmorris/subspace/infra/socket.Dockerfile
     image: r.cfcr.io/seanmorris/socket.subspace.seanmorr.is
     restart: always
     ports:
@@ -54,7 +54,7 @@ services:
     image: mysql:5.7
     restart: always
     ports:
-      - "9996:3306"
+      - "9896:3306"
     volumes:
       - schema.subspace.seanmorr.is:/var/lib/mysql
     environment:
@@ -64,17 +64,17 @@ services:
       MYSQL_DATABASE: 'subspace'
     command: ['mysqld', '--character-set-server=utf8mb4']
 
-  # watcher.seanmorr.is:
-  #   build:
-  #     context: ../
-  #     dockerfile: infra/watcher.Dockerfile
-  #   image: watcher.seanmorr.is
-  #   restart: always
-  #   ports:
-  #     - "9485:9485"
-  #     - "3333:3333"
-  #   volumes:
-  #     - ../:/app
+  watcher.seanmorr.is:
+    build:
+      context: ../
+      dockerfile: infra/watcher.Dockerfile
+    image: watcher.seanmorr.is
+    restart: always
+    ports:
+      - "9485:9485"
+      - "3333:3333"
+    volumes:
+      - ../:/app
 
 volumes:
   schema.subspace.seanmorr.is:

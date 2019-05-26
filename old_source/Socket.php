@@ -17,16 +17,6 @@ class Socket
 
 	public function __construct()
 	{
-		// $this->hub = new \SeanMorris\Kalisti\Hub;	
-		// $this->localAgent = new \SeanMorris\Kalisti\Agent;
-		// $this->localAgent->register($this->hub);
-
-		$keyFile    = '/etc/letsencrypt/live/example.com/privkey.pem';
-		$chainFile  = '/etc/letsencrypt/live/example.com/chain.pem';
-
-		$keyFile    = '/home/sean/ssl_test/privkey.pem';
-		$chainFile  = '/home/sean/ssl_test/chain.pem';
-		$passphrase = '';
 		$address    = '0.0.0.0:9998';
 
 		$context = stream_context_create([]);

@@ -1,6 +1,6 @@
 {
-    "name": "SeanMorris/SubSpace",
-    "description": "Kalisti websocket server.",
+    "name": "SeanMorris/SubSpaceTerminal",
+    "description": "Kalisti websocket playground.",
     "authors": [
         {
             "name": "Sean Morris",
@@ -13,16 +13,13 @@
         "seanmorris/form": "dev-master",
         "seanmorris/message": "dev-master",
         "seanmorris/presskit": "dev-master",
-        "seanmorris/kalisti": "dev-master"
+        "seanmorris/kallisti": "dev-master",
+        "seanmorris/subspace": "dev-master"
     },
     "require-dev": {
         "simpletest/simpletest": "dev-master"
     },
     "autoload": {
-		"psr-4": {
-			"SeanMorris\\SubSpace\\Test\\": "test/",
-			"SeanMorris\\SubSpace\\": "source/"
-		}
 	},
 	"repositories": [
         {   
@@ -44,6 +41,10 @@
         {   
             "type": "vcs",
             "url": "git@github.com:seanmorris/kalisti.git"
+        },
+        {   
+            "type": "vcs",
+            "url": "git@github.com:seanmorris/subspace-server.git"
         }
     ]
 }

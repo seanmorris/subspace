@@ -1,11 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "hash": "60d8370f173c7f647eb4d199c54ef966",
-    "content-hash": "229bad4376f23435a319bb658be10342",
+    "content-hash": "f779fb8792aaa613d21ad3a557ab9d4f",
     "packages": [
         {
             "name": "hautelook/phpass",
@@ -49,7 +48,7 @@
                 "password",
                 "security"
             ],
-            "time": "2012-08-31 00:00:00"
+            "time": "2012-08-31T00:00:00+00:00"
         },
         {
             "name": "seanmorris/access",
@@ -57,12 +56,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/access.git",
-                "reference": "0b509b9a9b213dda045d1c2e5974af2c74a0046b"
+                "reference": "ea6a06a6bacd1ac2b473d3163b61eb314904d5f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/access/zipball/0b509b9a9b213dda045d1c2e5974af2c74a0046b",
-                "reference": "0b509b9a9b213dda045d1c2e5974af2c74a0046b",
+                "url": "https://api.github.com/repos/seanmorris/access/zipball/ea6a06a6bacd1ac2b473d3163b61eb314904d5f8",
+                "reference": "ea6a06a6bacd1ac2b473d3163b61eb314904d5f8",
                 "shasum": ""
             },
             "require": {
@@ -89,7 +88,7 @@
                 "source": "https://github.com/seanmorris/access/tree/master",
                 "issues": "https://github.com/seanmorris/access/issues"
             },
-            "time": "2018-12-13 00:49:52"
+            "time": "2019-05-09T00:11:11+00:00"
         },
         {
             "name": "seanmorris/form",
@@ -97,12 +96,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/form.git",
-                "reference": "1501aba6b50fb75b8605fc4afd986449b4c29fe9"
+                "reference": "1a060505b4638fe7e1c4784de13b775ec66500fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/form/zipball/1501aba6b50fb75b8605fc4afd986449b4c29fe9",
-                "reference": "1501aba6b50fb75b8605fc4afd986449b4c29fe9",
+                "url": "https://api.github.com/repos/seanmorris/form/zipball/1a060505b4638fe7e1c4784de13b775ec66500fc",
+                "reference": "1a060505b4638fe7e1c4784de13b775ec66500fc",
                 "shasum": ""
             },
             "require": {
@@ -129,7 +128,7 @@
                 }
             ],
             "description": "Simple, Object oriented forms for PHP.",
-            "time": "2018-12-09 04:27:18"
+            "time": "2019-02-13T14:43:44+00:00"
         },
         {
             "name": "seanmorris/ids",
@@ -137,12 +136,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/ids.git",
-                "reference": "f7ab5f65783423afb02c4b333c4d4b8a9dcfc6b7"
+                "reference": "6086ac461534fdd869da518dc1c6b0051223d5ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/ids/zipball/f7ab5f65783423afb02c4b333c4d4b8a9dcfc6b7",
-                "reference": "f7ab5f65783423afb02c4b333c4d4b8a9dcfc6b7",
+                "url": "https://api.github.com/repos/seanmorris/ids/zipball/6086ac461534fdd869da518dc1c6b0051223d5ae",
+                "reference": "6086ac461534fdd869da518dc1c6b0051223d5ae",
                 "shasum": ""
             },
             "require-dev": {
@@ -168,20 +167,20 @@
                 "source": "https://github.com/seanmorris/ids/tree/master",
                 "issues": "https://github.com/seanmorris/ids/issues"
             },
-            "time": "2018-12-12 21:01:08"
+            "time": "2019-05-26T19:03:11+00:00"
         },
         {
-            "name": "seanmorris/kalisti",
+            "name": "seanmorris/kallisti",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/kalisti.git",
-                "reference": "a95a5c408221a965b8acbefcbf7f411393ac6a6c"
+                "reference": "bce6fcc70fad6b8404b4489b93a5bb619573cabc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/kalisti/zipball/a95a5c408221a965b8acbefcbf7f411393ac6a6c",
-                "reference": "a95a5c408221a965b8acbefcbf7f411393ac6a6c",
+                "url": "https://api.github.com/repos/seanmorris/kalisti/zipball/bce6fcc70fad6b8404b4489b93a5bb619573cabc",
+                "reference": "bce6fcc70fad6b8404b4489b93a5bb619573cabc",
                 "shasum": ""
             },
             "require-dev": {
@@ -190,8 +189,8 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "SeanMorris\\Kalisti\\Test\\": "test/",
-                    "SeanMorris\\Kalisti\\": "source/"
+                    "SeanMorris\\Kallisti\\Test\\": "test/",
+                    "SeanMorris\\Kallisti\\": "source/"
                 }
             },
             "authors": [
@@ -200,12 +199,12 @@
                     "email": "inquire@seanmorr.is"
                 }
             ],
-            "description": "Channel based messaging interface",
+            "description": "Chaos Management Engine",
             "support": {
                 "source": "https://github.com/seanmorris/kalisti/tree/master",
                 "issues": "https://github.com/seanmorris/kalisti/issues"
             },
-            "time": "2018-12-14 15:52:35"
+            "time": "2019-03-10T06:54:05+00:00"
         },
         {
             "name": "seanmorris/message",
@@ -238,7 +237,7 @@
                 "source": "https://github.com/seanmorris/message/tree/master",
                 "issues": "https://github.com/seanmorris/message/issues"
             },
-            "time": "2018-05-07 18:57:24"
+            "time": "2018-05-07T18:57:24+00:00"
         },
         {
             "name": "seanmorris/presskit",
@@ -246,12 +245,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/PressKit.git",
-                "reference": "7dd622f93909289135923677bc9c82b25133a166"
+                "reference": "41c8b9f5f7662db0ad53420eb784374a01bf4ec9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/PressKit/zipball/7dd622f93909289135923677bc9c82b25133a166",
-                "reference": "7dd622f93909289135923677bc9c82b25133a166",
+                "url": "https://api.github.com/repos/seanmorris/PressKit/zipball/41c8b9f5f7662db0ad53420eb784374a01bf4ec9",
+                "reference": "41c8b9f5f7662db0ad53420eb784374a01bf4ec9",
                 "shasum": ""
             },
             "type": "library",
@@ -271,7 +270,52 @@
                 "source": "https://github.com/seanmorris/PressKit/tree/master",
                 "issues": "https://github.com/seanmorris/PressKit/issues"
             },
-            "time": "2018-12-12 21:01:29"
+            "time": "2019-05-08T23:30:55+00:00"
+        },
+        {
+            "name": "seanmorris/subspace",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/seanmorris/subspace-server.git",
+                "reference": "f7f4856a19bf9021dc316cf48ad6d0c24dd6ff0f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/seanmorris/subspace-server/zipball/f7f4856a19bf9021dc316cf48ad6d0c24dd6ff0f",
+                "reference": "f7f4856a19bf9021dc316cf48ad6d0c24dd6ff0f",
+                "shasum": ""
+            },
+            "require": {
+                "seanmorris/access": "dev-master",
+                "seanmorris/form": "dev-master",
+                "seanmorris/ids": "dev-master",
+                "seanmorris/kallisti": "dev-master",
+                "seanmorris/message": "dev-master",
+                "seanmorris/presskit": "dev-master"
+            },
+            "require-dev": {
+                "simpletest/simpletest": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SeanMorris\\SubSpace\\Test\\": "test/",
+                    "SeanMorris\\SubSpace\\": "source/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Sean Morris",
+                    "email": "contact@seanmorr.is"
+                }
+            ],
+            "description": "Kallisti websocket server.",
+            "support": {
+                "source": "https://github.com/seanmorris/subspace-server/tree/master",
+                "issues": "https://github.com/seanmorris/subspace-server/issues"
+            },
+            "time": "2019-03-10T16:00:42+00:00"
         },
         {
             "name": "seanmorris/theme",
@@ -308,7 +352,7 @@
                 }
             ],
             "description": "Simple, sane templating and theming for PHP",
-            "time": "2017-07-02 12:52:16"
+            "time": "2017-07-02T12:52:16+00:00"
         }
     ],
     "packages-dev": [
@@ -382,7 +426,7 @@
                 "testing",
                 "unit-test"
             ],
-            "time": "2017-09-01 07:28:43"
+            "time": "2017-09-01T07:28:43+00:00"
         }
     ],
     "aliases": [],
@@ -393,7 +437,8 @@
         "seanmorris/form": 20,
         "seanmorris/message": 20,
         "seanmorris/presskit": 20,
-        "seanmorris/kalisti": 20,
+        "seanmorris/kallisti": 20,
+        "seanmorris/subspace": 20,
         "simpletest/simpletest": 20
     },
     "prefer-stable": false,
