@@ -1,7 +1,6 @@
 <?php
-namespace SeanMorris\SubSpace;
-class WebRoute implements \SeanMorris\Ids\Routable
-//extends \SeanMorris\PressKit\Controller
+namespace SeanMorris\SubSpaceTerminal;
+class WebRoute extends \SeanMorris\SubSpace\WebRoute
 {
 	public $routes = [
 		'user' => 'SeanMorris\Access\Route\AccessRoute'
@@ -33,22 +32,9 @@ class WebRoute implements \SeanMorris\Ids\Routable
 			die;
 		}
 
-		session_start();
-	}
-
-	public function auth()
-	{
-		$user = \SeanMorris\Access\Route\AccessRoute::_currentUser();
-		$uid  = NULL;
-
-		if($user)
+		if (session_status() === PHP_SESSION_NONE)
 		{
-			$uid =  $user->publicId;
+			session_start();
 		}
-
-		return new \SeanMorris\SubSpace\JwtToken([
-			'time'  => microtime(TRUE)
-			, 'uid' => $uid
-		]);
 	}
 }

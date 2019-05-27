@@ -1,5 +1,5 @@
 <?php
-namespace SeanMorris\SubSpace\Idilic\View;
+namespace SeanMorris\SubSpaceTerminal\View;
 class Motd extends \SeanMorris\Theme\View
 {
 }

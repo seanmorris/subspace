@@ -1,74 +1,73 @@
 version: '3'
-
 services:
-  
-  app.subspace.seanmorr.is:
+
+  is.seanmorr.subspace-terminal.web:
     build:
       context: ../
       dockerfile: infra/app.Dockerfile
-    image: r.cfcr.io/seanmorris/app.subspace.seanmorr.is
+    image: seanmorris/subspace-terminal-web
     restart: always
     ports:
       - "80:80"
     volumes:
       - ../:/app
     depends_on:
-      - database.subspace.seanmorr.is
+      - is.seanmorr.subspace-terminal.database
 
-  worker.subspace.seanmorr.is:
+  is.seanmorr.subspace-terminal.socket:
     build:
       context: ../
-      dockerfile: infra/worker.Dockerfile
-    image: r.cfcr.io/seanmorris/worker.subspace.seanmorr.is
-    restart: on-failure
-    volumes:
-      - ../:/app
-    depends_on:
-      - database.subspace.seanmorr.is
-
-  socket.subspace.seanmorr.is:
-    build:
-      context: ../
-      dockerfile: vendor/seanmorris/subspace/infra/socket.Dockerfile
-    image: r.cfcr.io/seanmorris/socket.subspace.seanmorr.is
+      dockerfile: infra/socket.Dockerfile
+    image: seanmorris/subspace-terminal-socket
     restart: always
     ports:
       - "9998:9998"
     volumes:
       - ../:/app
     depends_on:
-      - database.subspace.seanmorr.is
-
-  updater.subspace.seanmorr.is:
-    build:
-      context: ../
-      dockerfile: infra/updater.Dockerfile
-    image: r.cfcr.io/seanmorris/updater.subspace.seanmorr.is
-    restart: on-failure
-    volumes:
-      - ../:/app
-    depends_on:
-      - database.subspace.seanmorr.is
+      - is.seanmorr.subspace-terminal.database
     
-  database.subspace.seanmorr.is:
+  is.seanmorr.subspace-terminal.database:
     image: mysql:5.7
     restart: always
     ports:
       - "9896:3306"
     volumes:
-      - schema.subspace.seanmorr.is:/var/lib/mysql
+      - is.seanmorr.subspace-terminal.schema:/var/lib/mysql
     environment:
+      MYSQL_USER:          'subspace-terminal'
+      MYSQL_DATABASE:      'subspace-terminal'
+      MYSQL_PASSWORD:      'password'
       MYSQL_ROOT_PASSWORD: 'supersecret'
-      MYSQL_USER: 'subspace'
-      MYSQL_PASSWORD: 'password'
-      MYSQL_DATABASE: 'subspace'
     command: ['mysqld', '--character-set-server=utf8mb4']
 
-  watcher.seanmorr.is:
+  is.seanmorr.subspace-terminal.worker:
+    build:
+      context: ../
+      dockerfile: infra/worker.Dockerfile
+    image: seanmorris/subspace-terminal-worker
+    restart: on-failure
+    volumes:
+      - ../:/app
+    depends_on:
+      - is.seanmorr.subspace-terminal.database
+
+  is.seanmorr.subspace-terminal.updater:
+    build:
+      context: ../
+      dockerfile: infra/updater.Dockerfile
+    image: seanmorris/subspace-terminal-updater
+    restart: on-failure
+    volumes:
+      - ../:/app
+    depends_on:
+      - is.seanmorr.subspace-terminal.database
+
+  is.seanmorr.subspace-terminal.watcher:
     build:
       context: ../
       dockerfile: infra/watcher.Dockerfile
-    image: watcher.seanmorr.is
+    image: seanmorris/subspace-terminal-watcher
     restart: always
     ports:
       - "9485:9485"
@@ -77,5 +76,5 @@ services:
       - ../:/app
 
 volumes:
-  schema.subspace.seanmorr.is:
+  is.seanmorr.subspace-terminal.schema:
     driver: "local"

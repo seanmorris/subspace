@@ -1,4 +1,4 @@
-FROM r.cfcr.io/seanmorris/worker.subspace.seanmorr.is:latest
+FROM seanmorris/subspace-terminal-worker:latest
 MAINTAINER Sean Morris <sean@seanmorr.is>
 CMD idilic link \
 	&& idilic applySchemas 1 \

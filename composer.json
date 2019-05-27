@@ -20,6 +20,10 @@
         "simpletest/simpletest": "dev-master"
     },
     "autoload": {
+        "psr-4": {
+            "SeanMorris\\SubSpaceTerminal\\Test\\": "test/",
+            "SeanMorris\\SubSpaceTerminal\\": "source/"
+        }
 	},
 	"repositories": [
         {   
@@ -40,7 +44,7 @@
         },
         {   
             "type": "vcs",
-            "url": "git@github.com:seanmorris/kalisti.git"
+            "url": "git@github.com:seanmorris/kallisti.git"
         },
         {   
             "type": "vcs",

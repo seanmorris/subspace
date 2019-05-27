@@ -1,10 +1,10 @@
 <?php
-namespace SeanMorris\SubSpace\Idilic\View;
+namespace SeanMorris\SubSpaceTerminal\View;
 class Manual extends \SeanMorris\Theme\View
 {
 }
 __halt_compiler(); ?>
-SubSpace Console 0.29a - Kalisti Websockets Playground
+SubSpace Console 0.29a - Kallisti Websockets Playground
 ©2018 Sean Morris
 
 Local Commands:
