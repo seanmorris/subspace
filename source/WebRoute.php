@@ -37,4 +37,19 @@ class WebRoute extends \SeanMorris\SubSpace\WebRoute
 			session_start();
 		}
 	}
+
+	public function init_rc($router)
+	{
+		return new \SeanMorris\SubSpaceTerminal\View\InitRc;
+	}
+
+	public function open_rc($router)
+	{
+		return new \SeanMorris\SubSpaceTerminal\View\OpenRc;
+	}
+
+	public function bounce_rc($router)
+	{
+		return new \SeanMorris\SubSpaceTerminal\View\BounceRc;
+	}
 }

@@ -25,6 +25,39 @@ class SocketRoute extends \SeanMorris\SubSpace\EntryRoute
 		return sprintf('Welcome to the subspace server, #0x%04x!', $clientId);
 	}
 
+	// /**
+	//  * Auth via JWT.
+	//  */
+	// public function auth($router)
+	// {
+	// 	$path = clone $router->path();
+	// 	$args = $path->consumeNodes();
+
+	// 	if($tokenContent = \SeanMorris\SubSpace\JwtToken::verify($args[0]))
+	// 	{
+	// 		$tokenContent = json_decode($tokenContent);
+
+	// 		if($tokenContent->uid)
+	// 		{
+	// 			$user = \SeanMorris\Access\User::loadOneByPublicId(
+	// 				$tokenContent->uid
+	// 			);
+
+	// 			if($user)
+	// 			{
+	// 				$router->contextSet('__authed', TRUE);
+	// 				$router->contextSet('__persistent', $user);
+
+	// 				$agent->contextSet('__persistent', $user);
+
+	// 				return 'authed & logged in.';
+	// 			}
+	// 		}
+
+	// 		return parent::auth($router);
+	// 	}
+	// }
+
 	/**
 	 * Roll a 64 bit die.
 	 */
@@ -33,6 +66,9 @@ class SocketRoute extends \SeanMorris\SubSpace\EntryRoute
 		return rand(PHP_INT_MIN,PHP_INT_MAX);
 	}
 
+	/**
+	 * Iterate a sequence.
+	 */
 	public function seq($router)
 	{
 		$agent = $router->contextGet('__agent');
@@ -42,10 +78,16 @@ class SocketRoute extends \SeanMorris\SubSpace\EntryRoute
 			return;
 		}
 
-		foreach(range(0,255) as $i)
-		{
+		$current = $router->contextGet('__sequence') ?? 0;
 
-		}
+		$router->contextSet('__sequence', $current + 1);
+
+		return $current;
+
+		// foreach(range(0,255) as $i)
+		// {
+
+		// }
 	}
 
 	/**

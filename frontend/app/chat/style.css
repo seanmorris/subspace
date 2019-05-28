@@ -1,0 +1,52 @@
+.nynex.window {
+	background: #c0c0c0;
+	border: 2px #c0c0c0 outset;
+	color: black;
+	text-shadow: none;
+	position: relative;
+	z-index: 1;
+	font-size: 1rem;
+	white-space: normal;
+
+	width: 100%;
+	min-height: 15em;
+}
+
+.nynex.window .titlebar {
+	background: #190080;
+	color: white;
+	padding-left: 0.5em;
+
+	height: 2em;
+
+	display: flex;
+	flex-direction: row;
+
+	justify-content: flex-end;
+	text-shadow: none;
+
+	user-select: none;
+}
+
+.nynex.window .titlebar .title {
+	display: flex;
+	flex-grow: 1;
+	justify-content: center;
+	flex-direction: column;
+	text-align: left;
+	font-weight: bold;
+}
+
+.nynex.window .titlebar .button {
+	background: #c0c0c0;
+	border: 2px #c0c0c0 outset;
+	color: black;
+	padding: 0.25em;
+	width: 2em;
+	text-align: center;
+	font-size: 0.2em;
+}
+
+.nynex.window .titlebar .button:active {
+	border-style: inset;
+}

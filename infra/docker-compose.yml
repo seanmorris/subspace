@@ -68,12 +68,13 @@ services:
       context: ../
       dockerfile: infra/watcher.Dockerfile
     image: seanmorris/subspace-terminal-watcher
-    restart: always
     ports:
       - "9485:9485"
       - "3333:3333"
     volumes:
       - ../:/app
+    command:
+      - "echo 'lol'"
 
 volumes:
   is.seanmorr.subspace-terminal.schema:

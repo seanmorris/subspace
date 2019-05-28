@@ -19,8 +19,8 @@ body {
 	overflow-y:scroll;
 	flex-direction: column;
 	color: white;
-	font-size: 1.5em;
-	line-height: 1.25em;
+	/*font-size: 1.25em;
+	line-height: 1.25em;*/
 }
 
 .main {
@@ -46,6 +46,8 @@ body {
 .bottom {
 	display: flex;
 	flex-direction: row;
+	background: black;
+	/*position: relative;*/
 }
 
 .bottom div:last-child {
@@ -78,7 +80,7 @@ body {
 .terminal .output p,
 .terminal .output p > span:last-child {
 	white-space: pre-wrap;
-	overflow-wrap: break-word;
+	word-break: break-all;
 	min-width: 0px;
 }
 
@@ -97,7 +99,6 @@ body {
 	outline: none;
 	padding: 0px;
 	box-sizing: border-box;
-	font-weight: /*bold*/;
 }
 
 .submit {
@@ -122,7 +123,8 @@ body {
 .scanlines{
 	pointer-events: none;
 	background-image: url(scanline.png);
-	opacity: 0.4;
+	opacity: 0.25;
+	transform: scale(2);
 	position: fixed;
 	top: 0px;
 	left: 0px;
