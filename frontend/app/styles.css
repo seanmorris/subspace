@@ -102,7 +102,7 @@ body {
 	background: rgba(0,0,0,0.0);
 }
 
-.terminal input:focus {
+html:hover .terminal input:focus {
 	background: rgba(0,0,0,0.80);
 }
 
@@ -169,5 +169,5 @@ body {
 
 .melting {
 	line-height: initial;
-	font-family: DejaVu;
+	font-family: sans;
 }

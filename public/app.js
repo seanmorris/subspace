@@ -5620,63 +5620,30 @@ var MeltingText = /*#__PURE__*/function (_BaseView) {
 
     _this = _super.call(this, args);
     _this.last = _this.init = Date.now();
-    _this.charUp = ["\u030D",
-    /*     ̍     */
-    "\u030E",
-    /*     ̎     */
-    "\u0304",
-    /*     ̄     */
-    "\u0305",
-    /*     ̅     */
-    "\u033F",
-    /*     ̿     */
-    "\u0311",
-    /*     ̑     */
-    "\u0306",
-    /*     ̆     */
-    "\u0310",
-    /*     ̐     */
-    "\u0352",
-    /*     ͒     */
-    "\u0357",
-    /*     ͗     */
-    "\u0351",
-    /*     ͑     */
-    "\u0307",
-    /*     ̇     */
-    "\u0308",
-    /*     ̈     */
-    "\u030A",
-    /*     ̊     */
-    "\u0342",
-    /*     ͂     */
-    "\u0343",
-    /*     ̓     */
+    _this.charUp = [// '\u030d', /*     ̍     */		'\u030e', /*     ̎     */		'\u0304', /*     ̄     */		'\u0305', /*     ̅     */
+    // '\u033f', /*     ̿     */		'\u0311', /*     ̑     */		'\u0306', /*     ̆     */		'\u0310', /*     ̐     */
+    // '\u0352', /*     ͒     */		'\u0357', /*     ͗     */		'\u0351', /*     ͑     */		'\u0307', /*     ̇     */
+    // '\u0308', /*     ̈     */		'\u030a', /*     ̊     */		'\u0342', /*     ͂     */		'\u0343', /*     ̓     */
     "\u0344",
     /*     ̈́     */
-    "\u034A",
-    /*     ͊     */
-    "\u034B",
-    /*     ͋     */
-    "\u034C",
-    /*     ͌     */
-    // '\u0303', /*     ̃     */		'\u0302', /*     ̂     */		'\u030c', /*     ̌     */		'\u0350', /*     ͐     */
-    "\u0300",
+
+    /*	'\u034a', /*     ͊     */
+
+    /*	'\u034b', /*     ͋     */
+
+    /*	'\u034c', /*     ͌     */
+    "\u0303",
+    /*     ̃     */
+
+    /*	'\u0302', /*     ̂     */
+
+    /*	'\u030c', /*     ̌     */
+
+    /*	'\u0350', /*     ͐     */
+    "\u0300"
     /*     ̀     */
-    "\u0301",
-    /*     ́     */
-    "\u030B",
-    /*     ̋     */
-    "\u030F",
-    /*     ̏     */
-    "\u0312",
-    /*     ̒     */
-    "\u0313",
-    /*     ̓     */
-    "\u0314",
-    /*     ̔     */
-    "\u033D"
-    /*     ̽     */
+    //	'\u0301', /*     ́     */		'\u030b', /*     ̋     */		'\u030f', /*     ̏     */
+    // '\u0312', /*     ̒     */		'\u0313', /*     ̓     */		'\u0314', /*     ̔     */		'\u033d', /*     ̽     */
     // '\u0309', /*     ̉     */		'\u0363', /*     ͣ     */		'\u0364', /*     ͤ     */		'\u0365', /*     ͥ     */
     // '\u0366', /*     ͦ     */		'\u0367', /*     ͧ     */		'\u0368', /*     ͨ     */		'\u0369', /*     ͩ     */
     // '\u036a', /*     ͪ     */		'\u036b', /*     ͫ     */		'\u036c', /*     ͬ     */		'\u036d', /*     ͭ     */
@@ -5729,85 +5696,40 @@ var MeltingText = /*#__PURE__*/function (_BaseView) {
 
     /*'\u0489'     ҉_     */
     ];
-    _this.charDown = ["\u0316",
-    /*     ̖     */
-    "\u0317",
-    /*     ̗     */
-    "\u0318",
-    /*     ̘     */
-    "\u0319",
-    /*     ̙     */
-    "\u0316",
-    /*     ̖     */
-    "\u0317",
-    /*     ̗     */
-    "\u0318",
-    /*     ̘     */
-    "\u0319",
-    /*     ̙     */
-    "\u0320",
-    /*     ̠     */
-    "\u0324",
-    /*     ̤     */
-    "\u0325",
-    /*     ̥     */
-    "\u0326",
-    /*     ̦     */
-    "\u0329",
-    /*     ̩     */
-    "\u032A",
-    /*     ̪     */
-    "\u032B",
-    /*     ̫     */
-    "\u032C",
-    /*     ̬     */
-    "\u032D",
-    /*     ̭     */
-    "\u032E",
-    /*     ̮     */
-    "\u032F",
-    /*     ̯     */
-    "\u0330"
-    /*     ̰     */
+    _this.charDown = [// '\u0316', /*     ̖     */		'\u0317', /*     ̗     */		'\u0318', /*     ̘     */		'\u0319', /*     ̙     */
+    // '\u0316', /*     ̖     */		'\u0317', /*     ̗     */		'\u0318', /*     ̘     */		'\u0319', /*     ̙     */
+    // '\u0320', /*     ̠     */		'\u0324', /*     ̤     */		'\u0325', /*     ̥     */		'\u0326', /*     ̦     */
+    // '\u0329', /*     ̩     */		'\u032a', /*     ̪     */		'\u032b', /*     ̫     */		'\u032c', /*     ̬     */
+    // '\u032d', /*     ̭     */		'\u032e', /*     ̮     */		'\u032f', /*     ̯     */		'\u0330', /*     ̰     */
     // '\u0331', /*     ̱     */		'\u0332', /*     ̲     */		'\u0333', /*     ̳     */		'\u0339', /*     ̹     */
-    // '\u033a', /*     ̺     */		'\u033b', /*     ̻     */		'\u033c', /*     ̼     */		'\u0345', /*     ͅ     */
-    // '\u0347', /*     ͇     */		'\u0348', /*     ͈     */		'\u0349', /*     ͉     */		'\u034d', /*     ͍     */
-    // '\u034e', /*     ͎     */		'\u0353', /*     ͓     */		'\u0354', /*     ͔     */		'\u0355', /*     ͕     */
+    "\u033A",
+    /*     ̺     */
+    "\u033B",
+    /*     ̻     */
+    "\u033C",
+    /*     ̼     */
+    "\u0345"
+    /*     ͅ     */
+    //'\u0347', /*     ͇     */		'\u0348', /*     ͈     */		'\u0349', /*     ͉     */		'\u034d', /*     ͍     */
+    //'\u034e', /*     ͎     */		'\u0353', /*     ͓     */		'\u0354', /*     ͔     */		'\u0355', /*     ͕     */
     // '\u0356', /*     ͖     */		'\u0359', /*     ͙     */		'\u035a', /*     ͚     */		'\u0323' /*     ̣     */
     ];
     _this.template = "\n\t\t\t<div cv-bind = \"output\" class = \"melting\"></div>\n\t\t";
-    _this.args.input = "Magic is no more than the art of employing consciously invisible means to produce visible effects. Will, love, and imagination are magic powers that everyone possesses; and whoever knows how to develop them to their fullest extent is a magician. Magic has but one dogma, namely, that the seen is the measure of the unseen\n"; // this.args.input      = 'anything'; 
+    _this.args.input = "Magic is no more than the art of employing consciously invisible means to produce visible effects. Will, love, and imagination are magic powers that everyone possesses; and whoever knows how to develop them to their fullest extent is a magician. Magic has but one dogma, namely, that the seen is the measure of the unseen\n\n\n\n\n\n\n\n"; // this.args.input      = 'anything'; 
 
     _this.args.output = 'uh.';
-    _this.corruptors = {};
-    _this.maxCorrupt = 50;
-    _this.type = '';
-
-    _this.args.bindTo('type', function (v) {
-      _this.output = _this.corrupt(_this.type);
-    });
+    _this.corruptors = [];
+    _this.maxMaxCorrupt = 50;
+    _this.maxCorrupt = 0;
+    _this.type = ''; // this.args.bindTo('type', (v) => {
+    // 	this.output = this.corrupt(this.type);
+    // });
 
     _this.onFrame(function () {
-      if (_this.lastFrame() > -75) {
-        return;
-      }
-
       _this.typewriter(_this.args.input);
     });
 
-    _this.onFrame(function () {
-      if (_this.lastFrame() > -40) {
-        return;
-      }
-
-      var subtract = -_this.age() / 50;
-
-      if (subtract > 40) {
-        subtract = 40;
-      }
-
-      _this.maxCorrup = 50 - subtract;
-      _this.last = Date.now();
+    _this.onInterval(40, function () {
       var selection = window.getSelection();
 
       if (selection.anchorOffset !== selection.focusOffset) {
@@ -5844,44 +5766,58 @@ var MeltingText = /*#__PURE__*/function (_BaseView) {
     value: function corrupt(v) {
       var chars = v.split('');
 
-      var rand = function rand(x) {
+      var random = function random(x) {
         return parseInt(Math.random() * x);
       };
 
-      for (var i in chars) {
-        if (!this.corruptors[i]) {
-          this.corruptors[i] = [];
-        }
+      if (random(2048) < 512 && this.maxCorrupt < this.maxMaxCorrupt) {
+        this.maxCorrupt++;
+      }
 
-        if (chars[i].match(/\W/)) {
+      for (var _i in chars) {
+        this.corruptors[_i] = this.corruptors[_i] || [];
+
+        if (chars[_i].match(/\W/)) {
           continue;
         }
 
         var charSets = [// this.charDown, this.charDown, this.charUp, 
-        this.charDown, this.charUp // this.charMid,
-        ];
-        var charSet = charSets[rand(charSets.length)];
+        this.charUp, this.charMid, this.charDown, this.charDown, this.charDown, this.charDown];
+        var charSet = charSets[random(charSets.length)]; // if(this.corruptors[i].length > this.maxCorrupt)
+        // {
+        // 	this.corruptors[i].shift();
+        // }
 
-        while (this.corruptors[i].length < this.maxCorrupt) {
-          if (rand(5) < 1) {
-            this.corruptors[i].unshift(this.corruptors[i].pop());
-            break;
-          }
-
-          if (charSet === this.charMid) {
-            if (rand(15) > 9) {
-              this.corruptors[i].shift(); // continue;
-            }
-          }
-
-          this.corruptors[i].unshift(charSet[rand(charSet.length)]);
+        if (random(8192) < 1) {
+          this.corruptors[_i].unshift(charSet[random(charSet.length)]);
         }
 
-        if (this.corruptors[i].length >= this.maxCorrupt) {
-          this.corruptors[i].pop();
+        while (this.corruptors[_i].length < this.maxCorrupt) {
+          this.corruptors[_i].unshift(charSet[random(charSet.length)]);
         }
 
-        chars[i] += this.corruptors[i].join('');
+        if (random(2048) < 1 && this.maxCorrupt > 25) {
+          this.corruptors[_i].splice(5 * random(5));
+        }
+
+        this.corruptors[_i].push(this.corruptors[_i].shift());
+
+        if (this.corruptors[_i].length < this.maxCorrupt) {} else {// this.corruptors[i].unshift(this.corruptors[i].pop());
+        } // if(!(i % 3) && random(1024) < 1)
+        // {
+        // 	this.corruptors.push(this.corruptors.shift());
+        // }
+        // if(random(1024) < 1)
+        // {
+        // 	this.corruptors.unshift(this.corruptors.pop());
+        // }
+
+      }
+
+      for (var i in chars) {
+        if (this.corruptors[i]) {
+          chars[i] += this.corruptors[i].join('');
+        }
       }
 
       return chars.join('');
@@ -5926,6 +5862,8 @@ exports.Path = void 0;
 
 var _Task = require("./Task");
 
+var _Lower = require("./tasks/Lower");
+
 var _Upper = require("./tasks/Upper");
 
 var _Prefix = require("./tasks/Prefix");
@@ -5937,6 +5875,7 @@ var _Countdown = require("./tasks/Countdown");
 var Path = {
   countdown: _Countdown.Countdown,
   upper: _Upper.Upper,
+  lower: _Lower.Lower,
   prefix: _Prefix.Prefix,
   suffix: _Suffix.Suffix
 };
@@ -7001,9 +6940,7 @@ var Task = /*#__PURE__*/function (_Mixin$with) {
 
           prev.addEventListener('output', onOutputEvent);
           prev.then(function (r) {
-            console.log(prev.title, 'ACCEPT');
-
-            _this2[Accept](r);
+            return _this2[Accept](r);
           });
           prev["catch"](function (e) {
             return _this2[Reject](r);
@@ -7404,7 +7341,7 @@ var Countdown = /*#__PURE__*/function (_Task) {
         var interval = setInterval(function () {
           console.log(_this2);
 
-          _this2.print("".concat(--count).concat(count ? '...' : ''));
+          _this2.print("".concat(--count, " iterations left").concat(count ? '...' : '.'));
 
           if (count <= 0) {
             accept();
@@ -7467,6 +7404,80 @@ var Help = /*#__PURE__*/function (_Task) {
 }(_Task2.Task);
 
 exports.Help = Help;
+});
+
+;require.register("tasks/Lower.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Lower = void 0;
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Lower = /*#__PURE__*/function (_Task) {
+  _inherits(Lower, _Task);
+
+  var _super = _createSuper(Lower);
+
+  function Lower() {
+    var _this;
+
+    _classCallCheck(this, Lower);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'Lowercase Task');
+
+    return _this;
+  }
+
+  _createClass(Lower, [{
+    key: "main",
+    value: function main() {
+      var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      this.status = 0;
+      this.print(String(input).toLowerCase());
+    }
+  }]);
+
+  return Lower;
+}(_Task2.Task);
+
+exports.Lower = Lower;
+
+_defineProperty(Lower, "helpText", 'Transform data from STDIN to lowercase.');
+
+_defineProperty(Lower, "useText", '/something | lower');
 });
 
 ;require.register("tasks/Prefix.js", function(exports, require, module) {
@@ -7542,6 +7553,10 @@ var Prefix = /*#__PURE__*/function (_Task) {
 }(_Task2.Task);
 
 exports.Prefix = Prefix;
+
+_defineProperty(Prefix, "helpText", 'Prepend a prefix to lines passed into STDIN.');
+
+_defineProperty(Prefix, "useText", '/something | prefix PREFIX_TEXT');
 });
 
 ;require.register("tasks/Suffix.js", function(exports, require, module) {
@@ -7617,6 +7632,10 @@ var Suffix = /*#__PURE__*/function (_Task) {
 }(_Task2.Task);
 
 exports.Suffix = Suffix;
+
+_defineProperty(Suffix, "helpText", 'Append a suffix to lines passed into STDIN.');
+
+_defineProperty(Suffix, "useText", '/something | suffix SUFFIX_TEXT');
 });
 
 ;require.register("tasks/Terminal.js", function(exports, require, module) {
@@ -7732,6 +7751,10 @@ var Upper = /*#__PURE__*/function (_Task) {
 }(_Task2.Task);
 
 exports.Upper = Upper;
+
+_defineProperty(Upper, "helpText", 'Transform data from STDIN to uppercase.');
+
+_defineProperty(Upper, "useText", '/something | upper');
 });
 
 ;require.register("___globals___", function(exports, require, module) {

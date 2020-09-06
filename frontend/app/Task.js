@@ -115,15 +115,11 @@ export class Task extends Mixin.with(Target, TaskSignals)
 
 				prev.addEventListener('output', onOutputEvent);
 
-				prev.then(r=>{
-					console.log(prev.title, 'ACCEPT');
-					this[Accept](r)
-				});
+				prev.then(r=> this[Accept](r));
 				prev.catch(e=>this[Reject](r));
 				
 				return prev.finally(() => {
 					prev.removeEventListener('output', onOutputEvent);
-				
 					return this.done();
 				});
 			}

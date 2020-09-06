@@ -42,7 +42,7 @@ export class Countdown extends Task
 
 				console.log(this);
 	
-				this.print(`${--count}${count?'...':''}`)
+				this.print(`${--count} iterations left${count?'...':'.'}`)
 
 				if(count <= 0)
 				{
