@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f779fb8792aaa613d21ad3a557ab9d4f",
+    "content-hash": "1e42fa8983d3cef58f43bd496b40d4ea",
     "packages": [
         {
             "name": "hautelook/phpass",
@@ -51,17 +51,201 @@
             "time": "2012-08-31T00:00:00+00:00"
         },
         {
+            "name": "php-amqplib/php-amqplib",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-amqplib/php-amqplib.git",
+                "reference": "c0b132eb3d487d30c757e00c8dc52b5b1007744d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/c0b132eb3d487d30c757e00c8dc52b5b1007744d",
+                "reference": "c0b132eb3d487d30c757e00c8dc52b5b1007744d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "ext-sockets": "*",
+                "php": ">=5.6.3",
+                "phpseclib/phpseclib": "^2.0.0"
+            },
+            "conflict": {
+                "php": "7.4.0 - 7.4.1"
+            },
+            "replace": {
+                "videlalvaro/php-amqplib": "self.version"
+            },
+            "require-dev": {
+                "ext-curl": "*",
+                "nategood/httpful": "^0.2.20",
+                "phpdocumentor/phpdocumentor": "^2.9",
+                "phpunit/phpunit": "^4.8",
+                "squizlabs/php_codesniffer": "^2.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpAmqpLib\\": "PhpAmqpLib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Alvaro Videla",
+                    "role": "Original Maintainer"
+                },
+                {
+                    "name": "John Kelly",
+                    "email": "johnmkelly86@gmail.com",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "Raúl Araya",
+                    "email": "nubeiro@gmail.com",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "Luke Bakken",
+                    "email": "luke@bakken.io",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "Formerly videlalvaro/php-amqplib.  This library is a pure PHP implementation of the AMQP protocol. It's been tested against RabbitMQ.",
+            "homepage": "https://github.com/php-amqplib/php-amqplib/",
+            "keywords": [
+                "message",
+                "queue",
+                "rabbitmq"
+            ],
+            "time": "2019-03-08T20:12:56+00:00"
+        },
+        {
+            "name": "phpseclib/phpseclib",
+            "version": "2.0.28",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpseclib/phpseclib.git",
+                "reference": "d1ca58cf33cb21046d702ae3a7b14fdacd9f3260"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/d1ca58cf33cb21046d702ae3a7b14fdacd9f3260",
+                "reference": "d1ca58cf33cb21046d702ae3a7b14fdacd9f3260",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phing/phing": "~2.7",
+                "phpunit/phpunit": "^4.8.35|^5.7|^6.0",
+                "sami/sami": "~2.0",
+                "squizlabs/php_codesniffer": "~2.0"
+            },
+            "suggest": {
+                "ext-gmp": "Install the GMP (GNU Multiple Precision) extension in order to speed up arbitrary precision integer arithmetic operations.",
+                "ext-libsodium": "SSH2/SFTP can make use of some algorithms provided by the libsodium-php extension.",
+                "ext-mcrypt": "Install the Mcrypt extension in order to speed up a few other cryptographic operations.",
+                "ext-openssl": "Install the OpenSSL extension in order to speed up a wide variety of cryptographic operations."
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "phpseclib/bootstrap.php"
+                ],
+                "psr-4": {
+                    "phpseclib\\": "phpseclib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jim Wigginton",
+                    "email": "terrafrost@php.net",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Patrick Monnerat",
+                    "email": "pm@datasphere.ch",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Andreas Fischer",
+                    "email": "bantu@phpbb.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Hans-Jürgen Petrich",
+                    "email": "petrich@tronic-media.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Graham Campbell",
+                    "email": "graham@alt-three.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP Secure Communications Library - Pure-PHP implementations of RSA, AES, SSH2, SFTP, X.509 etc.",
+            "homepage": "http://phpseclib.sourceforge.net",
+            "keywords": [
+                "BigInteger",
+                "aes",
+                "asn.1",
+                "asn1",
+                "blowfish",
+                "crypto",
+                "cryptography",
+                "encryption",
+                "rsa",
+                "security",
+                "sftp",
+                "signature",
+                "signing",
+                "ssh",
+                "twofish",
+                "x.509",
+                "x509"
+            ],
+            "funding": [
+                {
+                    "url": "https://github.com/terrafrost",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/phpseclib",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/phpseclib/phpseclib",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-07-08T09:08:33+00:00"
+        },
+        {
             "name": "seanmorris/access",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/access.git",
-                "reference": "ea6a06a6bacd1ac2b473d3163b61eb314904d5f8"
+                "reference": "fcf1f4225905cda5bd9da6f9d25c0544cb202cdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/access/zipball/ea6a06a6bacd1ac2b473d3163b61eb314904d5f8",
-                "reference": "ea6a06a6bacd1ac2b473d3163b61eb314904d5f8",
+                "url": "https://api.github.com/repos/seanmorris/access/zipball/fcf1f4225905cda5bd9da6f9d25c0544cb202cdb",
+                "reference": "fcf1f4225905cda5bd9da6f9d25c0544cb202cdb",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +272,7 @@
                 "source": "https://github.com/seanmorris/access/tree/master",
                 "issues": "https://github.com/seanmorris/access/issues"
             },
-            "time": "2019-05-09T00:11:11+00:00"
+            "time": "2020-08-29T19:57:30+00:00"
         },
         {
             "name": "seanmorris/form",
@@ -96,12 +280,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/form.git",
-                "reference": "1a060505b4638fe7e1c4784de13b775ec66500fc"
+                "reference": "4c127a91f63965661c6218bab7b7eb2c21c4f5f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/form/zipball/1a060505b4638fe7e1c4784de13b775ec66500fc",
-                "reference": "1a060505b4638fe7e1c4784de13b775ec66500fc",
+                "url": "https://api.github.com/repos/seanmorris/form/zipball/4c127a91f63965661c6218bab7b7eb2c21c4f5f9",
+                "reference": "4c127a91f63965661c6218bab7b7eb2c21c4f5f9",
                 "shasum": ""
             },
             "require": {
@@ -128,7 +312,7 @@
                 }
             ],
             "description": "Simple, Object oriented forms for PHP.",
-            "time": "2019-02-13T14:43:44+00:00"
+            "time": "2020-08-26T00:05:45+00:00"
         },
         {
             "name": "seanmorris/ids",
@@ -136,19 +320,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/ids.git",
-                "reference": "6086ac461534fdd869da518dc1c6b0051223d5ae"
+                "reference": "d5d046b5f2080cd0c6cd7508a580b38807ba3b59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/ids/zipball/6086ac461534fdd869da518dc1c6b0051223d5ae",
-                "reference": "6086ac461534fdd869da518dc1c6b0051223d5ae",
+                "url": "https://api.github.com/repos/seanmorris/ids/zipball/d5d046b5f2080cd0c6cd7508a580b38807ba3b59",
+                "reference": "d5d046b5f2080cd0c6cd7508a580b38807ba3b59",
                 "shasum": ""
             },
             "require-dev": {
+                "phpunit/phpunit": "^9",
+                "seanmorris/ksqlc": "dev-master",
                 "simpletest/simpletest": "dev-master"
             },
             "bin": [
-                "source/Idilic/idilic"
+                "bin/idilic"
             ],
             "type": "library",
             "autoload": {
@@ -167,20 +353,20 @@
                 "source": "https://github.com/seanmorris/ids/tree/master",
                 "issues": "https://github.com/seanmorris/ids/issues"
             },
-            "time": "2019-05-26T19:03:11+00:00"
+            "time": "2020-09-05T11:24:58+00:00"
         },
         {
             "name": "seanmorris/kallisti",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/seanmorris/kalisti.git",
-                "reference": "bce6fcc70fad6b8404b4489b93a5bb619573cabc"
+                "url": "https://github.com/seanmorris/kallisti.git",
+                "reference": "d59d9e1457ad132dc6748bbbbdb514dc311e53a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/kalisti/zipball/bce6fcc70fad6b8404b4489b93a5bb619573cabc",
-                "reference": "bce6fcc70fad6b8404b4489b93a5bb619573cabc",
+                "url": "https://api.github.com/repos/seanmorris/kallisti/zipball/d59d9e1457ad132dc6748bbbbdb514dc311e53a9",
+                "reference": "d59d9e1457ad132dc6748bbbbdb514dc311e53a9",
                 "shasum": ""
             },
             "require-dev": {
@@ -201,10 +387,10 @@
             ],
             "description": "Chaos Management Engine",
             "support": {
-                "source": "https://github.com/seanmorris/kalisti/tree/master",
-                "issues": "https://github.com/seanmorris/kalisti/issues"
+                "source": "https://github.com/seanmorris/kallisti/tree/master",
+                "issues": "https://github.com/seanmorris/kallisti/issues"
             },
-            "time": "2019-03-10T06:54:05+00:00"
+            "time": "2019-07-21T23:15:36+00:00"
         },
         {
             "name": "seanmorris/message",
@@ -245,13 +431,24 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/PressKit.git",
-                "reference": "41c8b9f5f7662db0ad53420eb784374a01bf4ec9"
+                "reference": "5d5560a713cfcdcd5c6af5eda821cb59c0ab8b80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/PressKit/zipball/41c8b9f5f7662db0ad53420eb784374a01bf4ec9",
-                "reference": "41c8b9f5f7662db0ad53420eb784374a01bf4ec9",
+                "url": "https://api.github.com/repos/seanmorris/PressKit/zipball/5d5560a713cfcdcd5c6af5eda821cb59c0ab8b80",
+                "reference": "5d5560a713cfcdcd5c6af5eda821cb59c0ab8b80",
                 "shasum": ""
+            },
+            "require": {
+                "seanmorris/access": "dev-master",
+                "seanmorris/form": "dev-master",
+                "seanmorris/ids": "dev-master",
+                "seanmorris/kallisti": "dev-master",
+                "seanmorris/message": "dev-master",
+                "seanmorris/theme": ">=1"
+            },
+            "require-dev": {
+                "simpletest/simpletest": "dev-master"
             },
             "type": "library",
             "autoload": {
@@ -270,7 +467,7 @@
                 "source": "https://github.com/seanmorris/PressKit/tree/master",
                 "issues": "https://github.com/seanmorris/PressKit/issues"
             },
-            "time": "2019-05-08T23:30:55+00:00"
+            "time": "2020-08-29T19:58:38+00:00"
         },
         {
             "name": "seanmorris/subspace",
@@ -278,12 +475,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/subspace-server.git",
-                "reference": "f7f4856a19bf9021dc316cf48ad6d0c24dd6ff0f"
+                "reference": "fb36df95d588df16f5cd7776e9f5e925f9a34cda"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/subspace-server/zipball/f7f4856a19bf9021dc316cf48ad6d0c24dd6ff0f",
-                "reference": "f7f4856a19bf9021dc316cf48ad6d0c24dd6ff0f",
+                "url": "https://api.github.com/repos/seanmorris/subspace-server/zipball/fb36df95d588df16f5cd7776e9f5e925f9a34cda",
+                "reference": "fb36df95d588df16f5cd7776e9f5e925f9a34cda",
                 "shasum": ""
             },
             "require": {
@@ -315,7 +512,7 @@
                 "source": "https://github.com/seanmorris/subspace-server/tree/master",
                 "issues": "https://github.com/seanmorris/subspace-server/issues"
             },
-            "time": "2019-03-10T16:00:42+00:00"
+            "time": "2020-06-30T23:50:26+00:00"
         },
         {
             "name": "seanmorris/theme",
@@ -362,21 +559,29 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/simpletest/simpletest.git",
-                "reference": "713ffea002c8a99adae899e7c27ec201d760f1e3"
+                "reference": "140876ef9ac9a10f884c3657f022829fc5ce64d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simpletest/simpletest/zipball/713ffea002c8a99adae899e7c27ec201d760f1e3",
-                "reference": "713ffea002c8a99adae899e7c27ec201d760f1e3",
+                "url": "https://api.github.com/repos/simpletest/simpletest/zipball/140876ef9ac9a10f884c3657f022829fc5ce64d2",
+                "reference": "140876ef9ac9a10f884c3657f022829fc5ce64d2",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.4 || ^7.0"
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "ext-dom": "*",
+                "ext-mbstring": "*",
+                "ext-tidy": "*"
             },
             "type": "library",
             "autoload": {
                 "classmap": [
-                    "."
+                    "src/"
+                ],
+                "exclude-from-classmap": [
+                    "/test"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -384,14 +589,6 @@
                 "LGPL-2.0+"
             ],
             "authors": [
-                {
-                    "name": "Lars Vierbergen",
-                    "email": "vierbergenlars@gmail.com"
-                },
-                {
-                    "name": "Lachlan Donald",
-                    "email": "lachlan@ljd.cc"
-                },
                 {
                     "name": "Marcus Baker",
                     "email": "marcus@lastcraft.com",
@@ -414,10 +611,18 @@
                     "role": "Original developer"
                 },
                 {
+                    "name": "Lachlan Donald",
+                    "email": "lachlan@ljd.cc"
+                },
+                {
+                    "name": "Lars Vierbergen",
+                    "email": "vierbergenlars@gmail.com"
+                },
+                {
                     "name": "Jens A. Koch"
                 }
             ],
-            "description": "Unit testing, mock objects and web testing framework for PHP built around test cases.",
+            "description": "SimpleTest is a framework for unit testing, web site testing and mock objects for PHP.",
             "homepage": "http://simpletest.org/",
             "keywords": [
                 "SimpleTest",
@@ -426,7 +631,7 @@
                 "testing",
                 "unit-test"
             ],
-            "time": "2017-09-01T07:28:43+00:00"
+            "time": "2020-04-26T13:57:35+00:00"
         }
     ],
     "aliases": [],
@@ -439,10 +644,12 @@
         "seanmorris/presskit": 20,
         "seanmorris/kallisti": 20,
         "seanmorris/subspace": 20,
+        "php-amqplib/php-amqplib": 20,
         "simpletest/simpletest": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }

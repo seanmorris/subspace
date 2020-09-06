@@ -11,7 +11,6 @@ export class ByteView extends View
 		this.template = `<span
 			cv-each = "bytes:byte:b"
 			cv-carry = "separator"
-			style = "display: block;"
 			"><span
 				cv-on = "cvDomAttached:color(event, byte, $view)"
 				cv-ref = "byte:curvature/base/Tag"
@@ -40,6 +39,6 @@ export class ByteView extends View
 
 		$view.tags.byte.element.style.color = color;
 
-		$view.tags.byte.element.style['text-shadow'] = `2px 0px 5px ${color}, -2px 0px 5px ${color}`
+		// $view.tags.byte.element.style['text-shadow'] = `2px 0px 5px ${color}, -2px 0px 5px ${color}`
 	}
 }

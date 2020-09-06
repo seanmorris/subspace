@@ -10,16 +10,22 @@
     "build": "brunch build --production"
   },
   "dependencies": {
-    "curvature": "^0.0.31",
+    "curvature": "^0.0.56",
     "subspace-client": "^0.0.3"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.7",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/preset-env": "^7.0.0",
     "auto-reload-brunch": "^2",
-    "brunch": "^2",
-    "clean-css-brunch": "^2",
-    "uglify-js-brunch": "^2",
-    "babel-brunch": "^6.1.1",
-    "babel-preset-latest": "^6",
-    "raw-brunch": "^1.0.2"
+    "babel-brunch": "^7.0.1",
+    "babel-minify": "^0.5.1",
+    "brace": "^0.11.1",
+    "brunch": "^3",
+    "clean-css-brunch": "^3",
+    "terser-brunch": "^4",
+    "raw-brunch": "^1.0.2",
+    "uglify-es-brunch": "^1"
   }
 }

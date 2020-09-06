@@ -5,7 +5,7 @@ class Help extends \SeanMorris\Theme\View
 }
 __halt_compiler(); ?>
 SubSpace Console 0.29a - Kallisti Websockets Playground
-©2018 Sean Morris
+©2018-2020 Sean Morris
 Type 'commmands' for a list of commands.
 
 Channels:

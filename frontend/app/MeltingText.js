@@ -6,6 +6,8 @@ export class MeltingText extends BaseView
 	{		
 		super(args);
 
+		this.last = this.init = Date.now();
+
 		this.charUp   = [
 			'\u030d', /*     ̍     */		'\u030e', /*     ̎     */		'\u0304', /*     ̄     */		'\u0305', /*     ̅     */
 			'\u033f', /*     ̿     */		'\u0311', /*     ̑     */		'\u0306', /*     ̆     */		'\u0310', /*     ̐     */
@@ -52,21 +54,42 @@ export class MeltingText extends BaseView
 		// this.args.input      = 'anything'; 
 		this.args.output     = 'uh.'
 		this.corruptors = {};
-		this.maxCorrupt = 20;
+		this.maxCorrupt = 50;
 		this.type       = '';
 
 		this.args.bindTo('type', (v) => {
 			this.output = this.corrupt(this.type);
 		});
 
-		setInterval(
+		this.onFrame(
 			() => {
+				if(this.lastFrame() > -75)
+				{
+					return;
+				}
+
 				this.typewriter(this.args.input);
 			}
-			, 25
 		);
-		setInterval(
+		this.onFrame(
 			() => {
+
+				if(this.lastFrame() > -40)
+				{
+					return;
+				}
+
+				let subtract = -this.age() / 50;
+
+				if(subtract > 40)
+				{
+					subtract = 40;
+				}
+
+				this.maxCorrup = 50 - subtract;
+
+				this.last = Date.now();
+
 				let selection = window.getSelection();
 
 				if(selection.anchorOffset !== selection.focusOffset)
@@ -82,7 +105,6 @@ export class MeltingText extends BaseView
 				this.args.output = this.corrupt(this.type);
 				// this.args.output = this.type;
 			}
-			, 35
 		);
 
 		this.args.bindTo(
@@ -90,6 +112,17 @@ export class MeltingText extends BaseView
 			, (v) => { this.type = ''; this.corruptors = [] }
 		);
 	}
+
+	age()
+	{
+		return this.init - Date.now();
+	}
+
+	lastFrame()
+	{
+		return this.last - Date.now();
+	}
+
 	corrupt(v) {
 		let chars = v.split('');
 		let rand  = (x) => parseInt(Math.random()*x);
@@ -103,9 +136,8 @@ export class MeltingText extends BaseView
 			let charSets = [
 				// this.charDown, this.charDown, this.charUp, 
 				this.charDown,
-				this.charDown,
 				this.charUp,
-				this.charMid,
+				// this.charMid,
 			];
 			let charSet  = charSets[ rand(charSets.length) ];
 			while(this.corruptors[i].length < this.maxCorrupt) {
@@ -129,6 +161,7 @@ export class MeltingText extends BaseView
 		}
 		return chars.join('');
 	}
+
 	typewriter(v) {
 		this.type = this.type || '';
 

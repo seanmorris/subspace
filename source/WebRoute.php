@@ -52,4 +52,57 @@ class WebRoute extends \SeanMorris\SubSpace\WebRoute
 	{
 		return new \SeanMorris\SubSpaceTerminal\View\BounceRc;
 	}
+
+	public function post($router)
+	{
+		if(!$user = \SeanMorris\Access\Route\AccessRoute::_currentUser())
+		{
+			return FALSE;
+		}
+
+		if(!isset($_POST['token']))
+		{
+			return FALSE;
+		}
+
+		if(!isset($_POST['channel']))
+		{
+			return FALSE;
+		}
+
+		$message = NULL;
+
+		if(!array_key_exists('message', $_POST))
+		{
+			if($_FILES['message'] && file_exists($_FILES['message']['tmp_name']))
+			{
+				$message = file_get_contents($_FILES['message']['tmp_name']);
+			}
+			else
+			{
+				return FALSE;
+			}
+		}
+
+		if(!$tokenSource = \SeanMorris\SubSpace\JwtToken::verify($_POST['token']))
+		{
+			return FALSE;
+		}
+
+		if(!$token = json_decode($tokenSource))
+		{
+			return FALSE;
+		}
+
+		if(!isset($token->cid))
+		{
+			return FALSE;
+		}
+
+		\SeanMorris\SubSpaceTerminal\Queue\AjaxMessage::send([
+			'message'   => $message
+			, 'channel' => $_POST['channel']
+			, 'agent'   => $token->cid
+		]);
+	}
 }

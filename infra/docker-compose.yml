@@ -11,6 +11,7 @@ services:
       - "80:80"
     volumes:
       - ../:/app
+      # - ../data/local/certbot:/etc/letsencrypt/live/subspace2.seanmorr.is/
     depends_on:
       - is.seanmorr.subspace-terminal.database
 
@@ -73,8 +74,43 @@ services:
       - "3333:3333"
     volumes:
       - ../:/app
-    command:
-      - "echo 'lol'"
+
+  is.seanmorr.subspace-terminal.rabbit:
+    image: "rabbitmq:3-management"
+    restart: always
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "O234234QALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+      - "19994:15672"
+      - "9994:5672"
+    volumes:
+      - "../data/global/rabbitMq/enabled_plugins:/etc/rabbitmq/enabled_plugins"
+
+  is.seanmorr.subspace-terminal.composer:
+    build:
+      context: ../
+      dockerfile: infra/composer.Dockerfile
+    image: seanmorris/subspace-terminal-composer
+    restart: on-failure
+    volumes:
+      - ../:/app
+      - ../data/local/composer/:/root/.composer/
+  
+  is.seanmorr.subspace-terminal.certbot:
+    image:   certbot/certbot
+    command: renew
+    volumes:
+      - ../data/local/certbot:/etc/letsencrypt/live/
+  
+  # is.seanmorr.subspace-terminal.fakecert:
+  #   image: vishnunair/docker-mkcert:latest
+  #   environment:
+  #     domain: localhost
+  #   volumes:
+  #     - ../data/local/certbot/subspace2.seanmorr.is:/root/.local/share/mkcert
 
 volumes:
   is.seanmorr.subspace-terminal.schema:

@@ -21,8 +21,6 @@ class SocketRoute extends \SeanMorris\SubSpace\EntryRoute
 			'name'  => $name
 			, 'uid' => $uid
 		]);
-
-		return sprintf('Welcome to the subspace server, #0x%04x!', $clientId);
 	}
 
 	// /**
@@ -111,20 +109,6 @@ class SocketRoute extends \SeanMorris\SubSpace\EntryRoute
 	public function help()
 	{
 		return new \SeanMorris\SubSpaceTerminal\View\Help;
-	}
-
-	public function _dynamic($router)
-	{
-		// $args = $router->path()->consumeNodes();
-
-		$command = $router->path()->getNode();
-
-		if($command == '?')
-		{
-			return $this->help($router);
-		}
-
-		return FALSE;
 	}
 
 	/**
@@ -238,5 +222,34 @@ class SocketRoute extends \SeanMorris\SubSpace\EntryRoute
 		$router->contextSet('__persistent', FALSE);
 
 		return 'logged out.';
+	}
+
+	public function _dynamic($router)
+	{
+		// $args = $router->path()->consumeNodes();
+
+		$command = $router->path()->getNode();
+
+		if($command == '?')
+		{
+			return $this->help($router);
+		}
+
+		return FALSE;
+	}
+
+	public function _tick($hub)
+	{
+		\SeanMorris\SubSpaceTerminal\Queue\AjaxMessage::check(
+			function($message) use($hub){
+				\SeanMorris\Ids\Log::debug($message);
+
+				$hub->publish(
+					$message['channel']
+					, $message['message']
+					, $hub->agent($message['agent'])
+				);
+			}
+		);
 	}
 }

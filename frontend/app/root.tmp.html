@@ -11,7 +11,7 @@
 
 					<form cv-on = "submit:cancel(event)">
 						<input
-							cv-on        = "keydown:test(event)"
+							cv-on        = ":keydown(event);:keyup(event)"
 							cv-bind      = "input"
 							autocomplete = "off"
 							cv-ref       = "input:curvature/base/Tag"/>
@@ -21,7 +21,7 @@
 						<input
 							name         = "pw-input"
 							type         = "password"
-							cv-on        = "keydown:test(event)"
+							cv-on        = ":keydown(event,false);:keyup(event,false)"
 							cv-bind      = "input"
 							autocomplete = "one-time-code"
 							cv-ref       = "password:curvature/base/Tag"/>

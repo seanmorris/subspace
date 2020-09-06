@@ -24,11 +24,12 @@ body {
 }
 
 .main {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	flex: 1;
-	/*filter:invert(100%);*/
-	text-shadow: -2px 0px 5px #FFF, 2px 0px 5px #FFF;
+	filter:invert(0%);
+	text-shadow: -0em 0em 1em currentColor;
 }
 
 .top .scanlines {
@@ -64,28 +65,28 @@ body {
 	box-sizing: border-box;
 }
 
+.terminal .output > p {
+}
+
 .terminal .output p {
 	margin: 0px;
 	display: flex;
+	flex-direction: row;
 	flex: 1;
-	flex-wrap: nowrap;
+	white-space: pre-wrap;
 	width: 100%;
+	min-width: 0px;
+	flex-wrap: nowrap;
+	/*flex-wrap: wrap;*/
 }
 
 .terminal .output p > span {
-	display: inline-block;
-	flex-basis: fill;
-}
-
-.terminal .output p,
-.terminal .output p > span:last-child {
-	white-space: pre-wrap;
-	word-break: break-all;
-	min-width: 0px;
+	/*display: contents;*/
+	/*text-indent:  0em;*/
 }
 
 .terminal input {
-	text-shadow: -3px 0px 4px #FAA, 3px 0px 4px #AFF;
+	text-shadow: -3px 0px 0.5em #FAA, 3px 0px 0.5em #AFF;
 	font-family: 'Unispace', monospace;
 	pointer-events: none;
 	width: 100%;
@@ -93,12 +94,16 @@ body {
 	resize: none;
 	overflow: hidden;
 	border: none;
-	background: black;
 	color: white;
 	font-size: 1em;
 	outline: none;
 	padding: 0px;
 	box-sizing: border-box;
+	background: rgba(0,0,0,0.0);
+}
+
+.terminal input:focus {
+	background: rgba(0,0,0,0.80);
 }
 
 .submit {
@@ -123,8 +128,8 @@ body {
 .scanlines{
 	pointer-events: none;
 	background-image: url(scanline.png);
+	background-size: auto 12px;
 	opacity: 0.25;
-	transform: scale(2);
 	position: fixed;
 	top: 0px;
 	left: 0px;
@@ -146,21 +151,22 @@ body {
 	}
 }
 
-.inverted {
-	filter: invert(1);
+.main.inverted {
+	text-shadow: none !important;
+	transition: filter 0.2s ease-out, text-shadow 0s;
+	filter: invert(100%);
+}
+
+.main.inverted span,
+.main.inverted input {
 	text-shadow: none !important;
 	transition: filter 0.2s ease-out, text-shadow 0s;
 }
 
-.inverted span,
-.inverted input {
-	text-shadow: none !important;
-	transition: filter 0.2s ease-out, text-shadow 0s;
+.main.inverted .scanlines {
+	/*opacity: 0.25;*/
 }
 
-.inverted .scanlines {
-	opacity: 0.64;
-}
 .melting {
 	line-height: initial;
 	font-family: DejaVu;

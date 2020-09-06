@@ -15,6 +15,16 @@ import { Cornfield } from 'Cornfield';
 import { Chat } from 'chat/Chat';
 import { Image } from 'Image';
 
+import { Mixin } from 'curvature/base/Mixin';
+
+import { Task } from './Task';
+import { Upper } from './tasks/Upper';
+import { Prefix } from './tasks/Prefix';
+import { Suffix } from './tasks/Suffix';
+import { Countdown } from './tasks/Countdown';
+
+import { Path } from './Path';
+
 export class RootView extends View {
 	constructor(args = {}) {
 		super(args);
@@ -26,9 +36,12 @@ export class RootView extends View {
 		this.args.inverted = '';
 		this.args.passwordMode = false;
 		this.localEcho = true;
+		this.postToken = null;
 
 		this.localLock = null;
 		this.args.prompt = '<<';
+
+		this.currentTask = false;
 
 		this.max = 1024;
 
@@ -57,33 +70,35 @@ export class RootView extends View {
 
 		this.runScript('/init_rc');
 
-		// this.auth().then(()=>{
-		// 	this.onTimeout(10, ()=>{
-		// 		this.socket.send('motd');
-		// 		this.args.output.push(`<< motd`);
-		// 	});
-		// });
-
-
-
 		let keyboard = new Keyboard;
 
 		keyboard.keys.bindTo((v, k) => {
 			if (v == 1) {
 				// alert(k);
+				// console.log(k)
 			}
-		}, { wait: 1 });
+		});
 
 		keyboard.keys.bindTo('Escape', (v) => {
-			if (v == 1) {
-				if (this.localLock) {
+			if (v == 1)
+			{
+				console.log( Task );
+				if(this.currentTask)
+				{
+					console.log( Task.KILL );
+					this.currentTask.signal( Task.KILL );
+					this.currentTask.signal('kill');
+				}
+
+				if (this.localLock)
+				{
 					this.args.output.push(`:: Killed.`);
 				}
 				this.localLock = false;
 				this.args.prompt = '<<';
 				this.args.passwordMode = false;
 			}
-		}, { wait: 1 });
+		});
 
 		keyboard.keys.bindTo('ArrowUp', (v) => {
 			if (v == 1) {
@@ -95,8 +110,14 @@ export class RootView extends View {
 				}
 
 				this.args.input = this.history[this.historyCursor];
+
+				this.onNextFrame(()=>{
+					const element = this.tags.input.element;
+					element.selectionStart = element.value.length;
+					element.selectionEnd   = element.value.length;
+				});
 			}
-		}, { wait: 1 });
+		});
 
 		keyboard.keys.bindTo('ArrowDown', (v) => {
 			if (v == 1) {
@@ -109,8 +130,14 @@ export class RootView extends View {
 				}
 
 				this.args.input = this.history[this.historyCursor];
+
+				this.onNextFrame(()=>{
+					const element = this.tags.input.element;
+					element.selectionStart = element.value.length;
+					element.selectionEnd   = element.value.length;
+				});
 			}
-		}, { wait: 1 });
+		});
 
 		// const rtcConfig = {iceServers: [{urls: 'stun:stun.l.google.com:19302'}]};
 		// const rtcConfig = {};
@@ -302,287 +329,386 @@ export class RootView extends View {
 			return;
 		}
 
-		// let original = command;
-		this.args.output.push(`:: ${command}`);
-
 		command = command.substring(1);
-		let args = command.split(' ');
-		command = args.shift();
 
-		switch (command) {
-			case 'pub':
-				let channel = parseInt(args.shift(), 16);
-				let data = [];
+		const commands = command.split(/\s*\|\s*/);
 
-				while (args.length) {
-					data.push(args.shift());
+		this.args.output.push(`-- /${command}`);
+
+		let chained = null;
+		let topTask = null;
+
+		for(const commandString of commands)
+		{
+			const args = commandString.trim().split(' ');
+			const command = args.shift().trim();
+
+			if(command.substr(-1) == "?")
+			{
+				command = command.substr(0, command.length - 1);
+
+				if(command in Path)
+				{
+					this.args.output.push(`?? ${Path[command].helpText}`);
+					this.args.output.push(`?? ${Path[command].useText}`);	
 				}
 
-				let channelBytes = new Uint8Array(
-					new Uint16Array([channel]).buffer
-				);
+				continue;
+			}
 
-				let bytes = [];
+			if(command in Path)
+			{
+				chained = new Path[command](args, chained);
+				continue;
+			}
 
-				for (let i in channelBytes) {
-					bytes[i] = channelBytes[i];
-				}
+			switch (command) {
 
-				for (let i = 0; i < data.length; i++) {
-					bytes[i + 2] = parseInt(data[i], 16);
-				}
+				case 'pub':
+					let channel = parseInt(args.shift(), 16);
+					let data = [];
 
-				this.socket.send(new Uint8Array(bytes));
-				break;
+					while (args.length) {
+						data.push(args.shift());
+					}
 
-			case 'login':
-				this.args.output.push(':: Escape to cancel');
-				this.localLock = new Login;
-				this.args.prompt = '::';
-				this.localLock.init(this);
-				this.args.prompt = '::';
-				break;
-
-			case 'register':
-				this.args.output.push(':: Escape to cancel');
-				this.localLock = new Register;
-				this.args.prompt = '::';
-				this.localLock.init(this);
-				break;
-
-			case 'auth':
-				this.auth();
-				break;
-
-			case 'clear':
-				while (this.args.output.length) {
-					this.args.output.pop();
-				}
-				break;
-
-			case 'echo':
-				if (args.length) {
-					this.localEcho = parseInt(args[0]);
-				}
-				this.args.output.push(`Echo is ${this.localEcho?'on':'off'}`);
-				break;
-
-			case 'cornfield':
-				this.localLock = new Cornfield(this);
-				this.args.prompt = '::';
-				break;
-
-				// case 'chat':
-				// 	this.localLock = new Chat(this);
-				// 	this.args.prompt = '::';
-				// 	break;
-
-			case 'image':
-				this.localLock = new Image(this, args);
-				this.args.prompt = '::';
-				break;
-
-			case 'light':
-				this.args.inverted = 'inverted';
-				break;
-
-			case 'dark':
-				this.args.inverted = '';
-				break;
-
-
-			case 'file':
-				if (!args.length) {
-					this.args.output.push(
-						`:: Error: Please supply a channel to publish file.`
+					let channelBytes = new Uint8Array(
+						new Uint16Array([channel]).buffer
 					);
+
+					let bytes = [];
+
+					for (let i in channelBytes) {
+						bytes[i] = channelBytes[i];
+					}
+
+					for (let i = 0; i < data.length; i++) {
+						bytes[i + 2] = parseInt(data[i], 16);
+					}
+
+					this.socket.send(new Uint8Array(bytes));
 					break;
-				}
-				this.fileChannel = args[0];
-				this.tags.file.element.click();
-				break;
 
-			case 'z':
-				this.args.output.push(
-					new MeltingText({ input: 'lmao!' })
-				);
-				break;
-
-			case 'commands':
-				this.args.output.push(JSON.stringify({
-					'/pub': 'CHAN BYTES... Publish raw bytes to a channel (hexadecimal)',
-					'/auth': 'Run the auth procedure.',
-					'/login': 'Run the login procedure.',
-					'/register': 'Run the registration procedure.',
-					'/clear': 'Clear the terminal.',
-					'/echo': '[1|0] Enable/Disable/Check localEcho.',
-					'/light': 'Light theme.',
-					'/dark': 'Dark theme.',
-					'/cornfield': 'Play Cornfield.'
-				}, null, 4));
-				break;
-
-			case 'offer':
-				this.peerClientChannel = this.peerClient.createDataChannel("chat")
-
-				this.peerClientChannel.addEventListener('open', () => {
-					console.log('Remote peer server accepted!');
-				});
-
-				this.peerClientChannel.addEventListener('message', (event) => {
-					console.log('Remote peer server sent message!');
-					console.log(event);
-				});
-
-				this.peerClient.createOffer().then((offer) => {
-					this.peerClient.setLocalDescription(offer);
-				});
-
-				break;
-
-			case 'answer':
-				if (!args.length) {
-					this.args.output.push(
-						`:: Error: Please supply SDP offer string.`
-					);
+				case 'login':
+					this.args.output.push(':: Escape to cancel');
+					this.localLock = new Login;
+					this.args.prompt = '::';
+					this.localLock.init(this);
+					this.args.prompt = '::';
 					break;
-				}
 
-				let offer = new RTCSessionDescription(
-					JSON.parse(args.join(' '))
-				);
+				case 'register':
+					this.args.output.push(':: Escape to cancel');
+					this.localLock = new Register;
+					this.args.prompt = '::';
+					this.localLock.init(this);
+					break;
 
-				this.peerServer.setRemoteDescription(offer);
+				case 'auth':
+					this.auth();
+					break;
 
-				this.peerServer.createAnswer(
-					(answer) => {
-						console.log(answer);
-						let answerString = JSON.stringify(
-							answer, null, 4
-						);
-						// this.args.output.push(answerString);
+				case 'clear':
+					while (this.args.output.length) {
+						this.args.output.pop();
+					}
+					break;
 
-						this.peerServer.setLocalDescription(answer);
-					}, (error) => {
-						console.error(error);
+				case 'echo':
+					if (args.length) {
+						this.localEcho = parseInt(args[0]);
+					}
+					this.args.output.push(`Echo is ${this.localEcho?'on':'off'}`);
+					break;
+
+				case 'cornfield':
+					this.localLock = new Cornfield(this);
+					this.args.prompt = '::';
+					break;
+
+					// case 'chat':
+					// 	this.localLock = new Chat(this);
+					// 	this.args.prompt = '::';
+					// 	break;
+
+				case 'image':
+					this.localLock = new Image(this, args);
+					this.args.prompt = '::';
+					break;
+
+				case 'light':
+					this.args.inverted = 'inverted';
+					break;
+
+				case 'dark':
+					this.args.inverted = '';
+					break;
+
+
+				case 'file':
+					if (!args.length) {
 						this.args.output.push(
-							`:: Error: Unexpected exception.`
+							`:: Error: Please supply a channel to publish file.`
 						);
+						break;
 					}
-				);
+					this.fileChannel = args[0];
+					this.tags.file.element.click();
+					break;
 
-				break;
-
-			case 'accept':
-				if (!args.length) {
+				case 'z':
 					this.args.output.push(
-						`:: Error: Please supply SDP offer string.`
+						new MeltingText({ input: 'lmao!' })
 					);
 					break;
-				}
 
-				let answer = new RTCSessionDescription(
-					JSON.parse(args.join(' '))
-				);
+				case 'commands':
+					this.args.output.push(JSON.stringify({
+						'/pub': 'CHAN BYTES... Publish raw bytes to a channel (hexadecimal)',
+						'/auth': 'Run the auth procedure.',
+						'/login': 'Run the login procedure.',
+						'/register': 'Run the registration procedure.',
+						'/clear': 'Clear the terminal.',
+						'/echo': '[1|0] Enable/Disable/Check localEcho.',
+						'/light': 'Light theme.',
+						'/dark': 'Dark theme.',
+						'/cornfield': 'Play Cornfield.'
+					}, null, 4));
+					break;
 
-				this.peerClient.setRemoteDescription(answer);
+				case 'offer':
+					this.peerClientChannel = this.peerClient.createDataChannel("chat")
 
-				break;
+					this.peerClientChannel.addEventListener('open', () => {
+						console.log('Remote peer server accepted!');
+					});
 
-			case 'connect':
-				this.socket = Socket.get(Config.socketHost, true);
+					this.peerClientChannel.addEventListener('message', (event) => {
+						console.log('Remote peer server sent message!');
+						console.log(event);
+					});
 
-				this.socket.subscribe('close', (event) => {
-					console.log('Disconnected!');
-					this.args.output.push(`:: Disconnected!`);
-					this.args.output.push(`:: Reinitializing in 5s...`);
+					this.peerClient.createOffer().then((offer) => {
+						this.peerClient.setLocalDescription(offer);
+					});
 
-					if (this.recon) {
-						this.clearTimeout(this.recon);
+					break;
 
-						this.recon = false;
-					} else {
-						this.recon = this.onTimeout(5000, () => {
+				case 'answer':
+					if (!args.length) {
+						this.args.output.push(
+							`:: Error: Please supply SDP offer string.`
+						);
+						break;
+					}
+
+					let offer = new RTCSessionDescription(
+						JSON.parse(args.join(' '))
+					);
+
+					this.peerServer.setRemoteDescription(offer);
+
+					this.peerServer.createAnswer(
+						(answer) => {
+							console.log(answer);
+							let answerString = JSON.stringify(
+								answer, null, 4
+							);
+							// this.args.output.push(answerString);
+
+							this.peerServer.setLocalDescription(answer);
+						}, (error) => {
+							console.error(error);
+							this.args.output.push(
+								`:: Error: Unexpected exception.`
+							);
+						}
+					);
+
+					break;
+
+				case 'accept':
+					if (!args.length) {
+						this.args.output.push(
+							`:: Error: Please supply SDP offer string.`
+						);
+						break;
+					}
+
+					let answer = new RTCSessionDescription(
+						JSON.parse(args.join(' '))
+					);
+
+					this.peerClient.setRemoteDescription(answer);
+
+					break;
+
+				case 'connect':
+					this.socket = Socket.get(Config.socketHost, true);
+
+					this.socket.subscribe('close', (event) => {
+						console.log('Disconnected!');
+						this.args.output.push(`:: Disconnected!`);
+						this.args.output.push(`:: Reinitializing in 5s...`);
+
+						if (this.recon) {
+							this.clearTimeout(this.recon);
+
 							this.recon = false;
-							this.runScript('/bounce_rc');
-						});
-					}
-
-				});
-
-				this.socket.subscribe('open', () => {
-					this.runScript('/open_rc');
-				});
-
-				this.socket.subscribe('message', (event, message, channel, origin, originId, originalChannel, packet) => {
-					if (typeof event.data == 'string') {
-						let received = JSON.parse(event.data);
-
-						if (typeof received == 'object') {
-							received = JSON.stringify(received, null, 4);
+						} else {
+							this.recon = this.onTimeout(5000, () => {
+								this.recon = false;
+								this.runScript('/bounce_rc');
+							});
 						}
 
-						if (this.localEcho) {
-							this.args.output.push(new TextMessageView({
-								message: received
-							}));
-						}
-					} else if (event.data instanceof ArrayBuffer) {
-						let bytesArray = new Uint8Array(event.data);
+					});
 
-						let user = originId.toString(16)
-							.toUpperCase()
-							.padStart(4, '0');
+					this.socket.subscribe('open', () => {
+						this.runScript('/open_rc');
+					});
 
-						let channelName = channel.toString(16)
-							.toUpperCase()
-							.padStart(4, '0');
+					this.socket.subscribe('message', (event, message, channel, origin, originId, originalChannel, packet) => {
+						if (typeof event.data == 'string') {
+							let received = JSON.parse(event.data);
 
-						let header = `0x${user}${channelName}`;
+							if (received.token && received.you == true) {
+								this.postToken = received.token;
+							}
 
-						let headerBytes = [
-							originId.toString(16)
-							.toUpperCase()
-							.padStart(4, '0'), channel.toString(16)
-							.toUpperCase()
-							.padStart(4, '0')
-						].join('').match(/.{1,2}/g);
+							if (typeof received == 'object') {
+								received = JSON.stringify(received, null, 4);
+							}
 
-						let messageIndex = 6;
+							if (this.localEcho) {
+								this.args.output.push(new TextMessageView({
+									message: received
+								}));
+							}
+						} else if (event.data instanceof ArrayBuffer) {
+							let bytesArray = new Uint8Array(event.data);
 
-						if (origin == 'server') {
-							headerBytes = [channel.toString(16).padStart(4, '0')];
-							header = `0x${channel.toString(16).padStart(4, '0')}`;
-
-							let messageIndex = 4;
-						}
-
-						let bytes = Array.from(bytesArray).map(x => {
-							return x.toString(16)
+							let user = originId.toString(16)
 								.toUpperCase()
-								.padStart(2, '0');
-						});
+								.padStart(4, '0');
 
-						if (this.localEcho) {
-							this.args.output.push(new BinaryMessageView({
-								header: new ByteView({
-									separator: '',
-									bytes: headerBytes
-								}),
-								message: new ByteView({
-									separator: ' ',
-									bytes: bytes.slice(messageIndex)
-								})
-							}));
+							let channelName = channel.toString(16)
+								.toUpperCase()
+								.padStart(4, '0');
+
+							let header = `0x${user}${channelName}`;
+
+							let headerBytes = [
+								originId.toString(16)
+								.toUpperCase()
+								.padStart(4, '0'), channel.toString(16)
+								.toUpperCase()
+								.padStart(4, '0')
+							].join('').match(/.{1,2}/g);
+
+							let messageIndex = 6;
+
+							if (origin == 'server') {
+								headerBytes = [channel.toString(16).padStart(4, '0')];
+								header = `0x${channel.toString(16).padStart(4, '0')}`;
+
+								let messageIndex = 4;
+							}
+
+							let bytes = Array.from(bytesArray).map(x => {
+								return x.toString(16)
+									.toUpperCase()
+									.padStart(2, '0');
+							});
+
+							if (this.localEcho) {
+								this.args.output.push(new BinaryMessageView({
+									header: new ByteView({
+										separator: '',
+										bytes: headerBytes
+									}),
+									message: new ByteView({
+										separator: ' ',
+										bytes: bytes.slice(messageIndex)
+									})
+								}));
+							}
+
+
+							while (this.args.output.length > this.max) {
+								this.args.output.shift();
+							}
 						}
+					});
+					break;
 
+				case 'ajaxSay':
+					const formData = new FormData();
+					const ccCount  = args.shift();
+					const ccList   = args.splice(0, ccCount);
+					const bccCount = args.shift();
+					const bccList  = args.splice(0, bccCount);
 
-						while (this.args.output.length > this.max) {
-							this.args.output.shift();
-						}
+					formData.append('cc',  ccList.join(','));
+					formData.append('bcc', bccList.join(','));
+
+					console.log(ccList, bccList);
+				case 'ajaxPub':
+					if (!this.postToken) {
+						this.args.output.push(`:: Please aquire a POST token first.`);
 					}
+					else {
+						this.args.output.push(`:: ${this.postToken}`);
+
+						const _formData = formData || new FormData();
+
+						_formData.append('token',   this.postToken);
+						_formData.append('channel', args.shift());
+						_formData.append('message', args.join(' '));
+
+						console.log(_formData);
+
+						fetch('/post', {
+							method: 'post'
+							, body: _formData
+						}).then((response)=>{
+							console.log(response);
+						});
+					}
+					break;
+			}
+
+			if(chained)
+			{
+				const error  = (event) => this.args.output.push(`!! ${event.detail}`);
+
+				chained.addEventListener('error', error);
+
+				chained.finally(done => {
+					chained.removeEventListener('error', error);
 				});
-				break;
+			}
+		}
+
+		if(chained)
+		{
+			this.args.prompt = '..';
+
+			this.currentTask = chained;
+
+			chained.execute().then(exitCode => console.log(exitCode));
+			chained.catch(error  => this.args.output.push(`!! ${error}`));
+			chained.finally(() => this.args.prompt = '<<');
+
+			const output = (event) => this.args.output.push(`:: ${event.detail}`);
+
+			chained.addEventListener('output', output);			
+
+			chained.finally(done => {
+				chained.removeEventListener('output', output);
+				this.currentTask = false;
+				this.args.prompt = '<<';
+			});
 		}
 
 		this.args.input = '';
@@ -600,15 +726,56 @@ export class RootView extends View {
 		});
 	}
 
-	test(event) {
-		if (event.key == 'Enter') {
-			let command = this.args.input;
-			this.args.input = '';
-			this.onTimeout(0, () => {
-				this.interpret(command);
-			});
+	keydown(event, autocomplete)
+	{
+		switch(event.key)
+		{
+			case 'Tab':
 
-			console.log(command);
+				event.preventDefault();
+
+			break;
+		}
+	}
+
+	keyup(event, autocomplete)
+	{
+		switch(event.key)
+		{
+			case 'Tab':
+
+				event.preventDefault();
+
+				if(!this.args.input || this.args.input[0] !== '/')
+				{
+					break;
+				}
+
+				const search = this.args.input.substr(1);
+
+				for(const cmd in Path)
+				{
+					if(cmd.length < search.length)
+					{
+						continue;
+					}
+					
+					if(search === cmd.substr(0, search.length))
+					{
+						this.args.input = '/' + cmd;
+						break;
+					}
+				}
+
+				break;
+
+			case 'Enter':
+				let command = this.args.input;
+				this.args.input = '';
+				this.onTimeout(0, () => {
+					this.interpret(command);
+				});
+				break;
 		}
 	}
 
