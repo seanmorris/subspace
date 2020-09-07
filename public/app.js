@@ -4724,118 +4724,6 @@ exports.ViewList = ViewList;
   })();
 });
 
-require.register("curvature/input/Keyboard.js", function(exports, require, module) {
-  require = __makeRelativeRequire(require, {}, "curvature");
-  (function() {
-    "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Keyboard = void 0;
-
-var _Bindable = require("../base/Bindable");
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var Keyboard = /*#__PURE__*/function () {
-  _createClass(Keyboard, null, [{
-    key: "get",
-    value: function get() {
-      return this.instance = this.instance || new this();
-    }
-  }]);
-
-  function Keyboard() {
-    var _this = this;
-
-    _classCallCheck(this, Keyboard);
-
-    this.maxDecay = 120;
-    this.listening = true;
-    this.keys = _Bindable.Bindable.makeBindable({});
-    this.codes = _Bindable.Bindable.makeBindable({});
-    document.addEventListener('keyup', function (event) {
-      _this.keys[event.key] = -1;
-      _this.codes[event.code] = -1;
-    });
-    document.addEventListener('keydown', function (event) {
-      if (_this.keys[event.key] > 0) {
-        return;
-      }
-
-      _this.keys[event.key] = 1;
-      _this.codes[event.code] = 1;
-    });
-    window.addEventListener('blur', function (event) {
-      for (var i in _this.keys) {
-        _this.keys[i] = -1;
-      }
-
-      for (var _i in _this.codes) {
-        _this.codes[_i] = -1;
-      }
-    });
-  }
-
-  _createClass(Keyboard, [{
-    key: "getKey",
-    value: function getKey(key) {
-      if (!this.keys[key]) {
-        return 0;
-      }
-
-      return this.keys[key];
-    }
-  }, {
-    key: "getKeyCode",
-    value: function getKeyCode(code) {
-      if (!this.codes[code]) {
-        return 0;
-      }
-
-      return this.codes[code];
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      for (var i in this.keys) {
-        if (this.keys[i] > 0) {
-          this.keys[i]++;
-        } else {
-          this.keys[i]--;
-
-          if (this.keys[i] < -this.maxDecay) {
-            delete this.keys[i];
-          }
-        }
-      }
-
-      for (var i in this.codes) {
-        if (this.codes[i] > 0) {
-          this.codes[i]++;
-        } else {
-          this.codes[i]--;
-
-          if (this.codes[i] < -this.maxDecay) {
-            delete this.keys[i];
-          }
-        }
-      }
-    }
-  }]);
-
-  return Keyboard;
-}();
-
-exports.Keyboard = Keyboard;
-  })();
-});
-
 require.register("subspace-client/Channel.js", function(exports, require, module) {
   require = __makeRelativeRequire(require, {}, "subspace-client");
   (function() {
@@ -5198,132 +5086,7 @@ var Socket = exports.Socket = function () {
 }();
   })();
 });
-require.register("BinaryMessageView.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.BinaryMessageView = void 0;
-
-var _View2 = require("curvature/base/View");
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-var BinaryMessageView = /*#__PURE__*/function (_View) {
-  _inherits(BinaryMessageView, _View);
-
-  var _super = _createSuper(BinaryMessageView);
-
-  function BinaryMessageView() {
-    var _this;
-
-    var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, BinaryMessageView);
-
-    _this = _super.call(this, args);
-    _this.template = "<span>&gt;&gt;&nbsp;0x</span>[[header]]&nbsp;[[message]]";
-    return _this;
-  }
-
-  return BinaryMessageView;
-}(_View2.View);
-
-exports.BinaryMessageView = BinaryMessageView;
-});
-
-;require.register("ByteView.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.ByteView = void 0;
-
-var _View2 = require("curvature/base/View");
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-var ByteView = /*#__PURE__*/function (_View) {
-  _inherits(ByteView, _View);
-
-  var _super = _createSuper(ByteView);
-
-  function ByteView() {
-    var _this;
-
-    var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, ByteView);
-
-    _this = _super.call(this, args);
-    _this.args.separator = _this.args.separator || '';
-    _this.template = "<span\n\t\t\tcv-each = \"bytes:byte:b\"\n\t\t\tcv-carry = \"separator\"\n\t\t\t\"><span\n\t\t\t\tcv-on = \"cvDomAttached:color(event, byte, $view)\"\n\t\t\t\tcv-ref = \"byte:curvature/base/Tag\"\n\t\t\t\t\n\t\t\t>[[byte]][[separator]]</span></span>";
-    return _this;
-  }
-
-  _createClass(ByteView, [{
-    key: "color",
-    value: function color(event, _byte, $view) {
-      var hue = parseInt(_byte, 16); // let color = '#' + [
-      // 	(Math.pow(Math.cos(Math.PI * hue + 5), 2) * 192)
-      // 	, (Math.pow(Math.cos(Math.PI * hue + 10), 2) * 192)
-      // 	, (Math.pow(Math.cos(Math.PI * hue + 0), 2) * 192)
-      // ].map((x)=>Math.floor(x).toString(16).padStart(2, '0')).join('');
-
-      if (!hue) {
-        return;
-      }
-
-      var color = "hsl(" + 360 * hue / 0xFF + ",70%,70%)";
-      $view.tags["byte"].element.style.color = color; // $view.tags.byte.element.style['text-shadow'] = `2px 0px 5px ${color}, -2px 0px 5px ${color}`
-    }
-  }]);
-
-  return ByteView;
-}(_View2.View);
-
-exports.ByteView = ByteView;
-});
-
-;require.register("Config.js", function(exports, require, module) {
+require.register("Config.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5343,384 +5106,7 @@ Config.title = 'SubSpace 0.2.0a'; // Config.socketHost = `ws://${location.hostna
 Config.socketHost = "ws".concat(location.protocol === 'https:' ? 's' : '', "://").concat(location.hostname, ":9998");
 });
 
-require.register("Cornfield.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Cornfield = void 0;
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var Cornfield = /*#__PURE__*/function () {
-  function Cornfield(terminal) {
-    var _this = this;
-
-    _classCallCheck(this, Cornfield);
-
-    terminal.args.output.push(':: Welcome to Cornfield');
-    terminal.args.output.push(':: You are in a cornfield.');
-    terminal.args.output.push(':: You see corn.');
-    terminal.args.output.push(':: Move? [north south east west]');
-    terminal.args.output.push(':: Look?');
-    terminal.localEcho = false;
-    this.socket = terminal.socket;
-    this.socket.subscribe('message:cornfield:game', function (e, m, o, i) {});
-    this.socket.subscribe('message:cornfield:chat', function (e, m, c, o, i) {
-      terminal.args.output.push("!! <".concat(i, "> ").concat(m));
-    });
-    this.socket.subscribe('message:cornfield:users:ping', function (e, m, o, i) {
-      _this.socket.publish('cornfield:users:pong', 'pong!');
-    });
-    this.socket.subscribe('message:cornfield:users:pong', function (e, m, o, i) {});
-  }
-
-  _createClass(Cornfield, [{
-    key: "pass",
-    value: function pass(input, terminal) {
-      var args = input.split(' ');
-      var command = args.shift();
-      console.log(command);
-
-      switch (command.toLowerCase()) {
-        case 'ping':
-          this.socket.publish('cornfield:users:ping', 'ping!');
-          break;
-
-        case 'look':
-          terminal.args.output.push(':: You found an ear of corn.');
-          this.socket.publish('cornfield:game', 'l');
-          break;
-
-        case 'n':
-        case 'north':
-          terminal.args.output.push(':: You moved north.');
-          this.socket.publish('cornfield:game', 'n');
-          break;
-
-        case 's':
-        case 'south':
-          terminal.args.output.push(':: You moved south.');
-          this.socket.publish('cornfield:game', 's');
-          break;
-
-        case 'e':
-        case 'east':
-          terminal.args.output.push(':: You moved east.');
-          this.socket.publish('cornfield:game', 'e');
-          break;
-
-        case 'w':
-        case 'west':
-          terminal.args.output.push(':: You moved west.');
-          this.socket.publish('cornfield:game', 'w');
-          break;
-
-        case 't':
-        case 'talk':
-        case 'say':
-          // let chatMessage = 'ok';
-          var chatMessage = args.join(' ');
-          terminal.args.output.push("!! <you> ".concat(chatMessage));
-          this.socket.publish('cornfield:chat', chatMessage);
-          break;
-      }
-
-      terminal.args.input = '';
-    }
-  }]);
-
-  return Cornfield;
-}();
-
-exports.Cornfield = Cornfield;
-});
-
-;require.register("MeltingText.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.MeltingText = void 0;
-
-var _View = require("curvature/base/View");
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-var MeltingText = /*#__PURE__*/function (_BaseView) {
-  _inherits(MeltingText, _BaseView);
-
-  var _super = _createSuper(MeltingText);
-
-  function MeltingText(args) {
-    var _this;
-
-    _classCallCheck(this, MeltingText);
-
-    _this = _super.call(this, args);
-    _this.last = _this.init = Date.now();
-    _this.charUp = [// '\u030d', /*     ̍     */		'\u030e', /*     ̎     */		'\u0304', /*     ̄     */		'\u0305', /*     ̅     */
-    // '\u033f', /*     ̿     */		'\u0311', /*     ̑     */		'\u0306', /*     ̆     */		'\u0310', /*     ̐     */
-    // '\u0352', /*     ͒     */		'\u0357', /*     ͗     */		'\u0351', /*     ͑     */		'\u0307', /*     ̇     */
-    // '\u0308', /*     ̈     */		'\u030a', /*     ̊     */		'\u0342', /*     ͂     */		'\u0343', /*     ̓     */
-    "\u0344",
-    /*     ̈́     */
-
-    /*	'\u034a', /*     ͊     */
-
-    /*	'\u034b', /*     ͋     */
-
-    /*	'\u034c', /*     ͌     */
-    "\u0303",
-    /*     ̃     */
-
-    /*	'\u0302', /*     ̂     */
-
-    /*	'\u030c', /*     ̌     */
-
-    /*	'\u0350', /*     ͐     */
-    "\u0300"
-    /*     ̀     */
-    //	'\u0301', /*     ́     */		'\u030b', /*     ̋     */		'\u030f', /*     ̏     */
-    // '\u0312', /*     ̒     */		'\u0313', /*     ̓     */		'\u0314', /*     ̔     */		'\u033d', /*     ̽     */
-    // '\u0309', /*     ̉     */		'\u0363', /*     ͣ     */		'\u0364', /*     ͤ     */		'\u0365', /*     ͥ     */
-    // '\u0366', /*     ͦ     */		'\u0367', /*     ͧ     */		'\u0368', /*     ͨ     */		'\u0369', /*     ͩ     */
-    // '\u036a', /*     ͪ     */		'\u036b', /*     ͫ     */		'\u036c', /*     ͬ     */		'\u036d', /*     ͭ     */
-    // '\u036e', /*     ͮ     */		'\u036f', /*     ͯ     */		'\u033e', /*     ̾     */		'\u035b', /*     ͛     */
-    ];
-    _this.charMid = ["\u0315",
-    /*     ̕     */
-    "\u031B",
-    /*     ̛     */
-    "\u0340",
-    /*     ̀     */
-    "\u0341",
-    /*     ́     */
-    "\u0358",
-    /*     ͘     */
-    "\u0321",
-    /*     ̡     */
-    "\u0322",
-    /*     ̢     */
-    "\u0327",
-    /*     ̧     */
-    "\u0328",
-    /*     ̨     */
-    "\u0334",
-    /*     ̴     */
-    "\u0335",
-    /*     ̵     */
-    "\u0336",
-    /*     ̶     */
-    "\u034F",
-    /*     ͏     */
-    "\u035C",
-    /*     ͜     */
-    "\u035D",
-    /*     ͝     */
-    "\u035E",
-    /*     ͞     */
-    "\u035F",
-    /*     ͟     */
-    "\u0360",
-    /*     ͠     */
-
-    /*'\u0362',      ͢     */
-    "\u0338",
-    /*     ̸     */
-    "\u0337",
-    /*     ̷     */
-    "\u0361"
-    /*     ͡     */
-
-    /*'\u0489'     ҉_     */
-    ];
-    _this.charDown = [// '\u0316', /*     ̖     */		'\u0317', /*     ̗     */		'\u0318', /*     ̘     */		'\u0319', /*     ̙     */
-    // '\u0316', /*     ̖     */		'\u0317', /*     ̗     */		'\u0318', /*     ̘     */		'\u0319', /*     ̙     */
-    // '\u0320', /*     ̠     */		'\u0324', /*     ̤     */		'\u0325', /*     ̥     */		'\u0326', /*     ̦     */
-    // '\u0329', /*     ̩     */		'\u032a', /*     ̪     */		'\u032b', /*     ̫     */		'\u032c', /*     ̬     */
-    // '\u032d', /*     ̭     */		'\u032e', /*     ̮     */		'\u032f', /*     ̯     */		'\u0330', /*     ̰     */
-    // '\u0331', /*     ̱     */		'\u0332', /*     ̲     */		'\u0333', /*     ̳     */		'\u0339', /*     ̹     */
-    "\u033A",
-    /*     ̺     */
-    "\u033B",
-    /*     ̻     */
-    "\u033C",
-    /*     ̼     */
-    "\u0345"
-    /*     ͅ     */
-    //'\u0347', /*     ͇     */		'\u0348', /*     ͈     */		'\u0349', /*     ͉     */		'\u034d', /*     ͍     */
-    //'\u034e', /*     ͎     */		'\u0353', /*     ͓     */		'\u0354', /*     ͔     */		'\u0355', /*     ͕     */
-    // '\u0356', /*     ͖     */		'\u0359', /*     ͙     */		'\u035a', /*     ͚     */		'\u0323' /*     ̣     */
-    ];
-    _this.template = "\n\t\t\t<div cv-bind = \"output\" class = \"melting\"></div>\n\t\t";
-    _this.args.input = "Magic is no more than the art of employing consciously invisible means to produce visible effects. Will, love, and imagination are magic powers that everyone possesses; and whoever knows how to develop them to their fullest extent is a magician. Magic has but one dogma, namely, that the seen is the measure of the unseen\n"; // this.args.input      = 'anything'; 
-
-    _this.args.output = 'uh.';
-    _this.corruptors = [];
-    _this.maxMaxCorrupt = 50;
-    _this.maxCorrupt = 0;
-    _this.type = '';
-
-    _this.onFrame(function () {
-      _this.typewriter(_this.args.input);
-    });
-
-    _this.onInterval(40, function () {
-      var selection = window.getSelection();
-
-      if (selection.anchorOffset !== selection.focusOffset) {
-        return;
-      }
-
-      if (selection.anchorNode !== selection.focusNode) {
-        return;
-      }
-
-      _this.args.output = _this.corrupt(_this.type); // this.args.output = this.type;
-    });
-
-    _this.args.bindTo('input', function (v) {
-      _this.type = '';
-      _this.corruptors = [];
-    });
-
-    return _this;
-  }
-
-  _createClass(MeltingText, [{
-    key: "age",
-    value: function age() {
-      return this.init - Date.now();
-    }
-  }, {
-    key: "lastFrame",
-    value: function lastFrame() {
-      return this.last - Date.now();
-    }
-  }, {
-    key: "corrupt",
-    value: function corrupt(v) {
-      var chars = v.split('');
-
-      var random = function random(x) {
-        return parseInt(Math.random() * x);
-      };
-
-      if (random(2048) < 512 && this.maxCorrupt < this.maxMaxCorrupt) {
-        this.maxCorrupt++;
-      }
-
-      for (var _i in chars) {
-        this.corruptors[_i] = this.corruptors[_i] || [];
-
-        if (chars[_i].match(/\W/)) {
-          continue;
-        }
-
-        var charSets = [// this.charDown // Melt Slow
-        // this.charDown, this.charMid // Melt
-        // this.charDown, this.charUp,   this.charMid, // Boil 
-        this.charMid, this.charUp // Burn
-        // this.charMid // Simmer
-        // this.charUp // Rain
-        ];
-        var charSet = charSets[random(charSets.length)]; // if(this.corruptors[i].length > this.maxCorrupt)
-        // {
-        // 	this.corruptors[i].shift();
-        // }
-
-        if (random(8192) < 1) {
-          this.corruptors[_i].unshift(charSet[random(charSet.length)]);
-        }
-
-        if (this.corruptors[_i].length < this.maxCorrupt) {
-          this.corruptors[_i].unshift(charSet[random(charSet.length)]);
-        }
-
-        if (random(2048) < 1 && this.maxCorrupt > 25) {
-          this.corruptors[_i].splice(5 * random(5));
-        }
-
-        this.corruptors[_i].push(this.corruptors[_i].shift());
-
-        if (this.corruptors[_i].length < this.maxCorrupt) {} else {// this.corruptors[i].unshift(this.corruptors[i].pop());
-        } // if(!(i % 3) && random(1024) < 1)
-        // {
-        // 	this.corruptors.push(this.corruptors.shift());
-        // }
-        // if(random(1024) < 1)
-        // {
-        // 	this.corruptors.unshift(this.corruptors.pop());
-        // }
-
-      }
-
-      for (var i in chars) {
-        if (this.corruptors[i]) {
-          chars[i] += this.corruptors[i].join('');
-        }
-      }
-
-      return chars.join('');
-    }
-  }, {
-    key: "typewriter",
-    value: function typewriter(v) {
-      this.type = this.type || '';
-
-      if (this.type !== v) {
-        this.type += v.substr(this.type.length, 1);
-        this.onTimeout(150, function () {
-          if (document.body.scrollHeight > window.scrollY + window.innerHeight) {
-            window.scrollTo({
-              top: document.body.scrollHeight,
-              left: 0,
-              behavior: 'smooth'
-            });
-          }
-        });
-      } else {
-        return true;
-      }
-
-      return false;
-    }
-  }]);
-
-  return MeltingText;
-}(_View.View);
-
-exports.MeltingText = MeltingText;
-});
-
-;require.register("Path.js", function(exports, require, module) {
+require.register("Path.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5740,6 +5126,8 @@ var _Suffix = require("./tasks/Suffix");
 
 var _Countdown = require("./tasks/Countdown");
 
+var _Auth = require("./tasks/Auth");
+
 var _Login = require("./tasks/Login");
 
 var _Register = require("./tasks/Register");
@@ -5754,19 +5142,29 @@ var _PublishFile = require("./tasks/PublishFile");
 
 var _WatchImages = require("./tasks/WatchImages");
 
+var _PublishAjax = require("./tasks/PublishAjax");
+
+var _Connection = require("./tasks/Connection");
+
+var _Theme = require("./tasks/Theme");
+
 var Path = {
   countdown: _Countdown.Countdown,
   upper: _Upper.Upper,
   lower: _Lower.Lower,
   prefix: _Prefix.Prefix,
   suffix: _Suffix.Suffix,
+  auth: _Auth.Auth,
   pub: _PublishBytes.PublishBytes,
+  pubajax: _PublishAjax.PublishAjax,
   pubfile: _PublishFile.PublishFile,
   images: _WatchImages.WatchImages,
   login: _Login.Login,
   register: _Register.Register,
   rtcc: _RtcClient.RtcClient,
-  rtcs: _RtcServer.RtcServer
+  rtcs: _RtcServer.RtcServer,
+  connect: _Connection.Connection,
+  theme: _Theme.Theme
 };
 exports.Path = Path;
 });
@@ -5783,21 +5181,9 @@ var _Config = require("Config");
 
 var _View2 = require("curvature/base/View");
 
-var _Keyboard = require("curvature/input/Keyboard");
-
 var _Socket = require("subspace-client/Socket");
 
-var _BinaryMessageView = require("BinaryMessageView");
-
-var _TextMessageView = require("TextMessageView");
-
-var _ByteView = require("ByteView");
-
-var _MeltingText = require("MeltingText");
-
-var _Cornfield = require("Cornfield");
-
-var _Chat = require("chat/Chat");
+var _MeltingText = require("view/MeltingText");
 
 var _Mixin = require("curvature/base/Mixin");
 
@@ -5859,17 +5245,17 @@ var RootView = /*#__PURE__*/function (_View) {
     _this.args.input = '';
     _this.args.output = [];
     _this.args.inverted = '';
-    _this.args.passwordMode = false;
     _this.localEcho = true;
     _this.postToken = null;
-    _this.localLock = null;
     _this.args.prompt = '<<';
-    _this.currentTask = false;
+    _this.args.passwordMode = false;
+    _this.tasks = [];
     _this.max = 1024;
-    _this.history = [];
     _this.historyCursor = -1;
+    _this.history = [];
+    _this.env = new Map();
 
-    args.output.___after___.push(function (t, k, o, a) {
+    args.output.___after(function (t, k, o, a) {
       if (k === 'push') {
         _this.onTimeout(16, function () {
           window.scrollTo({
@@ -5891,78 +5277,20 @@ var RootView = /*#__PURE__*/function (_View) {
 
     _this.runScript('/init_rc');
 
-    var keyboard = new _Keyboard.Keyboard();
-    keyboard.keys.bindTo(function (v, k) {
-      if (v == 1) {// alert(k);
-        // console.log(k)
-      }
-    });
-    keyboard.keys.bindTo('Escape', function (v) {
-      if (v == 1) {
-        console.log(_Task.Task);
-
-        if (_this.currentTask) {
-          console.log(_Task.Task.KILL);
-
-          _this.currentTask["finally"](function () {
-            return _this.args.output.push(":: Killed.");
-          });
-
-          _this.currentTask.signal(_Task.Task.KILL);
-
-          _this.currentTask.signal('kill');
-        }
-
-        if (_this.localLock) {
-          _this.args.output.push(":: Killed.");
-        }
-
-        _this.localLock = false;
-        _this.args.prompt = '<<';
-        _this.args.passwordMode = false;
-      }
-    });
-    keyboard.keys.bindTo('ArrowUp', function (v) {
-      if (v == 1) {
-        _this.historyCursor++;
-
-        if (_this.historyCursor >= _this.history.length) {
-          _this.historyCursor--;
-          return;
-        }
-
-        _this.args.input = _this.history[_this.historyCursor];
-
-        _this.onNextFrame(function () {
-          var element = _this.tags.input.element;
-          element.selectionStart = element.value.length;
-          element.selectionEnd = element.value.length;
-        });
-      }
-    });
-    keyboard.keys.bindTo('ArrowDown', function (v) {
-      if (v == 1) {
-        _this.historyCursor--;
-
-        if (_this.historyCursor <= -1) {
-          _this.historyCursor++;
-          _this.args.input = '';
-          return;
-        }
-
-        _this.args.input = _this.history[_this.historyCursor];
-
-        _this.onNextFrame(function () {
-          var element = _this.tags.input.element;
-          element.selectionStart = element.value.length;
-          element.selectionEnd = element.value.length;
-        });
-      }
-    });
+    _this.originalInput = '';
     return _this;
   }
 
   _createClass(RootView, [{
+    key: "runCommand",
+    value: function runCommand(command) {
+      if (this.tasks.length) {
+        return this.tasks[0].write(command) || Promise.resolve();
+      }
+
+      return this.interpret(command) || Promise.resolve();
+    }
+  }, {
     key: "runScript",
     value: function runScript(url) {
       var _this2 = this;
@@ -5972,19 +5300,27 @@ var RootView = /*#__PURE__*/function (_View) {
       }).then(function (init) {
         var lines = init.split("\n");
 
-        for (var i in lines) {
-          var line = lines[i];
-
-          if (line[0] == '!') {
-            _this2.args.output.push(line.substring(1));
-          } else {
-            if (!line) {
-              continue;
-            }
-
-            _this2.interpret(line);
+        var process = function process(lines) {
+          if (!lines.length) {
+            return;
           }
-        }
+
+          var line = lines.shift();
+
+          if (line && line[0] == '!') {
+            _this2.args.output.push(line.substring(1));
+
+            process(lines);
+          } else if (line) {
+            _this2.runCommand(line).then(function () {
+              return process(lines);
+            });
+          } else {
+            process(lines);
+          }
+        };
+
+        process(lines);
       });
     }
   }, {
@@ -6034,42 +5370,17 @@ var RootView = /*#__PURE__*/function (_View) {
     value: function interpret(command) {
       var _this4 = this;
 
-      if (this.localLock) {
-        if (command == '/quit') {
-          this.localLock = false;
-          this.args.prompt = '<<';
-          this.args.output.push(":: Killed.");
-          this.args.input = '';
-          return;
-        }
-
-        if (this.localLock) {
-          console.log(this.localLock);
-          this.localLock.pass(command, this);
-        }
-
-        return;
-      }
-
       this.history.unshift(command);
       this.historyCursor = -1;
 
       if (command.substring(0, 1) !== '/') {
-        this.socket.send(command);
-        this.args.output.push("<< ".concat(command));
-
-        while (this.args.output.length > this.max) {
-          this.args.output.shift();
-        }
-
-        this.args.input = '';
         return;
       }
 
       command = command.substring(1);
       var commands = command.split(/\s*\|\s*/);
       this.args.output.push("-- /".concat(command));
-      var chained = null;
+      var task = null;
       var topTask = null;
 
       var _iterator = _createForOfIteratorHelper(commands),
@@ -6094,188 +5405,31 @@ var RootView = /*#__PURE__*/function (_View) {
           }
 
           if (_command in _Path.Path) {
-            chained = new _Path.Path[_command](args, chained, this);
-            continue;
-          }
+            task = new _Path.Path[_command](args, task, this);
+          } else {
+            switch (_command) {
+              case 'clear':
+                this.args.output.splice(0);
+                break;
 
-          switch (_command) {
-            case 'auth':
-              this.auth();
-              break;
+              case 'z':
+                this.args.output.push(new _MeltingText.MeltingText({
+                  input: 'lmao!'
+                }));
+                break;
 
-            case 'clear':
-              while (this.args.output.length) {
-                this.args.output.pop();
-              }
-
-              break;
-
-            case 'echo':
-              if (args.length) {
-                this.localEcho = parseInt(args[0]);
-              }
-
-              this.args.output.push("Echo is ".concat(this.localEcho ? 'on' : 'off'));
-              break;
-
-            case 'light':
-              this.args.inverted = 'inverted';
-              break;
-
-            case 'dark':
-              this.args.inverted = '';
-              break;
-            // case 'cornfield':
-            // 	this.localLock = new Cornfield(this);
-            // 	this.args.prompt = '::';
-            // 	break;
-
-            case 'z':
-              this.args.output.push(new _MeltingText.MeltingText({
-                input: 'lmao!'
-              }));
-              break;
-
-            case 'commands':
-              this.args.output.push(JSON.stringify({
-                '/pub': 'CHAN BYTES... Publish raw bytes to a channel (hexadecimal)',
-                '/auth': 'Run the auth procedure.',
-                '/login': 'Run the login procedure.',
-                '/register': 'Run the registration procedure.',
-                '/clear': 'Clear the terminal.',
-                '/echo': '[1|0] Enable/Disable/Check localEcho.',
-                '/light': 'Light theme.',
-                '/dark': 'Dark theme.',
-                '/cornfield': 'Play Cornfield.'
-              }, null, 4));
-              break;
-
-            case 'connect':
-              this.socket = _Socket.Socket.get(_Config.Config.socketHost, true);
-              this.socket.subscribe('close', function (event) {
-                console.log('Disconnected!');
-
-                _this4.args.output.push(":: Disconnected!");
-
-                _this4.args.output.push(":: Reinitializing in 5s...");
-
-                if (_this4.recon) {
-                  _this4.clearTimeout(_this4.recon);
-
-                  _this4.recon = false;
-                } else {
-                  _this4.recon = _this4.onTimeout(5000, function () {
-                    _this4.recon = false;
-
-                    _this4.runScript('/bounce_rc');
-                  });
+              case 'commands':
+                for (var cmd in _Path.Path) {
+                  this.args.output.push("?| ".concat(cmd, " - ").concat(_Path.Path[cmd].helpText));
+                  _Path.Path[cmd].useText && this.args.output.push(" | ".concat(_Path.Path[cmd].useText));
+                  this.args.output.push(" |");
                 }
-              });
-              this.socket.subscribe('open', function () {
-                _this4.runScript('/open_rc');
-              });
-              this.socket.subscribe('message', function (event, message, channel, origin, originId, originalChannel, packet) {
-                if (typeof event.data == 'string') {
-                  var received = JSON.parse(event.data);
 
-                  if (received.token && received.you == true) {
-                    _this4.postToken = received.token;
-                  }
+                break;
 
-                  if (_typeof(received) == 'object') {
-                    received = JSON.stringify(received, null, 4);
-                  }
-
-                  if (_this4.localEcho) {
-                    _this4.args.output.push(new _TextMessageView.TextMessageView({
-                      message: received
-                    }));
-                  }
-                } else if (event.data instanceof ArrayBuffer) {
-                  var bytesArray = new Uint8Array(event.data);
-                  var user = originId.toString(16).toUpperCase().padStart(4, '0');
-                  var channelName = channel.toString(16).toUpperCase().padStart(4, '0');
-                  var header = "0x".concat(user).concat(channelName);
-                  var headerBytes = [originId.toString(16).toUpperCase().padStart(4, '0'), channel.toString(16).toUpperCase().padStart(4, '0')].join('').match(/.{1,2}/g);
-                  var messageIndex = 6;
-
-                  if (origin == 'server') {
-                    headerBytes = [channel.toString(16).padStart(4, '0')];
-                    header = "0x".concat(channel.toString(16).padStart(4, '0'));
-                    var _messageIndex = 4;
-                  }
-
-                  var bytes = Array.from(bytesArray).map(function (x) {
-                    return x.toString(16).toUpperCase().padStart(2, '0');
-                  });
-
-                  if (_this4.localEcho) {
-                    _this4.args.output.push(new _BinaryMessageView.BinaryMessageView({
-                      header: new _ByteView.ByteView({
-                        separator: '',
-                        bytes: headerBytes
-                      }),
-                      message: new _ByteView.ByteView({
-                        separator: ' ',
-                        bytes: bytes.slice(messageIndex)
-                      })
-                    }));
-                  }
-
-                  while (_this4.args.output.length > _this4.max) {
-                    _this4.args.output.shift();
-                  }
-                }
-              });
-              break;
-
-            case 'ajaxSay':
-              var formData = new FormData();
-              var ccCount = args.shift();
-              var ccList = args.splice(0, ccCount);
-              var bccCount = args.shift();
-              var bccList = args.splice(0, bccCount);
-              formData.append('cc', ccList.join(','));
-              formData.append('bcc', bccList.join(','));
-              console.log(ccList, bccList);
-
-            case 'ajaxPub':
-              if (!this.postToken) {
-                this.args.output.push(":: Please aquire a POST token first.");
-              } else {
-                this.args.output.push(":: ".concat(this.postToken));
-
-                var _formData = formData || new FormData();
-
-                _formData.append('token', this.postToken);
-
-                _formData.append('channel', args.shift());
-
-                _formData.append('message', args.join(' '));
-
-                console.log(_formData);
-                fetch('/post', {
-                  method: 'post',
-                  body: _formData
-                }).then(function (response) {
-                  console.log(response);
-                });
-              }
-
-              break;
-          }
-
-          if (chained) {
-            (function () {
-              var error = function error(event) {
-                return _this4.args.output.push("!! ".concat(event.detail));
-              };
-
-              chained.addEventListener('error', error);
-              chained["finally"](function (done) {
-                chained.removeEventListener('error', error);
-              });
-            })();
+              default:
+                this.args.output.push("!! Bad command: ".concat(_command));
+            }
           }
         }
       } catch (err) {
@@ -6284,9 +5438,9 @@ var RootView = /*#__PURE__*/function (_View) {
         _iterator.f();
       }
 
-      if (chained) {
+      if (task) {
         this.args.prompt = '..';
-        this.currentTask = chained;
+        this.tasks.unshift(task);
 
         var output = function output(event) {
           return _this4.args.output.push(":: ".concat(event.detail));
@@ -6296,42 +5450,26 @@ var RootView = /*#__PURE__*/function (_View) {
           return _this4.args.output.push("!! ".concat(event.detail));
         };
 
-        chained.addEventListener('output', output);
-        chained.addEventListener('error', error);
-        chained.execute().then(function (exitCode) {
-          return console.log(exitCode);
+        task.addEventListener('output', output);
+        task.addEventListener('error', error);
+        task.execute();
+        task["catch"](function (error) {
+          return console.log(error);
         });
-        chained["catch"](function (error) {
+        task["catch"](function (error) {
           return _this4.args.output.push("!! ".concat(error));
         });
-        chained["finally"](function () {
-          return _this4.args.prompt = '<<';
-        });
-        chained["finally"](function (done) {
-          chained.removeEventListener('output', output);
-          chained.removeEventListener('error', error);
-          _this4.currentTask = false;
+        task["finally"](function (done) {
           _this4.args.prompt = '<<';
+          task.removeEventListener('error', error);
+          task.removeEventListener('output', output);
+
+          _this4.tasks.shift();
         });
       }
 
       this.args.input = '';
-    }
-  }, {
-    key: "auth",
-    value: function auth() {
-      var _this5 = this;
-
-      return fetch('/auth?api').then(function (response) {
-        return response.text();
-      }).then(function (token) {
-        // this.args.output.push(`:: /auth`);
-        _this5.args.output.push('<< auth [token censored]');
-
-        _this5.socket.send("auth ".concat(token));
-
-        return true;
-      });
+      return task;
     }
   }, {
     key: "keydown",
@@ -6345,9 +5483,60 @@ var RootView = /*#__PURE__*/function (_View) {
   }, {
     key: "keyup",
     value: function keyup(event, autocomplete) {
-      var _this6 = this;
+      var _this5 = this;
 
       switch (event.key) {
+        case 'ArrowDown':
+          this.historyCursor--;
+
+          if (this.historyCursor <= -1) {
+            this.historyCursor = -1;
+            this.args.input = this.originalInput;
+            return;
+          }
+
+          this.args.input = this.history[this.historyCursor];
+          this.onNextFrame(function () {
+            var element = _this5.tags.input.element;
+            element.selectionStart = element.value.length;
+            element.selectionEnd = element.value.length;
+          });
+          break;
+
+        case 'ArrowUp':
+          if (this.historyCursor == -1) {
+            this.originalInput = this.args.input;
+          }
+
+          this.historyCursor++;
+
+          if (this.historyCursor >= this.history.length) {
+            this.historyCursor--;
+            return;
+          }
+
+          this.args.input = this.history[this.historyCursor];
+          this.onNextFrame(function () {
+            var element = _this5.tags.input.element;
+            element.selectionStart = element.value.length;
+            element.selectionEnd = element.value.length;
+          });
+          break;
+
+        case 'Escape':
+          if (this.tasks.length) {
+            console.log(_Task.Task.KILL);
+            this.tasks[0]["finally"](function () {
+              return _this5.args.output.push(":: Killed.");
+            });
+            this.tasks[0].signal(_Task.Task.KILL);
+            this.tasks[0].signal('kill');
+          }
+
+          this.args.prompt = '<<';
+          this.args.passwordMode = false;
+          break;
+
         case 'Tab':
           event.preventDefault();
 
@@ -6372,16 +5561,8 @@ var RootView = /*#__PURE__*/function (_View) {
 
         case 'Enter':
           var command = this.args.input;
-          this.args.input = '';
-          this.onTimeout(0, function () {
-            if (_this6.currentTask) {
-              _this6.currentTask.write(command);
-
-              return;
-            }
-
-            _this6.interpret(command);
-          });
+          this.originalInput = this.args.input = '';
+          this.runCommand(command);
           break;
       }
     }
@@ -6524,7 +5705,7 @@ var Task = /*#__PURE__*/function (_Mixin$with) {
   }, {
     key: "write",
     value: function write(line) {
-      this.main(line);
+      return this.main(line);
     }
   }, {
     key: "signal",
@@ -6614,7 +5795,6 @@ var Task = /*#__PURE__*/function (_Mixin$with) {
   }, {
     key: "done",
     value: function done(results) {
-      console.log(this.status);
       return this.status;
     }
   }]);
@@ -6672,57 +5852,6 @@ exports.TaskSignals = TaskSignals;
 _defineProperty(TaskSignals, "KILL", 'kill');
 
 _defineProperty(TaskSignals, "CLOSE", 'close');
-});
-
-;require.register("TextMessageView.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.TextMessageView = void 0;
-
-var _View2 = require("curvature/base/View");
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-var TextMessageView = /*#__PURE__*/function (_View) {
-  _inherits(TextMessageView, _View);
-
-  var _super = _createSuper(TextMessageView);
-
-  function TextMessageView() {
-    var _this;
-
-    var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, TextMessageView);
-
-    _this = _super.call(this, args);
-    _this.template = "<span>&gt;&gt;&nbsp;</span><span class = \"text\">[[message]]</span>";
-    return _this;
-  }
-
-  return TextMessageView;
-}(_View2.View);
-
-exports.TextMessageView = TextMessageView;
 });
 
 ;require.register("chat/Chat.js", function(exports, require, module) {
@@ -6928,7 +6057,382 @@ exports.Target = Target;
 });
 
 ;require.register("root.tmp.html", function(exports, require, module) {
-module.exports = "<div class = \"main [[inverted]]\" cv-on = \"click:focus(event)\">\n\t<div class = \"top\">\n\t\t<div class = \"menu\"></div>\n\t\t<div class = \"terminal\">\n\t\t\t<div class = \"output\" cv-each = \"output:line:l\" cv-ref = \"output:curvature/base/Tag\">\n\t\t\t\t<p>[[line]]</p>\n\t\t\t</div>\n\t\t\t<div class = \"bottom\">\n\t\t\t\t<div>[[prompt]]&nbsp;</div>\n\t\t\t\t<div>\n\n\t\t\t\t\t<form cv-on = \"submit:cancel(event)\">\n\t\t\t\t\t\t<input\n\t\t\t\t\t\t\tcv-on        = \":keydown(event);:keyup(event)\"\n\t\t\t\t\t\t\tcv-bind      = \"input\"\n\t\t\t\t\t\t\tautocomplete = \"off\"\n\t\t\t\t\t\t\tcv-ref       = \"input:curvature/base/Tag\"/>\n\t\t\t\t\t</form>\n\n\t\t\t\t\t<form cv-on = \"submit:cancel(event)\">\n\t\t\t\t\t\t<input\n\t\t\t\t\t\t\tname         = \"pw-input\"\n\t\t\t\t\t\t\ttype         = \"password\"\n\t\t\t\t\t\t\tcv-on        = \":keydown(event,false);:keyup(event,false)\"\n\t\t\t\t\t\t\tcv-bind      = \"input\"\n\t\t\t\t\t\t\tautocomplete = \"one-time-code\"\n\t\t\t\t\t\t\tcv-ref       = \"password:curvature/base/Tag\"/>\n\t\t\t\t\t</form>\n\n\t\t\t\t\t<input\n\t\t\t\t\t\tname  = \"file-input\"\n\t\t\t\t\t\ttype  = \"file\"\n\t\t\t\t\t\tstyle = \"display: none\"\n\t\t\t\t\t\tcv-on = \"input:fileLoaded(event)\"\n\t\t\t\t\t\tcv-ref = \"file:curvature/base/Tag\"/>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n\n\t<div class = \"scanlines\"></div>\n</div>\n"
+module.exports = "<div class = \"main [[inverted]]\" cv-on = \"click:focus(event)\">\n\t<div class = \"top\">\n\t\t<div class = \"menu\"></div>\n\t\t<div class = \"terminal\">\n\t\t\t<div class = \"output\" cv-each = \"output:line:l\" cv-ref = \"output:curvature/base/Tag\">\n\t\t\t\t<p>[[line]]</p>\n\t\t\t</div>\n\t\t\t<div class = \"bottom\">\n\t\t\t\t<div>[[prompt]]&nbsp;</div>\n\t\t\t\t<div>\n\t\t\t\t\t<form cv-on = \"submit:cancel(event)\">\n\t\t\t\t\t\t<input\n\t\t\t\t\t\t\tautocomplete = \"off\"\n\t\t\t\t\t\t\tcv-bind      = \"input\"\n\t\t\t\t\t\t\tcv-on        = \":keydown(event);:keyup(event)\"\n\t\t\t\t\t\t\tcv-ref       = \"input:curvature/base/Tag\"/>\n\t\t\t\t\t</form>\n\n\t\t\t\t\t<form cv-on = \"submit:cancel(event)\">\n\t\t\t\t\t\t<input\n\t\t\t\t\t\t\tautocomplete = \"one-time-code\"\n\t\t\t\t\t\t\tname         = \"pw-input\"\n\t\t\t\t\t\t\ttype         = \"password\"\n\t\t\t\t\t\t\tcv-bind      = \"input\"\n\t\t\t\t\t\t\tcv-ref       = \"password:curvature/base/Tag\"\n\t\t\t\t\t\t\tcv-on        = \"\n\t\t\t\t\t\t\t\t:keydown(event,false);\n\t\t\t\t\t\t\t\t:keyup(event,false)\n\t\t\t\t\t\t\t\"/>\n\t\t\t\t\t</form>\n\n\t\t\t\t\t<input\n\t\t\t\t\t\tname  = \"file-input\"\n\t\t\t\t\t\ttype  = \"file\"\n\t\t\t\t\t\tstyle = \"display: none\"\n\t\t\t\t\t\tcv-on = \"input:fileLoaded(event)\"\n\t\t\t\t\t\tcv-ref = \"file:curvature/base/Tag\"/>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n\n\t<div class = \"scanlines\"></div>\n</div>\n"
+});
+
+;require.register("tasks/Auth.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Auth = void 0;
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Auth = /*#__PURE__*/function (_Task) {
+  _inherits(Auth, _Task);
+
+  var _super = _createSuper(Auth);
+
+  function Auth() {
+    var _this;
+
+    _classCallCheck(this, Auth);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'Auth Task');
+
+    return _this;
+  }
+
+  _createClass(Auth, [{
+    key: "init",
+    value: function init() {
+      var _this2 = this;
+
+      return fetch('/auth?api').then(function (response) {
+        return response.text();
+      }).then(function (token) {
+        // this.args.output.push(`:: /auth`);
+        // this.print('<< auth [token censored]');			
+        _this2.term.socket.send("auth ".concat(token));
+
+        return true;
+      });
+    }
+  }, {
+    key: "main",
+    value: function main(command) {
+      if (!command) {
+        return;
+      }
+
+      console.log(command);
+
+      if (command.substring(0, 1) === '/') {
+        this.term.interpret(command);
+      } else {
+        this.term.socket.send(command);
+      }
+    }
+  }]);
+
+  return Auth;
+}(_Task2.Task);
+
+exports.Auth = Auth;
+
+_defineProperty(Auth, "helpText", 'Perform token exchange to identify socket connection.');
+
+_defineProperty(Auth, "useText", '/auth');
+});
+
+;require.register("tasks/Connection.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Connection = void 0;
+
+var _Config = require("Config");
+
+var _Socket = require("subspace-client/Socket");
+
+var _ByteView = require("../view/ByteView");
+
+var _TextMessageView = require("../view/TextMessageView");
+
+var _BinaryMessageView = require("../view/BinaryMessageView");
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Accept = Symbol('accept');
+
+var Connection = /*#__PURE__*/function (_Task) {
+  _inherits(Connection, _Task);
+
+  var _super = _createSuper(Connection);
+
+  function Connection() {
+    var _this;
+
+    _classCallCheck(this, Connection);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'Websocket Connection Task');
+
+    return _this;
+  }
+
+  _createClass(Connection, [{
+    key: "init",
+    value: function init() {
+      var _this2 = this;
+
+      this.socket = _Socket.Socket.get(_Config.Config.socketHost, true);
+      this.term.socket = this.socket;
+      this.term.env.set('socket', this.socket);
+      this.socket.subscribe('close', function (event) {
+        console.log('Disconnected!');
+
+        _this2.args.output.push("Disconnected!");
+
+        _this2.args.output.push("Reinitializing in ".concat(_Config.Config.reconnect / 1000 || 5, "s..."));
+
+        if (_this2.recon) {
+          _this2.clearTimeout(_this2.recon);
+
+          _this2.recon = false;
+        } else {
+          _this2.recon = _this2.onTimeout(_Config.Config.reconnect || 5000, function () {
+            _this2.recon = false;
+
+            _this2.runScript('/bounce_rc');
+          });
+        }
+      });
+      this.term.args.prompt = '..';
+      this.socket.subscribe('open', function () {
+        _this2.term.runScript('/open_rc');
+
+        _this2.term.args.prompt = '<<<';
+      });
+      this.socket.subscribe('message', function (event, message, channel, origin, originId, originalChannel, packet) {
+        if (!_this2.term.localEcho) {
+          return;
+        }
+
+        if (typeof event.data == 'string') {
+          var received = JSON.parse(event.data);
+
+          if (received.token && received.you == true) {
+            _this2.term.postToken = received.token;
+          }
+
+          if (_typeof(received) == 'object') {
+            received = JSON.stringify(received, null, 4);
+          }
+
+          _this2.term.args.output.push(new _TextMessageView.TextMessageView({
+            message: received
+          }));
+        } else if (event.data instanceof ArrayBuffer) {
+          var bytesArray = new Uint8Array(event.data);
+          var user = originId.toString(16).toUpperCase().padStart(4, '0');
+          var channelName = channel.toString(16).toUpperCase().padStart(4, '0');
+          var header = "0x".concat(user).concat(channelName);
+          var headerBytes = [originId.toString(16).toUpperCase().padStart(4, '0'), channel.toString(16).toUpperCase().padStart(4, '0')].join('').match(/.{1,2}/g);
+          var messageIndex = 6;
+
+          if (origin == 'server') {
+            headerBytes = [channel.toString(16).padStart(4, '0')];
+            header = "0x".concat(channel.toString(16).padStart(4, '0')); // let messageIndex = 4;
+          }
+
+          var bytes = Array.from(bytesArray).map(function (x) {
+            return x.toString(16).toUpperCase().padStart(2, '0');
+          });
+          var messageView = new _BinaryMessageView.BinaryMessageView({
+            header: new _ByteView.ByteView({
+              separator: '',
+              bytes: headerBytes
+            }),
+            message: new _ByteView.ByteView({
+              separator: ' ',
+              bytes: bytes.slice(messageIndex)
+            })
+          });
+
+          _this2.term.args.output.push(messageView);
+        }
+      });
+      return new Promise(function (accept) {
+        _this2[Accept] = accept;
+      });
+    }
+  }, {
+    key: "main",
+    value: function main(command) {
+      if (!command) {
+        return;
+      }
+
+      if (command.substring(0, 1) === '/') {
+        return this.term.interpret(command);
+      } else {
+        this.socket.send(command); // this.print(`<< ${command}`);
+
+        return Promise.resolve();
+      }
+    }
+  }]);
+
+  return Connection;
+}(_Task2.Task);
+
+exports.Connection = Connection;
+
+_defineProperty(Connection, "helpText", 'Connect to a websocket.');
+
+_defineProperty(Connection, "useText", '/connect SERVER');
+});
+
+;require.register("tasks/Cornfield.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Cornfield = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Cornfield = /*#__PURE__*/function () {
+  function Cornfield(terminal) {
+    var _this = this;
+
+    _classCallCheck(this, Cornfield);
+
+    terminal.args.output.push(':: Welcome to Cornfield');
+    terminal.args.output.push(':: You are in a cornfield.');
+    terminal.args.output.push(':: You see corn.');
+    terminal.args.output.push(':: Move? [north south east west]');
+    terminal.args.output.push(':: Look?');
+    terminal.localEcho = false;
+    this.socket = terminal.socket;
+    this.socket.subscribe('message:cornfield:game', function (e, m, o, i) {});
+    this.socket.subscribe('message:cornfield:chat', function (e, m, c, o, i) {
+      terminal.args.output.push("!! <".concat(i, "> ").concat(m));
+    });
+    this.socket.subscribe('message:cornfield:users:ping', function (e, m, o, i) {
+      _this.socket.publish('cornfield:users:pong', 'pong!');
+    });
+    this.socket.subscribe('message:cornfield:users:pong', function (e, m, o, i) {});
+  }
+
+  _createClass(Cornfield, [{
+    key: "pass",
+    value: function pass(input, terminal) {
+      var args = input.split(' ');
+      var command = args.shift();
+      console.log(command);
+
+      switch (command.toLowerCase()) {
+        case 'ping':
+          this.socket.publish('cornfield:users:ping', 'ping!');
+          break;
+
+        case 'look':
+          terminal.args.output.push(':: You found an ear of corn.');
+          this.socket.publish('cornfield:game', 'l');
+          break;
+
+        case 'n':
+        case 'north':
+          terminal.args.output.push(':: You moved north.');
+          this.socket.publish('cornfield:game', 'n');
+          break;
+
+        case 's':
+        case 'south':
+          terminal.args.output.push(':: You moved south.');
+          this.socket.publish('cornfield:game', 's');
+          break;
+
+        case 'e':
+        case 'east':
+          terminal.args.output.push(':: You moved east.');
+          this.socket.publish('cornfield:game', 'e');
+          break;
+
+        case 'w':
+        case 'west':
+          terminal.args.output.push(':: You moved west.');
+          this.socket.publish('cornfield:game', 'w');
+          break;
+
+        case 't':
+        case 'talk':
+        case 'say':
+          // let chatMessage = 'ok';
+          var chatMessage = args.join(' ');
+          terminal.args.output.push("!! <you> ".concat(chatMessage));
+          this.socket.publish('cornfield:chat', chatMessage);
+          break;
+      }
+
+      terminal.args.input = '';
+    }
+  }]);
+
+  return Cornfield;
+}();
+
+exports.Cornfield = Cornfield;
 });
 
 ;require.register("tasks/Countdown.js", function(exports, require, module) {
@@ -7353,6 +6857,104 @@ _defineProperty(Prefix, "helpText", 'Prepend a prefix to lines passed into STDIN
 _defineProperty(Prefix, "useText", '/something | prefix PREFIX_TEXT');
 });
 
+;require.register("tasks/PublishAjax.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PublishAjax = void 0;
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var PublishAjax = /*#__PURE__*/function (_Task) {
+  _inherits(PublishAjax, _Task);
+
+  var _super = _createSuper(PublishAjax);
+
+  function PublishAjax() {
+    var _this;
+
+    _classCallCheck(this, PublishAjax);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'Publish Ajax Task');
+
+    return _this;
+  }
+
+  _createClass(PublishAjax, [{
+    key: "init",
+    value: function init() {
+      if (!this.term.postToken) {
+        this.print("Please aquire a POST token first.");
+        return;
+      }
+
+      this.print("".concat(this.postToken));
+
+      var _formData = new FormData();
+
+      _formData.append('token', this.term.postToken);
+
+      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+
+      _formData.append('channel', args.shift());
+
+      _formData.append('message', args.join(' '));
+
+      console.log(_formData);
+      var options = {
+        method: 'post',
+        body: _formData
+      };
+      return fetch('/post', options).then(function (response) {
+        console.log(response);
+      });
+    }
+  }]);
+
+  return PublishAjax;
+}(_Task2.Task);
+
+exports.PublishAjax = PublishAjax;
+
+_defineProperty(PublishAjax, "helpText", 'Publish to a channel via AJAX.');
+
+_defineProperty(PublishAjax, "useText", '/pubajax');
+});
+
 ;require.register("tasks/PublishBytes.js", function(exports, require, module) {
 "use strict";
 
@@ -7416,7 +7018,6 @@ var PublishBytes = /*#__PURE__*/function (_Task) {
     key: "main",
     value: function main(input) {
       var args = this.args;
-      console.log(args);
       var channel = parseInt(args.shift(), 16);
       var data = [];
 
@@ -8014,6 +7615,106 @@ _defineProperty(RtcServer, "helpText", 'RTC Server.');
 _defineProperty(RtcServer, "useText", '');
 });
 
+;require.register("tasks/SayAjax.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.SayAjax = void 0;
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var SayAjax = /*#__PURE__*/function (_Task) {
+  _inherits(SayAjax, _Task);
+
+  var _super = _createSuper(SayAjax);
+
+  function SayAjax() {
+    var _this;
+
+    _classCallCheck(this, SayAjax);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'Say Ajax Task');
+
+    return _this;
+  }
+
+  _createClass(SayAjax, [{
+    key: "init",
+    value: function init() {
+      if (!this.term.postToken) {
+        this.print("Please aquire a POST token first.");
+        return;
+      }
+
+      this.print("".concat(this.postToken));
+      var formData = new FormData();
+
+      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+
+      var ccCount = args.shift();
+      var ccList = args.splice(0, ccCount);
+      var bccCount = args.shift();
+      var bccList = args.splice(0, bccCount);
+      formData.append('cc', ccList.join(','));
+      formData.append('bcc', bccList.join(','));
+      console.log(ccList, bccList);
+      formData.append('token', this.term.postToken);
+      formData.append('channel', args.shift());
+      formData.append('message', args.join(' '));
+      var options = {
+        method: 'post',
+        body: formData
+      };
+      return fetch('/post', options).then(function (response) {
+        console.log(response);
+      });
+    }
+  }]);
+
+  return SayAjax;
+}(_Task2.Task);
+
+exports.SayAjax = SayAjax;
+
+_defineProperty(SayAjax, "helpText", 'Whisper on a channel via AJAX.');
+
+_defineProperty(SayAjax, "useText", '/sayajax');
+});
+
 ;require.register("tasks/Suffix.js", function(exports, require, module) {
 "use strict";
 
@@ -8136,6 +7837,84 @@ var Upper = /*#__PURE__*/function (_Task) {
 }(_Task2.Task);
 
 exports.Upper = Upper;
+});
+
+;require.register("tasks/Theme.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Theme = void 0;
+
+var _Config = require("Config");
+
+var _Socket = require("subspace-client/Socket");
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Accept = Symbol('accept');
+
+var Theme = /*#__PURE__*/function (_Task) {
+  _inherits(Theme, _Task);
+
+  var _super = _createSuper(Theme);
+
+  function Theme() {
+    var _this;
+
+    _classCallCheck(this, Theme);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'Theme Task');
+
+    return _this;
+  }
+
+  _createClass(Theme, [{
+    key: "init",
+    value: function init(themeName) {
+      this.term.args.inverted = this.term.args.inverted ? '' : 'inverted';
+    }
+  }]);
+
+  return Theme;
+}(_Task2.Task);
+
+exports.Theme = Theme;
+
+_defineProperty(Theme, "helpText", 'Change the current theme.');
+
+_defineProperty(Theme, "useText", '/theme');
 });
 
 ;require.register("tasks/Upper.js", function(exports, require, module) {
@@ -8334,6 +8113,461 @@ exports.WatchImages = WatchImages;
 _defineProperty(WatchImages, "helpText", 'Watch a channel for images.');
 
 _defineProperty(WatchImages, "useText", '/images CHAN');
+});
+
+;require.register("view/BinaryMessageView.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.BinaryMessageView = void 0;
+
+var _View2 = require("curvature/base/View");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var BinaryMessageView = /*#__PURE__*/function (_View) {
+  _inherits(BinaryMessageView, _View);
+
+  var _super = _createSuper(BinaryMessageView);
+
+  function BinaryMessageView() {
+    var _this;
+
+    var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, BinaryMessageView);
+
+    _this = _super.call(this, args);
+    _this.template = "<span>&gt;&gt;&nbsp;0x</span>[[header]]&nbsp;[[message]]";
+    return _this;
+  }
+
+  return BinaryMessageView;
+}(_View2.View);
+
+exports.BinaryMessageView = BinaryMessageView;
+});
+
+;require.register("view/ByteView.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ByteView = void 0;
+
+var _View2 = require("curvature/base/View");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var ByteView = /*#__PURE__*/function (_View) {
+  _inherits(ByteView, _View);
+
+  var _super = _createSuper(ByteView);
+
+  function ByteView() {
+    var _this;
+
+    var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, ByteView);
+
+    _this = _super.call(this, args);
+    _this.args.separator = _this.args.separator || '';
+    _this.template = "<span\n\t\t\tcv-each = \"bytes:byte:b\"\n\t\t\tcv-carry = \"separator\"\n\t\t\t\"><span\n\t\t\t\tclass  = \"byte\"\n\t\t\t\tcv-on  = \"cvDomAttached:color(event, byte, $view)\"\n\t\t\t\tcv-ref = \"byte:curvature/base/Tag\"\n\t\t\t\t\n\t\t\t>[[byte]][[separator]]</span></span>";
+    return _this;
+  }
+
+  _createClass(ByteView, [{
+    key: "color",
+    value: function color(event, _byte, $view) {
+      var hue = parseInt(_byte, 16); // let color = '#' + [
+      // 	(Math.pow(Math.cos(Math.PI * hue + 5), 2) * 192)
+      // 	, (Math.pow(Math.cos(Math.PI * hue + 10), 2) * 192)
+      // 	, (Math.pow(Math.cos(Math.PI * hue + 0), 2) * 192)
+      // ].map((x)=>Math.floor(x).toString(16).padStart(2, '0')).join('');
+
+      if (!hue) {
+        return;
+      }
+
+      var color = "hsl(" + 360 * hue / 0xFF + ",100%,50%)";
+      $view.tags["byte"].element.style.color = color; // $view.tags.byte.element.style['text-shadow'] = `2px 0px 5px ${color}, -2px 0px 5px ${color}`
+    }
+  }]);
+
+  return ByteView;
+}(_View2.View);
+
+exports.ByteView = ByteView;
+});
+
+;require.register("view/MeltingText.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MeltingText = void 0;
+
+var _View = require("curvature/base/View");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var MeltingText = /*#__PURE__*/function (_BaseView) {
+  _inherits(MeltingText, _BaseView);
+
+  var _super = _createSuper(MeltingText);
+
+  function MeltingText(args) {
+    var _this;
+
+    _classCallCheck(this, MeltingText);
+
+    _this = _super.call(this, args);
+    _this.last = _this.init = Date.now();
+    _this.charUp = [// '\u030d', /*     ̍     */		'\u030e', /*     ̎     */		'\u0304', /*     ̄     */		'\u0305', /*     ̅     */
+    // '\u033f', /*     ̿     */		'\u0311', /*     ̑     */		'\u0306', /*     ̆     */		'\u0310', /*     ̐     */
+    // '\u0352', /*     ͒     */		'\u0357', /*     ͗     */		'\u0351', /*     ͑     */		'\u0307', /*     ̇     */
+    // '\u0308', /*     ̈     */		'\u030a', /*     ̊     */		'\u0342', /*     ͂     */		'\u0343', /*     ̓     */
+    "\u0344",
+    /*     ̈́     */
+
+    /*	'\u034a', /*     ͊     */
+
+    /*	'\u034b', /*     ͋     */
+
+    /*	'\u034c', /*     ͌     */
+    "\u0303",
+    /*     ̃     */
+
+    /*	'\u0302', /*     ̂     */
+
+    /*	'\u030c', /*     ̌     */
+
+    /*	'\u0350', /*     ͐     */
+    "\u0300"
+    /*     ̀     */
+    //	'\u0301', /*     ́     */		'\u030b', /*     ̋     */		'\u030f', /*     ̏     */
+    // '\u0312', /*     ̒     */		'\u0313', /*     ̓     */		'\u0314', /*     ̔     */		'\u033d', /*     ̽     */
+    // '\u0309', /*     ̉     */		'\u0363', /*     ͣ     */		'\u0364', /*     ͤ     */		'\u0365', /*     ͥ     */
+    // '\u0366', /*     ͦ     */		'\u0367', /*     ͧ     */		'\u0368', /*     ͨ     */		'\u0369', /*     ͩ     */
+    // '\u036a', /*     ͪ     */		'\u036b', /*     ͫ     */		'\u036c', /*     ͬ     */		'\u036d', /*     ͭ     */
+    // '\u036e', /*     ͮ     */		'\u036f', /*     ͯ     */		'\u033e', /*     ̾     */		'\u035b', /*     ͛     */
+    ];
+    _this.charMid = ["\u0315",
+    /*     ̕     */
+    "\u031B",
+    /*     ̛     */
+    "\u0340",
+    /*     ̀     */
+    "\u0341",
+    /*     ́     */
+    "\u0358",
+    /*     ͘     */
+    "\u0321",
+    /*     ̡     */
+    "\u0322",
+    /*     ̢     */
+    "\u0327",
+    /*     ̧     */
+    "\u0328",
+    /*     ̨     */
+    "\u0334",
+    /*     ̴     */
+    "\u0335",
+    /*     ̵     */
+    "\u0336",
+    /*     ̶     */
+    "\u034F",
+    /*     ͏     */
+    "\u035C",
+    /*     ͜     */
+    "\u035D",
+    /*     ͝     */
+    "\u035E",
+    /*     ͞     */
+    "\u035F",
+    /*     ͟     */
+    "\u0360",
+    /*     ͠     */
+
+    /*'\u0362',      ͢     */
+    "\u0338",
+    /*     ̸     */
+    "\u0337",
+    /*     ̷     */
+    "\u0361"
+    /*     ͡     */
+
+    /*'\u0489'     ҉_     */
+    ];
+    _this.charDown = [// '\u0316', /*     ̖     */		'\u0317', /*     ̗     */		'\u0318', /*     ̘     */		'\u0319', /*     ̙     */
+    // '\u0316', /*     ̖     */		'\u0317', /*     ̗     */		'\u0318', /*     ̘     */		'\u0319', /*     ̙     */
+    // '\u0320', /*     ̠     */		'\u0324', /*     ̤     */		'\u0325', /*     ̥     */		'\u0326', /*     ̦     */
+    // '\u0329', /*     ̩     */		'\u032a', /*     ̪     */		'\u032b', /*     ̫     */		'\u032c', /*     ̬     */
+    // '\u032d', /*     ̭     */		'\u032e', /*     ̮     */		'\u032f', /*     ̯     */		'\u0330', /*     ̰     */
+    // '\u0331', /*     ̱     */		'\u0332', /*     ̲     */		'\u0333', /*     ̳     */		'\u0339', /*     ̹     */
+    "\u033A",
+    /*     ̺     */
+    "\u033B",
+    /*     ̻     */
+    "\u033C",
+    /*     ̼     */
+    "\u0345"
+    /*     ͅ     */
+    //'\u0347', /*     ͇     */		'\u0348', /*     ͈     */		'\u0349', /*     ͉     */		'\u034d', /*     ͍     */
+    //'\u034e', /*     ͎     */		'\u0353', /*     ͓     */		'\u0354', /*     ͔     */		'\u0355', /*     ͕     */
+    // '\u0356', /*     ͖     */		'\u0359', /*     ͙     */		'\u035a', /*     ͚     */		'\u0323' /*     ̣     */
+    ];
+    _this.template = "\n\t\t\t<div cv-bind = \"output\" class = \"melting\"></div>\n\t\t";
+    _this.args.input = "Magic is no more than the art of employing consciously invisible means to produce visible effects. Will, love, and imagination are magic powers that everyone possesses; and whoever knows how to develop them to their fullest extent is a magician. Magic has but one dogma, namely, that the seen is the measure of the unseen\n"; // this.args.input      = 'anything'; 
+
+    _this.args.output = 'uh.';
+    _this.corruptors = [];
+    _this.maxMaxCorrupt = 50;
+    _this.maxCorrupt = 0;
+    _this.type = '';
+
+    _this.onFrame(function () {
+      _this.typewriter(_this.args.input);
+    });
+
+    _this.onInterval(40, function () {
+      var selection = window.getSelection();
+
+      if (selection.anchorOffset !== selection.focusOffset) {
+        return;
+      }
+
+      if (selection.anchorNode !== selection.focusNode) {
+        return;
+      }
+
+      _this.args.output = _this.corrupt(_this.type); // this.args.output = this.type;
+    });
+
+    _this.args.bindTo('input', function (v) {
+      _this.type = '';
+      _this.corruptors = [];
+    });
+
+    return _this;
+  }
+
+  _createClass(MeltingText, [{
+    key: "age",
+    value: function age() {
+      return this.init - Date.now();
+    }
+  }, {
+    key: "lastFrame",
+    value: function lastFrame() {
+      return this.last - Date.now();
+    }
+  }, {
+    key: "corrupt",
+    value: function corrupt(v) {
+      var chars = v.split('');
+
+      var random = function random(x) {
+        return parseInt(Math.random() * x);
+      };
+
+      if (random(2048) < 512 && this.maxCorrupt < this.maxMaxCorrupt) {
+        this.maxCorrupt++;
+      }
+
+      for (var _i in chars) {
+        this.corruptors[_i] = this.corruptors[_i] || [];
+
+        if (chars[_i].match(/\W/)) {
+          continue;
+        }
+
+        var charSets = [// this.charDown // Melt Slow
+        // this.charDown, this.charMid // Melt
+        // this.charDown, this.charUp,   this.charMid, // Boil 
+        this.charMid, this.charUp // Burn
+        // this.charMid // Simmer
+        // this.charUp // Rain
+        ];
+        var charSet = charSets[random(charSets.length)]; // if(this.corruptors[i].length > this.maxCorrupt)
+        // {
+        // 	this.corruptors[i].shift();
+        // }
+
+        if (random(8192) < 1) {
+          this.corruptors[_i].unshift(charSet[random(charSet.length)]);
+        }
+
+        if (this.corruptors[_i].length < this.maxCorrupt) {
+          this.corruptors[_i].unshift(charSet[random(charSet.length)]);
+        }
+
+        if (random(2048) < 1 && this.maxCorrupt > 25) {
+          this.corruptors[_i].splice(5 * random(5));
+        }
+
+        this.corruptors[_i].push(this.corruptors[_i].shift());
+
+        if (this.corruptors[_i].length < this.maxCorrupt) {} else {// this.corruptors[i].unshift(this.corruptors[i].pop());
+        } // if(!(i % 3) && random(1024) < 1)
+        // {
+        // 	this.corruptors.push(this.corruptors.shift());
+        // }
+        // if(random(1024) < 1)
+        // {
+        // 	this.corruptors.unshift(this.corruptors.pop());
+        // }
+
+      }
+
+      for (var i in chars) {
+        if (this.corruptors[i]) {
+          chars[i] += this.corruptors[i].join('');
+        }
+      }
+
+      return chars.join('');
+    }
+  }, {
+    key: "typewriter",
+    value: function typewriter(v) {
+      this.type = this.type || '';
+
+      if (this.type !== v) {
+        this.type += v.substr(this.type.length, 1);
+        this.onTimeout(150, function () {
+          if (document.body.scrollHeight > window.scrollY + window.innerHeight) {
+            window.scrollTo({
+              top: document.body.scrollHeight,
+              left: 0,
+              behavior: 'smooth'
+            });
+          }
+        });
+      } else {
+        return true;
+      }
+
+      return false;
+    }
+  }]);
+
+  return MeltingText;
+}(_View.View);
+
+exports.MeltingText = MeltingText;
+});
+
+;require.register("view/TextMessageView.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.TextMessageView = void 0;
+
+var _View2 = require("curvature/base/View");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var TextMessageView = /*#__PURE__*/function (_View) {
+  _inherits(TextMessageView, _View);
+
+  var _super = _createSuper(TextMessageView);
+
+  function TextMessageView() {
+    var _this;
+
+    var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, TextMessageView);
+
+    _this = _super.call(this, args);
+    _this.template = "<span>&gt;&gt;&nbsp;</span><span class = \"text\">[[message]]</span>";
+    return _this;
+  }
+
+  return TextMessageView;
+}(_View2.View);
+
+exports.TextMessageView = TextMessageView;
 });
 
 ;require.register("___globals___", function(exports, require, module) {

@@ -1,18 +1,7 @@
 import { Config } from 'Config';
 import { View } from 'curvature/base/View';
-import { Keyboard } from 'curvature/input/Keyboard';
-
 import { Socket } from 'subspace-client/Socket';
-
-import { BinaryMessageView } from 'BinaryMessageView';
-import { TextMessageView } from 'TextMessageView';
-import { ByteView } from 'ByteView';
-import { MeltingText } from 'MeltingText';
-
-// import { Login } from 'Login';
-// import { Register } from 'Register';
-import { Cornfield } from 'Cornfield';
-import { Chat } from 'chat/Chat';
+import { MeltingText } from 'view/MeltingText';
 
 import { Mixin } from 'curvature/base/Mixin';
 
@@ -30,25 +19,27 @@ export class RootView extends View {
 		super(args);
 
 		this.routes = {};
-		this.template = require('./root.tmp');
-		this.args.input = '';
-		this.args.output = [];
+
+		this.template      = require('./root.tmp');
+		this.args.input    = '';
+		this.args.output   = [];
 		this.args.inverted = '';
+		this.localEcho     = true;
+		this.postToken     = null;
+		this.args.prompt   = '<<';
+		
 		this.args.passwordMode = false;
-		this.localEcho = true;
-		this.postToken = null;
 
-		this.localLock = null;
-		this.args.prompt = '<<';
-
-		this.currentTask = false;
+		this.tasks = [];
 
 		this.max = 1024;
 
-		this.history = [];
 		this.historyCursor = -1;
+		this.history       = [];
 
-		args.output.___after___.push((t, k, o, a) => {
+		this.env = new Map();
+
+		args.output.___after((t, k, o, a) => {
 			if (k === 'push') {
 				this.onTimeout(16, () => {
 					window.scrollTo({
@@ -70,75 +61,17 @@ export class RootView extends View {
 
 		this.runScript('/init_rc');
 
-		let keyboard = new Keyboard;
+		this.originalInput = '';
+	}
 
-		keyboard.keys.bindTo((v, k) => {
-			if (v == 1) {
-				// alert(k);
-				// console.log(k)
-			}
-		});
+	runCommand(command)
+	{
+		if(this.tasks.length)
+		{
+			return this.tasks[0].write(command) || Promise.resolve();
+		}
 
-		keyboard.keys.bindTo('Escape', (v) => {
-			if (v == 1)
-			{
-				console.log( Task );
-				if(this.currentTask)
-				{
-					console.log( Task.KILL );
-					this.currentTask.finally(()=>this.args.output.push(`:: Killed.`));
-					this.currentTask.signal( Task.KILL );
-					this.currentTask.signal('kill');
-				}
-
-				if (this.localLock)
-				{
-					this.args.output.push(`:: Killed.`);
-				}
-				this.localLock = false;
-				this.args.prompt = '<<';
-				this.args.passwordMode = false;
-			}
-		});
-
-		keyboard.keys.bindTo('ArrowUp', (v) => {
-			if (v == 1) {
-				this.historyCursor++;
-
-				if (this.historyCursor >= this.history.length) {
-					this.historyCursor--;
-					return;
-				}
-
-				this.args.input = this.history[this.historyCursor];
-
-				this.onNextFrame(()=>{
-					const element = this.tags.input.element;
-					element.selectionStart = element.value.length;
-					element.selectionEnd   = element.value.length;
-				});
-			}
-		});
-
-		keyboard.keys.bindTo('ArrowDown', (v) => {
-			if (v == 1) {
-				this.historyCursor--;
-
-				if (this.historyCursor <= -1) {
-					this.historyCursor++;
-					this.args.input = '';
-					return;
-				}
-
-				this.args.input = this.history[this.historyCursor];
-
-				this.onNextFrame(()=>{
-					const element = this.tags.input.element;
-					element.selectionStart = element.value.length;
-					element.selectionEnd   = element.value.length;
-				});
-			}
-		});
+		return this.interpret(command) || Promise.resolve();
 	}
 
 	runScript(url)
@@ -148,23 +81,31 @@ export class RootView extends View {
 		}).then((init) => {
 			let lines = init.split("\n");
 
-			for(let i in lines)
-			{
-				let line = lines[i];
+			const process = (lines) => {
 
-				if (line[0] == '!')
+				if(!lines.length)
+				{
+					return;
+				}
+
+				let line = lines.shift();
+
+				if (line && line[0] == '!')
 				{
 					this.args.output.push(line.substring(1));
+					process(lines);
+				}
+				else if(line)
+				{
+					this.runCommand(line).then(()=>process(lines));
 				}
 				else
 				{
-					if(!line)
-					{
-						continue;
-					}
-					this.interpret(line);
+					process(lines);
 				}
 			}
+
+			process(lines);
 		});
 	}
 
@@ -208,42 +149,11 @@ export class RootView extends View {
 
 	interpret(command)
 	{
-		if(this.localLock)
-		{
-			if(command == '/quit')
-			{
-				this.localLock = false;
-				this.args.prompt = '<<';
-				this.args.output.push(`:: Killed.`);
-				this.args.input = '';
-				return;
-			}
-
-			if(this.localLock)
-			{
-				console.log(this.localLock);
-				this.localLock.pass(command, this);
-			}
-
-			return;
-		}
-
 		this.history.unshift(command);
 		this.historyCursor = -1;
 
 		if(command.substring(0, 1) !== '/')
 		{
-			this.socket.send(command);
-
-			this.args.output.push(`<< ${command}`);
-
-			while(this.args.output.length > this.max)
-			{
-				this.args.output.shift();
-			}
-
-			this.args.input = '';
-
 			return;
 		}
 
@@ -253,7 +163,7 @@ export class RootView extends View {
 
 		this.args.output.push(`-- /${command}`);
 
-		let chained = null;
+		let task = null;
 		let topTask = null;
 
 		for(const commandString of commands)
@@ -276,262 +186,73 @@ export class RootView extends View {
 
 			if(command in Path)
 			{
-				chained = new Path[command](args, chained, this);
-				continue;
+				task = new Path[command](args, task, this);
 			}
-
-			switch (command) {
-
-				case 'auth':
-					this.auth();
-					break;
-
-				case 'clear':
-					while (this.args.output.length) {
-						this.args.output.pop();
-					}
-					break;
-
-				case 'echo':
-					if (args.length) {
-						this.localEcho = parseInt(args[0]);
-					}
-					this.args.output.push(`Echo is ${this.localEcho?'on':'off'}`);
-					break;
-
-
-				case 'light':
-					this.args.inverted = 'inverted';
-					break;
-
-				case 'dark':
-					this.args.inverted = '';
-					break;
-
-				// case 'cornfield':
-				// 	this.localLock = new Cornfield(this);
-				// 	this.args.prompt = '::';
-				// 	break;
-
-				case 'z':
-					this.args.output.push(
-						new MeltingText({ input: 'lmao!' })
-					);
-					break;
-
-				case 'commands':
-					this.args.output.push(JSON.stringify({
-						'/pub': 'CHAN BYTES... Publish raw bytes to a channel (hexadecimal)',
-						'/auth': 'Run the auth procedure.',
-						'/login': 'Run the login procedure.',
-						'/register': 'Run the registration procedure.',
-						'/clear': 'Clear the terminal.',
-						'/echo': '[1|0] Enable/Disable/Check localEcho.',
-						'/light': 'Light theme.',
-						'/dark': 'Dark theme.',
-						'/cornfield': 'Play Cornfield.'
-					}, null, 4));
-					break;
-
-				case 'connect':
-					this.socket = Socket.get(Config.socketHost, true);
-
-					this.socket.subscribe('close', (event) => {
-						console.log('Disconnected!');
-						this.args.output.push(`:: Disconnected!`);
-						this.args.output.push(`:: Reinitializing in 5s...`);
-
-						if (this.recon) {
-							this.clearTimeout(this.recon);
-
-							this.recon = false;
-						} else {
-							this.recon = this.onTimeout(5000, () => {
-								this.recon = false;
-								this.runScript('/bounce_rc');
-							});
-						}
-					});
-
-					this.socket.subscribe('open', () => {
-						this.runScript('/open_rc');
-					});
-
-					this.socket.subscribe('message', (event, message, channel, origin, originId, originalChannel, packet) => {
-						if (typeof event.data == 'string') {
-							let received = JSON.parse(event.data);
-
-							if (received.token && received.you == true) {
-								this.postToken = received.token;
-							}
-
-							if (typeof received == 'object') {
-								received = JSON.stringify(received, null, 4);
-							}
-
-							if (this.localEcho) {
-								this.args.output.push(new TextMessageView({
-									message: received
-								}));
-							}
-						} else if (event.data instanceof ArrayBuffer) {
-							let bytesArray = new Uint8Array(event.data);
-
-							let user = originId.toString(16)
-								.toUpperCase()
-								.padStart(4, '0');
-
-							let channelName = channel.toString(16)
-								.toUpperCase()
-								.padStart(4, '0');
-
-							let header = `0x${user}${channelName}`;
-
-							let headerBytes = [
-								originId.toString(16)
-								.toUpperCase()
-								.padStart(4, '0'), channel.toString(16)
-								.toUpperCase()
-								.padStart(4, '0')
-							].join('').match(/.{1,2}/g);
-
-							let messageIndex = 6;
-
-							if (origin == 'server') {
-								headerBytes = [channel.toString(16).padStart(4, '0')];
-								header = `0x${channel.toString(16).padStart(4, '0')}`;
-
-								let messageIndex = 4;
-							}
-
-							let bytes = Array.from(bytesArray).map(x => {
-								return x.toString(16)
-									.toUpperCase()
-									.padStart(2, '0');
-							});
-
-							if (this.localEcho) {
-								this.args.output.push(new BinaryMessageView({
-									header: new ByteView({
-										separator: '',
-										bytes: headerBytes
-									}),
-									message: new ByteView({
-										separator: ' ',
-										bytes: bytes.slice(messageIndex)
-									})
-								}));
-							}
-
-
-							while (this.args.output.length > this.max) {
-								this.args.output.shift();
-							}
-						}
-					});
-					break;
-
-				case 'ajaxSay':
-					const formData = new FormData();
-					const ccCount  = args.shift();
-					const ccList   = args.splice(0, ccCount);
-					const bccCount = args.shift();
-					const bccList  = args.splice(0, bccCount);
-
-					formData.append('cc',  ccList.join(','));
-					formData.append('bcc', bccList.join(','));
-
-					console.log(ccList, bccList);
-				case 'ajaxPub':
-					if (!this.postToken) {
-						this.args.output.push(`:: Please aquire a POST token first.`);
-					}
-					else {
-						this.args.output.push(`:: ${this.postToken}`);
-
-						const _formData = formData || new FormData();
-
-						_formData.append('token',   this.postToken);
-						_formData.append('channel', args.shift());
-						_formData.append('message', args.join(' '));
-
-						console.log(_formData);
-
-						fetch('/post', {
-							method: 'post'
-							, body: _formData
-						}).then((response)=>{
-							console.log(response);
-						});
-					}
-					break;
-			}
-
-			if(chained)
+			else
 			{
-				const error  = (event) => this.args.output.push(`!! ${event.detail}`);
+				switch (command)
+				{
+					case 'clear': this.args.output.splice(0); break;
 
-				chained.addEventListener('error', error);
+					case 'z':
+						this.args.output.push(
+							new MeltingText({ input: 'lmao!' })
+						);
+						break;
 
-				chained.finally(done => {
-					chained.removeEventListener('error', error);
-				});
+					case 'commands':
+						for(const cmd in Path)
+						{
+							this.args.output.push(`?| ${cmd} - ${Path[cmd].helpText}`);
+							Path[cmd].useText
+							&& this.args.output.push(` | ${Path[cmd].useText}`);
+
+							this.args.output.push(` |`);
+
+						}
+						break;
+					
+					default:
+						this.args.output.push(`!! Bad command: ${command}`);
+				}
 			}
 		}
 
-		if(chained)
+		if(task)
 		{
 			this.args.prompt = '..';
 
-			this.currentTask = chained;
+			this.tasks.unshift(task);
 
 			const output = (event) => this.args.output.push(`:: ${event.detail}`);
 			const error  = (event) => this.args.output.push(`!! ${event.detail}`);
 			
-			chained.addEventListener('output', output);			
-			chained.addEventListener('error', error);			
+			task.addEventListener('output', output);			
+			task.addEventListener('error', error);			
 			
-			chained.execute().then(exitCode => console.log(exitCode));
-			chained.catch(error  => this.args.output.push(`!! ${error}`));
-			chained.finally(() => this.args.prompt = '<<');
-
-			chained.finally(done => {
-				chained.removeEventListener('output', output);
-				chained.removeEventListener('error', error);
-				this.currentTask = false;
+			task.execute();
+			
+			task.catch(error  => console.log(error));
+			task.catch(error  => this.args.output.push(`!! ${error}`));
+			
+			task.finally(done => {
 				this.args.prompt = '<<';
+				task.removeEventListener('error', error);
+				task.removeEventListener('output', output);
+				this.tasks.shift();
 			});
 		}
 
 		this.args.input = '';
-	}
 
-	auth()
-	{
-		return fetch('/auth?api').then((response) => {
-
-			return response.text();
-		
-		}).then((token) => {
-			// this.args.output.push(`:: /auth`);
-		
-			this.args.output.push('<< auth [token censored]');
-			
-			this.socket.send(`auth ${token}`);
-
-			return true;
-		});
+		return task;
 	}
 
 	keydown(event, autocomplete)
 	{
 		switch(event.key)
 		{
-			case 'Tab':
-
-				event.preventDefault();
-
-			break;
+			case 'Tab': event.preventDefault(); break;
 		}
 	}
 
@@ -539,6 +260,64 @@ export class RootView extends View {
 	{
 		switch(event.key)
 		{
+			case 'ArrowDown':
+				this.historyCursor--;
+
+				if(this.historyCursor <= -1)
+				{
+					this.historyCursor = -1;
+					this.args.input = this.originalInput;
+					return;
+				}
+
+				this.args.input = this.history[this.historyCursor];
+
+				this.onNextFrame(()=>{
+					const element = this.tags.input.element;
+					element.selectionStart = element.value.length;
+					element.selectionEnd   = element.value.length;
+				});
+				break;
+
+			case 'ArrowUp':
+				if(this.historyCursor == -1)
+				{
+					this.originalInput = this.args.input;
+				}
+
+				this.historyCursor++;
+
+				if (this.historyCursor >= this.history.length) {
+					this.historyCursor--;
+					return;
+				}
+
+				this.args.input = this.history[this.historyCursor];
+
+				this.onNextFrame(()=>{
+					const element = this.tags.input.element;
+					element.selectionStart = element.value.length;
+					element.selectionEnd   = element.value.length;
+				});
+				break;
+
+			case 'Escape': 
+				if(this.tasks.length)
+				{
+					console.log( Task.KILL );
+					
+					this.tasks[0].finally(()=>this.args.output.push(
+						`:: Killed.`
+					));
+					
+					this.tasks[0].signal( Task.KILL );
+					this.tasks[0].signal('kill');
+				}
+
+				this.args.prompt = '<<';
+				this.args.passwordMode = false;
+				break;
+			
 			case 'Tab':
 
 				event.preventDefault();
@@ -568,22 +347,14 @@ export class RootView extends View {
 
 			case 'Enter':
 				let command = this.args.input;
-				this.args.input = '';
-				this.onTimeout(0, () => {
-
-					if(this.currentTask)
-					{
-						this.currentTask.write(command);
-						return;
-					}
-
-					this.interpret(command);
-				});
+				this.originalInput = this.args.input = '';
+				this.runCommand(command);
 				break;
 		}
 	}
 
-	cancel(event) {
+	cancel(event)
+	{
 		event.preventDefault();
 		event.stopPropagation();
 	}

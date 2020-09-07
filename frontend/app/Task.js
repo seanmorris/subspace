@@ -62,7 +62,7 @@ export class Task extends Mixin.with(Target, TaskSignals)
 
 	write(line)
 	{
-		this.main(line);
+		return this.main(line);
 	}
 
 	signal(signalName)
@@ -107,7 +107,7 @@ export class Task extends Mixin.with(Target, TaskSignals)
 			prev.addEventListener('output', onOutputEvent);
 		}
 
-		console.log(this.title + ' initializing.')
+		console.log(this.title + ' initializing.');
 		
 		let init = this.init(...this.args);
 
@@ -159,8 +159,6 @@ export class Task extends Mixin.with(Target, TaskSignals)
 
 	done(results)
 	{
-		console.log(this.status);
-
 		return this.status;
 	}
 }

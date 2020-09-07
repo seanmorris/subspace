@@ -234,19 +234,24 @@ html:hover .terminal input:focus {
 }
 
 .main.inverted {
-	text-shadow: none !important;
+	/*text-shadow: none !important;*/
 	transition: filter 0.2s ease-out, text-shadow 0s;
 	filter: invert(100%);
 }
 
 .main.inverted span,
 .main.inverted input {
-	text-shadow: none !important;
+	/*text-shadow: none !important;*/
 	transition: filter 0.2s ease-out, text-shadow 0s;
 }
 
 .main.inverted .scanlines {
 	/*opacity: 0.25;*/
+}
+
+.main.inverted .byte {
+	/*filter: ;*/
+	filter: saturate(100%) brightness(500%);
 }
 
 .melting {

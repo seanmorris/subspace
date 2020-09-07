@@ -8,23 +8,25 @@
 			<div class = "bottom">
 				<div>[[prompt]]&nbsp;</div>
 				<div>
-
 					<form cv-on = "submit:cancel(event)">
 						<input
-							cv-on        = ":keydown(event);:keyup(event)"
-							cv-bind      = "input"
 							autocomplete = "off"
+							cv-bind      = "input"
+							cv-on        = ":keydown(event);:keyup(event)"
 							cv-ref       = "input:curvature/base/Tag"/>
 					</form>
 
 					<form cv-on = "submit:cancel(event)">
 						<input
+							autocomplete = "one-time-code"
 							name         = "pw-input"
 							type         = "password"
-							cv-on        = ":keydown(event,false);:keyup(event,false)"
 							cv-bind      = "input"
-							autocomplete = "one-time-code"
-							cv-ref       = "password:curvature/base/Tag"/>
+							cv-ref       = "password:curvature/base/Tag"
+							cv-on        = "
+								:keydown(event,false);
+								:keyup(event,false)
+							"/>
 					</form>
 
 					<input

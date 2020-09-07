@@ -11,12 +11,9 @@ export class PublishBytes extends Task
 
 	main(input)
 	{
-		const args = this.args;
-
-		console.log(args);
-
+		const args  = this.args;
 		let channel = parseInt(args.shift(), 16);
-		let data = [];
+		let data    = [];
 
 		while(args.length)
 		{

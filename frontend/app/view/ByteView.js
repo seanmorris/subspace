@@ -12,7 +12,8 @@ export class ByteView extends View
 			cv-each = "bytes:byte:b"
 			cv-carry = "separator"
 			"><span
-				cv-on = "cvDomAttached:color(event, byte, $view)"
+				class  = "byte"
+				cv-on  = "cvDomAttached:color(event, byte, $view)"
 				cv-ref = "byte:curvature/base/Tag"
 				
 			>[[byte]][[separator]]</span></span>`;
@@ -33,9 +34,7 @@ export class ByteView extends View
 			return;
 		}
 
-		let color = "hsl(" + (
-			(360 * hue) / 0xFF
-		) + ",70%,70%)";
+		let color = "hsl(" + ((360 * hue) / 0xFF) + ",100%,50%)";
 
 		$view.tags.byte.element.style.color = color;
 
