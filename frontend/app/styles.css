@@ -29,7 +29,7 @@ body {
 	flex-direction: column;
 	flex: 1;
 	filter:invert(0%);
-	text-shadow: -0em 0em 1em currentColor;
+	text-shadow: 0em 0em 0.25em currentColor;
 }
 
 .top .scanlines {

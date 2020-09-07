@@ -5441,141 +5441,6 @@ var Cornfield = /*#__PURE__*/function () {
 exports.Cornfield = Cornfield;
 });
 
-;require.register("Image.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Image = void 0;
-
-var _View = require("curvature/base/View");
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var Image = /*#__PURE__*/function () {
-  function Image(terminal, args) {
-    _classCallCheck(this, Image);
-
-    terminal.localEcho = false;
-    this.socket = terminal.socket;
-    var channel = 0;
-
-    if (args.length) {
-      channel = args[0];
-    }
-
-    this.socket.subscribe("message:".concat(channel), function (e, m, o, i) {
-      console.log(m, o, i);
-      terminal.args.output.push("Got one.");
-      var blob = new Blob([new Uint8Array(m)]);
-      var url = URL.createObjectURL(blob);
-      var view = new _View.View();
-      view.template = '<img cv-attr = "src:img" cv-ref = "img:curvature/base/Tag" />';
-
-      view.postRender = function () {
-        var img = view.tags.img.element;
-
-        var imageLoad = function imageLoad(event) {
-          img.removeEventListener('load', imageLoad);
-          URL.revokeObjectURL(url);
-        };
-
-        img.addEventListener('load', imageLoad);
-      };
-
-      terminal.args.output.push(view);
-      view.args.img = url;
-    });
-    terminal.args.output.push(":: Listening for images on channel ".concat(channel));
-  }
-
-  _createClass(Image, [{
-    key: "pass",
-    value: function pass(input, terminal) {
-      var args = input.split(' ');
-      var command = args.shift();
-      console.log(command);
-
-      switch (command.toLowerCase()) {
-        case 'ping':
-          this.socket.publish('cornfield:users:ping', 'ping!');
-          break;
-      }
-
-      terminal.args.input = '';
-    }
-  }]);
-
-  return Image;
-}();
-
-exports.Image = Image;
-});
-
-;require.register("Login.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Login = void 0;
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var Login = /*#__PURE__*/function () {
-  function Login() {
-    _classCallCheck(this, Login);
-  }
-
-  _createClass(Login, [{
-    key: "init",
-    value: function init(terminal) {
-      terminal.args.output.push(':: Please type your username');
-    }
-  }, {
-    key: "pass",
-    value: function pass(command, terminal) {
-      terminal.args.passwordMode = false;
-
-      if (!this.stack) {
-        this.stack = [];
-      }
-
-      this.stack.push(command);
-
-      if (this.stack.length == 1) {
-        terminal.args.passwordMode = true;
-        terminal.args.input = '';
-        terminal.args.output.push(':: Please type your password [censored]');
-        return;
-      }
-
-      if (this.stack.length == 2) {
-        terminal.args.input = '';
-        terminal.localLock = false;
-        terminal.args.prompt = '<<';
-        terminal.args.output.push("<< login ".concat(this.stack[0], " [password censored]"));
-        terminal.socket.send("login ".concat(this.stack[0], " ").concat(this.stack[1]));
-        terminal.args.output.push(':: Checking...');
-      }
-    }
-  }]);
-
-  return Login;
-}();
-
-exports.Login = Login;
-});
-
 ;require.register("MeltingText.js", function(exports, require, module) {
 "use strict";
 
@@ -5715,15 +5580,13 @@ var MeltingText = /*#__PURE__*/function (_BaseView) {
     // '\u0356', /*     ͖     */		'\u0359', /*     ͙     */		'\u035a', /*     ͚     */		'\u0323' /*     ̣     */
     ];
     _this.template = "\n\t\t\t<div cv-bind = \"output\" class = \"melting\"></div>\n\t\t";
-    _this.args.input = "Magic is no more than the art of employing consciously invisible means to produce visible effects. Will, love, and imagination are magic powers that everyone possesses; and whoever knows how to develop them to their fullest extent is a magician. Magic has but one dogma, namely, that the seen is the measure of the unseen\n\n\n\n\n\n\n\n"; // this.args.input      = 'anything'; 
+    _this.args.input = "Magic is no more than the art of employing consciously invisible means to produce visible effects. Will, love, and imagination are magic powers that everyone possesses; and whoever knows how to develop them to their fullest extent is a magician. Magic has but one dogma, namely, that the seen is the measure of the unseen\n"; // this.args.input      = 'anything'; 
 
     _this.args.output = 'uh.';
     _this.corruptors = [];
     _this.maxMaxCorrupt = 50;
     _this.maxCorrupt = 0;
-    _this.type = ''; // this.args.bindTo('type', (v) => {
-    // 	this.output = this.corrupt(this.type);
-    // });
+    _this.type = '';
 
     _this.onFrame(function () {
       _this.typewriter(_this.args.input);
@@ -5781,8 +5644,13 @@ var MeltingText = /*#__PURE__*/function (_BaseView) {
           continue;
         }
 
-        var charSets = [// this.charDown, this.charDown, this.charUp, 
-        this.charUp, this.charMid, this.charDown, this.charDown, this.charDown, this.charDown];
+        var charSets = [// this.charDown // Melt Slow
+        // this.charDown, this.charMid // Melt
+        // this.charDown, this.charUp,   this.charMid, // Boil 
+        this.charMid, this.charUp // Burn
+        // this.charMid // Simmer
+        // this.charUp // Rain
+        ];
         var charSet = charSets[random(charSets.length)]; // if(this.corruptors[i].length > this.maxCorrupt)
         // {
         // 	this.corruptors[i].shift();
@@ -5792,7 +5660,7 @@ var MeltingText = /*#__PURE__*/function (_BaseView) {
           this.corruptors[_i].unshift(charSet[random(charSet.length)]);
         }
 
-        while (this.corruptors[_i].length < this.maxCorrupt) {
+        if (this.corruptors[_i].length < this.maxCorrupt) {
           this.corruptors[_i].unshift(charSet[random(charSet.length)]);
         }
 
@@ -5872,99 +5740,38 @@ var _Suffix = require("./tasks/Suffix");
 
 var _Countdown = require("./tasks/Countdown");
 
+var _Login = require("./tasks/Login");
+
+var _Register = require("./tasks/Register");
+
+var _RtcClient = require("./tasks/RtcClient");
+
+var _RtcServer = require("./tasks/RtcServer");
+
+var _PublishBytes = require("./tasks/PublishBytes");
+
+var _PublishFile = require("./tasks/PublishFile");
+
+var _WatchImages = require("./tasks/WatchImages");
+
 var Path = {
   countdown: _Countdown.Countdown,
   upper: _Upper.Upper,
   lower: _Lower.Lower,
   prefix: _Prefix.Prefix,
-  suffix: _Suffix.Suffix
+  suffix: _Suffix.Suffix,
+  pub: _PublishBytes.PublishBytes,
+  pubfile: _PublishFile.PublishFile,
+  images: _WatchImages.WatchImages,
+  login: _Login.Login,
+  register: _Register.Register,
+  rtcc: _RtcClient.RtcClient,
+  rtcs: _RtcServer.RtcServer
 };
 exports.Path = Path;
 });
 
-require.register("Register.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Register = void 0;
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var Register = /*#__PURE__*/function () {
-  function Register() {
-    _classCallCheck(this, Register);
-  }
-
-  _createClass(Register, [{
-    key: "init",
-    value: function init(terminal) {
-      terminal.args.output.push(':: Please type your username');
-    }
-  }, {
-    key: "pass",
-    value: function pass(command, terminal) {
-      terminal.args.passwordMode = false;
-
-      if (!this.stack) {
-        this.stack = [];
-      }
-
-      this.stack.push(command);
-
-      if (this.stack.length == 1) {
-        terminal.args.input = '';
-        terminal.args.output.push(':: Please type your email address');
-        return;
-      }
-
-      if (this.stack.length == 2) {
-        terminal.args.passwordMode = true;
-        terminal.args.input = '';
-        terminal.args.output.push(':: Please type your password');
-        return;
-      }
-
-      if (this.stack.length == 3) {
-        terminal.args.passwordMode = true;
-        terminal.args.input = '';
-        terminal.args.output.push(':: Please type your password again.');
-        return;
-      }
-
-      if (this.stack.length == 4) {
-        terminal.args.input = '';
-
-        if (this.stack[2] !== this.stack[3]) {
-          terminal.args.output.push(':: Password verification failed.');
-          terminal.args.output.push(':: Please type your password');
-          terminal.args.passwordMode = true;
-          this.stack.pop();
-          this.stack.pop();
-          return;
-        }
-
-        terminal.args.output.push(":: Trying to register ".concat(this.stack[0], " <").concat(this.stack[1], ">..."));
-        terminal.args.output.push("<< register ".concat(this.stack[0], " [password censored] ").concat(this.stack[1]));
-        terminal.socket.send("register ".concat(this.stack[0], " ").concat(this.stack[2], " ").concat(this.stack[1]));
-        terminal.localLock = false;
-        terminal.args.prompt = '<<'; // terminal.socket.send(`login ${this.stack[0]} ${this.stack[1]}`);
-      }
-    }
-  }]);
-
-  return Register;
-}();
-
-exports.Register = Register;
-});
-
-;require.register("RootView.js", function(exports, require, module) {
+require.register("RootView.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5988,15 +5795,9 @@ var _ByteView = require("ByteView");
 
 var _MeltingText = require("MeltingText");
 
-var _Login = require("Login");
-
-var _Register = require("Register");
-
 var _Cornfield = require("Cornfield");
 
 var _Chat = require("chat/Chat");
-
-var _Image = require("Image");
 
 var _Mixin = require("curvature/base/Mixin");
 
@@ -6014,7 +5815,7 @@ var _Path = require("./Path");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function (_e) { function e(_x) { return _e.apply(this, arguments); } e.toString = function () { return _e.toString(); }; return e; }(function (e) { throw e; }), f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function (_e2) { function e(_x2) { return _e2.apply(this, arguments); } e.toString = function () { return _e2.toString(); }; return e; }(function (e) { didErr = true; err = e; }), f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
@@ -6103,6 +5904,10 @@ var RootView = /*#__PURE__*/function (_View) {
         if (_this.currentTask) {
           console.log(_Task.Task.KILL);
 
+          _this.currentTask["finally"](function () {
+            return _this.args.output.push(":: Killed.");
+          });
+
           _this.currentTask.signal(_Task.Task.KILL);
 
           _this.currentTask.signal('kill');
@@ -6153,65 +5958,7 @@ var RootView = /*#__PURE__*/function (_View) {
           element.selectionEnd = element.value.length;
         });
       }
-    }); // const rtcConfig = {iceServers: [{urls: 'stun:stun.l.google.com:19302'}]};
-    // const rtcConfig = {};
-
-    var rtcConfig = {
-      iceServers: [{
-        urls: 'stun:stun1.l.google.com:19302'
-      }, {
-        urls: 'stun:stun2.l.google.com:19302'
-      }]
-    };
-    _this.peerClient = new RTCPeerConnection(rtcConfig);
-    _this.peerServer = new RTCPeerConnection(rtcConfig);
-
-    _this.peerClient.addEventListener('icecandidate', function (event) {
-      console.log(event.candidate);
-      var localDescription = JSON.stringify(_this.peerClient.localDescription, null, 4);
-
-      _this.args.output.push(':: Client description');
-
-      _this.args.output.push(localDescription);
     });
-
-    _this.peerServer.addEventListener('icecandidate', function () {
-      var localDescription = JSON.stringify(_this.peerServer.localDescription, null, 4);
-
-      _this.args.output.push(':: Server description');
-
-      _this.args.output.push(localDescription);
-    });
-
-    _this.peerClient.addEventListener('iceconnectionstatechange', function () {
-      var state = _this.peerClient.iceConnectionState;
-
-      _this.args.output.push(':: Peer client state ' + state + '.');
-    });
-
-    _this.peerServer.addEventListener('iceconnectionstatechange', function () {
-      var state = _this.peerClient.iceConnectionState;
-
-      _this.args.output.push(':: Peer server state ' + state + '.');
-    });
-
-    _this.peerServer.addEventListener('datachannel', function () {
-      var state = _this.peerClient.iceConnectionState;
-
-      _this.args.output.push(':: Peer server state ' + state + '.');
-
-      _this.peerServerChannel = e.channel;
-
-      _this.peerClientChannel.addEventListener('open', function () {
-        console.log('Remote peer server accepted!');
-      });
-
-      _this.peerClientChannel.addEventListener('message', function (event) {
-        console.log('Remote peer server sent message!');
-        console.log(event);
-      });
-    });
-
     return _this;
   }
 
@@ -6260,34 +6007,6 @@ var RootView = /*#__PURE__*/function (_View) {
       });
     }
   }, {
-    key: "fileLoaded",
-    value: function fileLoaded(event) {
-      var _this4 = this;
-
-      if (this.fileChannel === false) {
-        return;
-      }
-
-      var fileReader = new FileReader();
-      var field = event.target;
-      var file = event.target.files[0];
-      fileReader.addEventListener('load', function (event) {
-        _this4.args.output.push(":: Sending ".concat(file.name, "..."));
-
-        if (_this4.fileChannel == parseInt(_this4.fileChannel)) {
-          _this4.socket.publish(_this4.fileChannel, event.target.result);
-        } else {
-          console.log(event.target);
-
-          _this4.socket.publish(_this4.fileChannel, new TextDecoder("utf-8").decode(event.target.result));
-        }
-
-        _this4.fileChannel = false;
-        field.value = '';
-      });
-      fileReader.readAsArrayBuffer(file);
-    }
-  }, {
     key: "focus",
     value: function focus(event) {
       if (event && event.target.name == 'INPUT') {
@@ -6313,7 +6032,7 @@ var RootView = /*#__PURE__*/function (_View) {
   }, {
     key: "interpret",
     value: function interpret(command) {
-      var _this5 = this;
+      var _this4 = this;
 
       if (this.localLock) {
         if (command == '/quit') {
@@ -6375,48 +6094,11 @@ var RootView = /*#__PURE__*/function (_View) {
           }
 
           if (_command in _Path.Path) {
-            chained = new _Path.Path[_command](args, chained);
+            chained = new _Path.Path[_command](args, chained, this);
             continue;
           }
 
           switch (_command) {
-            case 'pub':
-              var channel = parseInt(args.shift(), 16);
-              var data = [];
-
-              while (args.length) {
-                data.push(args.shift());
-              }
-
-              var channelBytes = new Uint8Array(new Uint16Array([channel]).buffer);
-              var bytes = [];
-
-              for (var i in channelBytes) {
-                bytes[i] = channelBytes[i];
-              }
-
-              for (var _i = 0; _i < data.length; _i++) {
-                bytes[_i + 2] = parseInt(data[_i], 16);
-              }
-
-              this.socket.send(new Uint8Array(bytes));
-              break;
-
-            case 'login':
-              this.args.output.push(':: Escape to cancel');
-              this.localLock = new _Login.Login();
-              this.args.prompt = '::';
-              this.localLock.init(this);
-              this.args.prompt = '::';
-              break;
-
-            case 'register':
-              this.args.output.push(':: Escape to cancel');
-              this.localLock = new _Register.Register();
-              this.args.prompt = '::';
-              this.localLock.init(this);
-              break;
-
             case 'auth':
               this.auth();
               break;
@@ -6436,20 +6118,6 @@ var RootView = /*#__PURE__*/function (_View) {
               this.args.output.push("Echo is ".concat(this.localEcho ? 'on' : 'off'));
               break;
 
-            case 'cornfield':
-              this.localLock = new _Cornfield.Cornfield(this);
-              this.args.prompt = '::';
-              break;
-            // case 'chat':
-            // 	this.localLock = new Chat(this);
-            // 	this.args.prompt = '::';
-            // 	break;
-
-            case 'image':
-              this.localLock = new _Image.Image(this, args);
-              this.args.prompt = '::';
-              break;
-
             case 'light':
               this.args.inverted = 'inverted';
               break;
@@ -6457,16 +6125,10 @@ var RootView = /*#__PURE__*/function (_View) {
             case 'dark':
               this.args.inverted = '';
               break;
-
-            case 'file':
-              if (!args.length) {
-                this.args.output.push(":: Error: Please supply a channel to publish file.");
-                break;
-              }
-
-              this.fileChannel = args[0];
-              this.tags.file.element.click();
-              break;
+            // case 'cornfield':
+            // 	this.localLock = new Cornfield(this);
+            // 	this.args.prompt = '::';
+            // 	break;
 
             case 'z':
               this.args.output.push(new _MeltingText.MeltingText({
@@ -6488,88 +6150,44 @@ var RootView = /*#__PURE__*/function (_View) {
               }, null, 4));
               break;
 
-            case 'offer':
-              this.peerClientChannel = this.peerClient.createDataChannel("chat");
-              this.peerClientChannel.addEventListener('open', function () {
-                console.log('Remote peer server accepted!');
-              });
-              this.peerClientChannel.addEventListener('message', function (event) {
-                console.log('Remote peer server sent message!');
-                console.log(event);
-              });
-              this.peerClient.createOffer().then(function (offer) {
-                _this5.peerClient.setLocalDescription(offer);
-              });
-              break;
-
-            case 'answer':
-              if (!args.length) {
-                this.args.output.push(":: Error: Please supply SDP offer string.");
-                break;
-              }
-
-              var offer = new RTCSessionDescription(JSON.parse(args.join(' ')));
-              this.peerServer.setRemoteDescription(offer);
-              this.peerServer.createAnswer(function (answer) {
-                console.log(answer);
-                var answerString = JSON.stringify(answer, null, 4); // this.args.output.push(answerString);
-
-                _this5.peerServer.setLocalDescription(answer);
-              }, function (error) {
-                console.error(error);
-
-                _this5.args.output.push(":: Error: Unexpected exception.");
-              });
-              break;
-
-            case 'accept':
-              if (!args.length) {
-                this.args.output.push(":: Error: Please supply SDP offer string.");
-                break;
-              }
-
-              var answer = new RTCSessionDescription(JSON.parse(args.join(' ')));
-              this.peerClient.setRemoteDescription(answer);
-              break;
-
             case 'connect':
               this.socket = _Socket.Socket.get(_Config.Config.socketHost, true);
               this.socket.subscribe('close', function (event) {
                 console.log('Disconnected!');
 
-                _this5.args.output.push(":: Disconnected!");
+                _this4.args.output.push(":: Disconnected!");
 
-                _this5.args.output.push(":: Reinitializing in 5s...");
+                _this4.args.output.push(":: Reinitializing in 5s...");
 
-                if (_this5.recon) {
-                  _this5.clearTimeout(_this5.recon);
+                if (_this4.recon) {
+                  _this4.clearTimeout(_this4.recon);
 
-                  _this5.recon = false;
+                  _this4.recon = false;
                 } else {
-                  _this5.recon = _this5.onTimeout(5000, function () {
-                    _this5.recon = false;
+                  _this4.recon = _this4.onTimeout(5000, function () {
+                    _this4.recon = false;
 
-                    _this5.runScript('/bounce_rc');
+                    _this4.runScript('/bounce_rc');
                   });
                 }
               });
               this.socket.subscribe('open', function () {
-                _this5.runScript('/open_rc');
+                _this4.runScript('/open_rc');
               });
               this.socket.subscribe('message', function (event, message, channel, origin, originId, originalChannel, packet) {
                 if (typeof event.data == 'string') {
                   var received = JSON.parse(event.data);
 
                   if (received.token && received.you == true) {
-                    _this5.postToken = received.token;
+                    _this4.postToken = received.token;
                   }
 
                   if (_typeof(received) == 'object') {
                     received = JSON.stringify(received, null, 4);
                   }
 
-                  if (_this5.localEcho) {
-                    _this5.args.output.push(new _TextMessageView.TextMessageView({
+                  if (_this4.localEcho) {
+                    _this4.args.output.push(new _TextMessageView.TextMessageView({
                       message: received
                     }));
                   }
@@ -6587,25 +6205,25 @@ var RootView = /*#__PURE__*/function (_View) {
                     var _messageIndex = 4;
                   }
 
-                  var _bytes = Array.from(bytesArray).map(function (x) {
+                  var bytes = Array.from(bytesArray).map(function (x) {
                     return x.toString(16).toUpperCase().padStart(2, '0');
                   });
 
-                  if (_this5.localEcho) {
-                    _this5.args.output.push(new _BinaryMessageView.BinaryMessageView({
+                  if (_this4.localEcho) {
+                    _this4.args.output.push(new _BinaryMessageView.BinaryMessageView({
                       header: new _ByteView.ByteView({
                         separator: '',
                         bytes: headerBytes
                       }),
                       message: new _ByteView.ByteView({
                         separator: ' ',
-                        bytes: _bytes.slice(messageIndex)
+                        bytes: bytes.slice(messageIndex)
                       })
                     }));
                   }
 
-                  while (_this5.args.output.length > _this5.max) {
-                    _this5.args.output.shift();
+                  while (_this4.args.output.length > _this4.max) {
+                    _this4.args.output.shift();
                   }
                 }
               });
@@ -6650,7 +6268,7 @@ var RootView = /*#__PURE__*/function (_View) {
           if (chained) {
             (function () {
               var error = function error(event) {
-                return _this5.args.output.push("!! ".concat(event.detail));
+                return _this4.args.output.push("!! ".concat(event.detail));
               };
 
               chained.addEventListener('error', error);
@@ -6669,25 +6287,31 @@ var RootView = /*#__PURE__*/function (_View) {
       if (chained) {
         this.args.prompt = '..';
         this.currentTask = chained;
+
+        var output = function output(event) {
+          return _this4.args.output.push(":: ".concat(event.detail));
+        };
+
+        var error = function error(event) {
+          return _this4.args.output.push("!! ".concat(event.detail));
+        };
+
+        chained.addEventListener('output', output);
+        chained.addEventListener('error', error);
         chained.execute().then(function (exitCode) {
           return console.log(exitCode);
         });
         chained["catch"](function (error) {
-          return _this5.args.output.push("!! ".concat(error));
+          return _this4.args.output.push("!! ".concat(error));
         });
         chained["finally"](function () {
-          return _this5.args.prompt = '<<';
+          return _this4.args.prompt = '<<';
         });
-
-        var output = function output(event) {
-          return _this5.args.output.push(":: ".concat(event.detail));
-        };
-
-        chained.addEventListener('output', output);
         chained["finally"](function (done) {
           chained.removeEventListener('output', output);
-          _this5.currentTask = false;
-          _this5.args.prompt = '<<';
+          chained.removeEventListener('error', error);
+          _this4.currentTask = false;
+          _this4.args.prompt = '<<';
         });
       }
 
@@ -6696,15 +6320,15 @@ var RootView = /*#__PURE__*/function (_View) {
   }, {
     key: "auth",
     value: function auth() {
-      var _this6 = this;
+      var _this5 = this;
 
       return fetch('/auth?api').then(function (response) {
         return response.text();
       }).then(function (token) {
         // this.args.output.push(`:: /auth`);
-        _this6.args.output.push('<< auth [token censored]');
+        _this5.args.output.push('<< auth [token censored]');
 
-        _this6.socket.send("auth ".concat(token));
+        _this5.socket.send("auth ".concat(token));
 
         return true;
       });
@@ -6721,7 +6345,7 @@ var RootView = /*#__PURE__*/function (_View) {
   }, {
     key: "keyup",
     value: function keyup(event, autocomplete) {
-      var _this7 = this;
+      var _this6 = this;
 
       switch (event.key) {
         case 'Tab':
@@ -6750,7 +6374,13 @@ var RootView = /*#__PURE__*/function (_View) {
           var command = this.args.input;
           this.args.input = '';
           this.onTimeout(0, function () {
-            _this7.interpret(command);
+            if (_this6.currentTask) {
+              _this6.currentTask.write(command);
+
+              return;
+            }
+
+            _this6.interpret(command);
           });
           break;
       }
@@ -6837,6 +6467,7 @@ var Task = /*#__PURE__*/function (_Mixin$with) {
 
     var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
     var prev = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    var term = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
     _classCallCheck(this, Task);
 
@@ -6846,6 +6477,7 @@ var Task = /*#__PURE__*/function (_Mixin$with) {
 
     _this.args = args;
     _this.prev = prev;
+    _this.term = term;
     _this.status = -1;
     _this.thread = new Promise(function (accept, reject) {
       _this[Accept] = accept;
@@ -6890,6 +6522,11 @@ var Task = /*#__PURE__*/function (_Mixin$with) {
       }));
     }
   }, {
+    key: "write",
+    value: function write(line) {
+      this.main(line);
+    }
+  }, {
     key: "signal",
     value: function signal(signalName) {
       console.log(this, "signal::".concat(signalName));
@@ -6921,60 +6558,50 @@ var Task = /*#__PURE__*/function (_Mixin$with) {
     value: function value() {
       var _this2 = this;
 
+      if (prev) {
+        var _onOutputEvent = function _onOutputEvent(_ref) {
+          var detail = _ref.detail;
+          return _this2.write(detail);
+        };
+
+        prev.addEventListener('output', _onOutputEvent);
+      }
+
+      console.log(this.title + ' initializing.');
       var init = this.init.apply(this, _toConsumableArray(this.args));
       var prev = this.prev;
-      console.log(this.title + ' initialized.');
 
       if (!(init instanceof Promise)) {
         init = Promise.resolve(init);
+      } else {
+        console.log(this.title + ' continues...');
       }
 
-      return init.then(function () {
-        if (prev) {
-          prev[Execute]();
-
-          var onOutputEvent = function onOutputEvent(_ref) {
-            var detail = _ref.detail;
-            return _this2.main(detail);
-          };
-
-          prev.addEventListener('output', onOutputEvent);
+      if (prev) {
+        prev[Execute]();
+        return Promise.allSettled([prev, init])["finally"](function () {
           prev.then(function (r) {
             return _this2[Accept](r);
           });
           prev["catch"](function (e) {
             return _this2[Reject](r);
           });
-          return prev["finally"](function () {
-            prev.removeEventListener('output', onOutputEvent);
-            return _this2.done();
-          });
-        } else {
-          var main = _this2.main(undefined);
+          prev.removeEventListener('output', onOutputEvent);
+          return _this2.done();
+        });
+      } else {
+        return Promise.allSettled([init]).then(function () {
+          try {
+            _this2.main(undefined);
 
-          if (!(main instanceof Promise)) {
-            main = Promise.resolve(main);
-          } else {
-            console.log(_this2.title + ' continues...');
+            _this2[Accept]();
+          } catch (_unused) {
+            _this2[Reject]();
           }
 
-          main.then(function (r) {
-            return _this2[Accept](r);
-          });
-          main["catch"](function (e) {
-            return _this2[Reject](r);
-          });
-          return main.then(function () {
-            var done = _this2.done();
-
-            if (!(done instanceof Promise)) {
-              done = Promise.resolve(done);
-            }
-
-            return done;
-          });
-        }
-      });
+          _this2.done();
+        });
+      }
     }
   }, {
     key: "init",
@@ -7207,7 +6834,60 @@ _RuleSet.RuleSet.wait();
 _Router.Router.wait(view);
 });
 
-require.register("mixin/Target.js", function(exports, require, module) {
+require.register("mixin/MixPromise.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MixPromise = void 0;
+
+var _Mixin = require("curvature/base/Mixin");
+
+var _Bindable = require("curvature/base/Bindable");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var promise = Symbol('promise');
+
+var MixPromise = /*#__PURE__*/function () {
+  function MixPromise() {
+    _classCallCheck(this, MixPromise);
+  }
+
+  _createClass(MixPromise, [{
+    key: _Mixin.Mixin._constructor,
+    value: function value(instance) {
+      instance[promise] = new Promise();
+    }
+  }, {
+    key: "then",
+    value: function then(callback) {
+      return this[promise].then(callback);
+    }
+  }, {
+    key: "catch",
+    value: function _catch(callback) {
+      return this[promise]["catch"](callback);
+    }
+  }, {
+    key: "finally",
+    value: function _finally(callback) {
+      return this[promise]["finally"](callback);
+    }
+  }]);
+
+  return MixPromise;
+}();
+
+exports.MixPromise = MixPromise;
+});
+
+;require.register("mixin/Target.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7309,15 +6989,11 @@ var Countdown = /*#__PURE__*/function (_Task) {
   _createClass(Countdown, [{
     key: "init",
     value: function init(max) {
+      var _this2 = this;
+
       var interval = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;
       this.max = Number(max);
       this.interval = Number(interval);
-    }
-  }, {
-    key: "main",
-    value: function main() {
-      var _this2 = this;
-
       var count = this.max;
 
       if (!this.max) {
@@ -7334,11 +7010,7 @@ var Countdown = /*#__PURE__*/function (_Task) {
 
       this.status = 0;
       return new Promise(function (accept, reject) {
-        _this2["finally"](function () {
-          return clearInterval(interval);
-        });
-
-        var interval = setInterval(function () {
+        var timer = setInterval(function () {
           console.log(_this2);
 
           _this2.print("".concat(--count, " iterations left").concat(count ? '...' : '.'));
@@ -7347,8 +7019,15 @@ var Countdown = /*#__PURE__*/function (_Task) {
             accept();
           }
         }, _this2.interval);
+
+        _this2["finally"](function () {
+          return clearInterval(timer);
+        });
       });
     }
+  }, {
+    key: "main",
+    value: function main() {}
   }]);
 
   return Countdown;
@@ -7404,6 +7083,121 @@ var Help = /*#__PURE__*/function (_Task) {
 }(_Task2.Task);
 
 exports.Help = Help;
+});
+
+;require.register("tasks/Login.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Login = void 0;
+
+var _Config = require("Config");
+
+var _Socket = require("subspace-client/Socket");
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Accept = Symbol('accept');
+
+var Login = /*#__PURE__*/function (_Task) {
+  _inherits(Login, _Task);
+
+  var _super = _createSuper(Login);
+
+  function Login() {
+    var _this;
+
+    _classCallCheck(this, Login);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'Login Task');
+
+    return _this;
+  }
+
+  _createClass(Login, [{
+    key: "init",
+    // static useText  = '';
+    value: function init() {
+      var _this2 = this;
+
+      this.print('Please type your username');
+      return new Promise(function (accept) {
+        _this2[Accept] = accept;
+      });
+    }
+  }, {
+    key: "main",
+    value: function main(command) {
+      var terminal = this.term;
+      terminal.args.passwordMode = false;
+
+      if (!this.stack) {
+        this.stack = [];
+      }
+
+      if (!command) {
+        return;
+      }
+
+      this.stack.push(command);
+
+      if (this.stack.length == 1) {
+        terminal.args.passwordMode = true;
+        terminal.args.input = '';
+        terminal.args.output.push(':: Please type your password [censored]');
+        return;
+      }
+
+      if (this.stack.length == 2) {
+        terminal.args.input = '';
+        terminal.localLock = false;
+        terminal.args.prompt = '<<';
+        terminal.args.output.push("<< login ".concat(this.stack[0], " [password censored]"));
+        terminal.socket.send("login ".concat(this.stack[0], " ").concat(this.stack[1]));
+        terminal.args.output.push(':: Checking...');
+        this[Accept]();
+      }
+    }
+  }]);
+
+  return Login;
+}(_Task2.Task);
+
+exports.Login = Login;
+
+_defineProperty(Login, "helpText", 'Login.');
 });
 
 ;require.register("tasks/Lower.js", function(exports, require, module) {
@@ -7557,6 +7351,667 @@ exports.Prefix = Prefix;
 _defineProperty(Prefix, "helpText", 'Prepend a prefix to lines passed into STDIN.');
 
 _defineProperty(Prefix, "useText", '/something | prefix PREFIX_TEXT');
+});
+
+;require.register("tasks/PublishBytes.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PublishBytes = void 0;
+
+var _Config = require("Config");
+
+var _Socket = require("subspace-client/Socket");
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var PublishBytes = /*#__PURE__*/function (_Task) {
+  _inherits(PublishBytes, _Task);
+
+  var _super = _createSuper(PublishBytes);
+
+  function PublishBytes() {
+    var _this;
+
+    _classCallCheck(this, PublishBytes);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'Publish Bytes Task');
+
+    return _this;
+  }
+
+  _createClass(PublishBytes, [{
+    key: "main",
+    value: function main(input) {
+      var args = this.args;
+      console.log(args);
+      var channel = parseInt(args.shift(), 16);
+      var data = [];
+
+      while (args.length) {
+        data.push(args.shift());
+      }
+
+      var channelBytes = new Uint8Array(new Uint16Array([channel]).buffer);
+      var bytes = [];
+
+      for (var i in channelBytes) {
+        bytes[i] = channelBytes[i];
+      }
+
+      for (var _i = 0; _i < data.length; _i++) {
+        bytes[_i + 2] = parseInt(data[_i], 16);
+      }
+
+      this.term.socket.send(new Uint8Array(bytes));
+    }
+  }]);
+
+  return PublishBytes;
+}(_Task2.Task);
+
+exports.PublishBytes = PublishBytes;
+
+_defineProperty(PublishBytes, "helpText", 'Publish bytes from ARGV.');
+
+_defineProperty(PublishBytes, "useText", '/pub CHAN BYTE [BYTE...] (hexadecimal)');
+});
+
+;require.register("tasks/PublishFile.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PublishFile = void 0;
+
+var _Config = require("Config");
+
+var _Socket = require("subspace-client/Socket");
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var PublishFile = /*#__PURE__*/function (_Task) {
+  _inherits(PublishFile, _Task);
+
+  var _super = _createSuper(PublishFile);
+
+  function PublishFile() {
+    var _this;
+
+    _classCallCheck(this, PublishFile);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'Publish File Task');
+
+    return _this;
+  }
+
+  _createClass(PublishFile, [{
+    key: "init",
+    value: function init(fileChannel) {
+      var _this2 = this;
+
+      this.fileChannel = fileChannel;
+      var fileInput = document.createElement('input');
+      fileInput.setAttribute('type', 'file');
+      fileInput.addEventListener('input', function () {
+        return _this2.fileLoaded(event);
+      });
+      fileInput.click(); // this.term.socket.send(new Uint8Array(bytes));		
+    }
+  }, {
+    key: "main",
+    value: function main() {}
+  }, {
+    key: "fileLoaded",
+    value: function fileLoaded(event) {
+      var _this3 = this;
+
+      if (this.fileChannel === false) {
+        return;
+      }
+
+      var fileReader = new FileReader();
+      var field = event.target;
+      var file = event.target.files[0];
+      fileReader.addEventListener('load', function (event) {
+        _this3.print("Sending ".concat(file.name, "..."));
+
+        if (_this3.fileChannel == parseInt(_this3.fileChannel)) {
+          _this3.term.socket.publish(_this3.fileChannel, event.target.result);
+        } else {
+          _this3.term.socket.publish(_this3.fileChannel, new TextDecoder("utf-8").decode(event.target.result));
+        }
+
+        _this3.fileChannel = false;
+        field.value = '';
+      });
+      fileReader.readAsArrayBuffer(file);
+    }
+  }]);
+
+  return PublishFile;
+}(_Task2.Task);
+
+exports.PublishFile = PublishFile;
+
+_defineProperty(PublishFile, "helpText", 'Publish bytes from a file to a channel.');
+
+_defineProperty(PublishFile, "useText", '/pubfile CHAN');
+});
+
+;require.register("tasks/Register.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Register = void 0;
+
+var _Config = require("Config");
+
+var _Socket = require("subspace-client/Socket");
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Accept = Symbol('accept');
+
+var Register = /*#__PURE__*/function (_Task) {
+  _inherits(Register, _Task);
+
+  var _super = _createSuper(Register);
+
+  function Register() {
+    var _this;
+
+    _classCallCheck(this, Register);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'Register Task');
+
+    return _this;
+  }
+
+  _createClass(Register, [{
+    key: "init",
+    // static useText  = '';
+    value: function init() {
+      var _this2 = this;
+
+      this.print('Please type your username');
+      return new Promise(function (accept) {
+        _this2[Accept] = accept;
+      });
+    }
+  }, {
+    key: "main",
+    value: function main(command) {
+      var terminal = this.term;
+      terminal.args.passwordMode = false;
+
+      if (!this.stack) {
+        this.stack = [];
+      }
+
+      this.stack.push(command);
+
+      if (this.stack.length == 1) {
+        terminal.args.input = '';
+        terminal.args.output.push(':: Please type your email address');
+        return;
+      }
+
+      if (this.stack.length == 2) {
+        terminal.args.passwordMode = true;
+        terminal.args.input = '';
+        terminal.args.output.push(':: Please type your password');
+        return;
+      }
+
+      if (this.stack.length == 3) {
+        terminal.args.passwordMode = true;
+        terminal.args.input = '';
+        terminal.args.output.push(':: Please type your password again.');
+        return;
+      }
+
+      if (this.stack.length == 4) {
+        terminal.args.input = '';
+
+        if (this.stack[2] !== this.stack[3]) {
+          terminal.args.output.push(':: Password verification failed.');
+          terminal.args.output.push(':: Please type your password');
+          terminal.args.passwordMode = true;
+          this.stack.pop();
+          this.stack.pop();
+          return;
+        }
+
+        terminal.args.output.push(":: Trying to register ".concat(this.stack[0], " <").concat(this.stack[1], ">..."));
+        terminal.args.output.push("<< register ".concat(this.stack[0], " [password censored] ").concat(this.stack[1]));
+        terminal.socket.send("register ".concat(this.stack[0], " ").concat(this.stack[2], " ").concat(this.stack[1]));
+        terminal.localLock = false;
+        terminal.args.prompt = '<<'; // terminal.socket.send(`login ${this.stack[0]} ${this.stack[1]}`);
+      }
+
+      this[Accept]();
+    }
+  }]);
+
+  return Register;
+}(_Task2.Task);
+
+exports.Register = Register;
+
+_defineProperty(Register, "helpText", 'Register.');
+});
+
+;require.register("tasks/RtcClient.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.RtcClient = void 0;
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Accept = Symbol('accept');
+
+var RtcClient = /*#__PURE__*/function (_Task) {
+  _inherits(RtcClient, _Task);
+
+  var _super = _createSuper(RtcClient);
+
+  function RtcClient() {
+    var _this;
+
+    _classCallCheck(this, RtcClient);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'RTC Client Task');
+
+    _defineProperty(_assertThisInitialized(_this), "connected", false);
+
+    return _this;
+  }
+
+  _createClass(RtcClient, [{
+    key: "init",
+    value: function init() {
+      var _this2 = this;
+
+      var rtcConfig = {
+        iceServers: [{
+          urls: 'stun:stun1.l.google.com:19302'
+        }, {
+          urls: 'stun:stun2.l.google.com:19302'
+        }]
+      };
+      this.peerClient = new RTCPeerConnection(rtcConfig);
+      this.peerClient.addEventListener('icecandidate', function (event) {
+        console.log(event.candidate);
+        var localDescription = JSON.stringify(_this2.peerClient.localDescription, null, 4);
+
+        _this2.print('Client description');
+
+        _this2.print(localDescription);
+      });
+      this.peerClient.addEventListener('iceconnectionstatechange', function () {
+        var state = _this2.peerClient.iceConnectionState;
+
+        _this2.print("RTC state: ".concat(state));
+      });
+      this.peerClientChannel = this.peerClient.createDataChannel("chat");
+      this.peerClientChannel.addEventListener('open', function () {
+        _this2.print('Remote peer server accepted!');
+
+        _this2.connected = true;
+      });
+      this.peerClientChannel.addEventListener('close', function () {
+        _this2.print('Peer reset connection.');
+
+        _this2[Accept]();
+      });
+      this["finally"](function () {
+        _this2.print('Terminating connection...');
+
+        _this2.peerClientChannel.close();
+      });
+      this.peerClientChannel.addEventListener('message', function (event) {
+        _this2.print("> ".concat(event.data));
+
+        console.log(event);
+      });
+      this.peerClient.createOffer().then(function (offer) {
+        _this2.peerClient.setLocalDescription(offer);
+      });
+      return new Promise(function (accept) {
+        _this2[Accept] = accept;
+      });
+    }
+  }, {
+    key: "main",
+    value: function main(input) {
+      if (!input) {
+        return;
+      }
+
+      if (!this.connected) {
+        this.accept(input);
+        return;
+      }
+
+      this.print("< ".concat(input));
+      this.peerClientChannel.send(input);
+    }
+  }, {
+    key: "accept",
+    value: function accept(answerString) {
+      if (!answerString) {
+        this.print("Please supply SDP offer string.");
+        return;
+      }
+
+      var answer = JSON.parse(answerString);
+      var session = new RTCSessionDescription(answer);
+      this.peerClient.setRemoteDescription(session);
+    }
+  }]);
+
+  return RtcClient;
+}(_Task2.Task);
+
+exports.RtcClient = RtcClient;
+
+_defineProperty(RtcClient, "helpText", 'RTC Client.');
+
+_defineProperty(RtcClient, "useText", '');
+});
+
+;require.register("tasks/RtcServer.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.RtcServer = void 0;
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Accept = Symbol('accept');
+
+var RtcServer = /*#__PURE__*/function (_Task) {
+  _inherits(RtcServer, _Task);
+
+  var _super = _createSuper(RtcServer);
+
+  function RtcServer() {
+    var _this;
+
+    _classCallCheck(this, RtcServer);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'RTC Server Task');
+
+    _defineProperty(_assertThisInitialized(_this), "connected", false);
+
+    return _this;
+  }
+
+  _createClass(RtcServer, [{
+    key: "init",
+    value: function init() {
+      var _this2 = this;
+
+      var rtcConfig = {
+        iceServers: [{
+          urls: 'stun:stun1.l.google.com:19302'
+        }, {
+          urls: 'stun:stun2.l.google.com:19302'
+        }]
+      };
+      this.peerServer = new RTCPeerConnection(rtcConfig);
+      this.peerServer.addEventListener('icecandidate', function () {
+        var localDescription = JSON.stringify(_this2.peerServer.localDescription, null, 4);
+
+        _this2.print('Server description');
+
+        _this2.print(localDescription);
+      });
+      this.peerServer.addEventListener('iceconnectionstatechange', function () {
+        var state = _this2.peerServer.iceConnectionState;
+
+        _this2.print("RTC state: ".concat(state));
+      });
+      this.peerServer.addEventListener('datachannel', function (event) {
+        _this2.peerServerChannel = event.channel;
+
+        _this2.peerServerChannel.addEventListener('open', function () {
+          _this2.print('Remote peer client accepted!');
+
+          _this2.connected = true;
+        });
+
+        _this2.peerServerChannel.addEventListener('close', function () {
+          _this2.print('Peer reset connection.');
+
+          _this2[Accept]();
+        });
+
+        _this2["finally"](function () {
+          if (_this2.peerServerChannel) {
+            _this2.print('Terminating connection...');
+
+            _this2.peerServerChannel.close();
+          }
+        });
+
+        _this2.peerServerChannel.addEventListener('message', function (event) {
+          _this2.print("> ".concat(event.data));
+
+          console.log(event);
+        });
+      });
+      this.printErr("Please supply SDP offer string.");
+      return new Promise(function (accept) {
+        _this2[Accept] = accept;
+      });
+    }
+  }, {
+    key: "main",
+    value: function main(input) {
+      if (!input) {
+        return;
+      }
+
+      if (!this.connected) {
+        this.answer(input);
+        return;
+      }
+
+      this.print("< ".concat(input));
+      this.peerServerChannel.send(input);
+    }
+  }, {
+    key: "answer",
+    value: function answer(offerString) {
+      var _this3 = this;
+
+      var offer = JSON.parse(offerString);
+      this.peerServer.setRemoteDescription(offer);
+      this.peerServer.createAnswer(function (answer) {
+        _this3.peerServer.setLocalDescription(answer);
+      }, function (error) {
+        console.error(error);
+
+        _this3.printErr("Unexpected exception.");
+
+        _this3[Accept]();
+      });
+    }
+  }, {
+    key: "done",
+    value: function done() {}
+  }]);
+
+  return RtcServer;
+}(_Task2.Task);
+
+exports.RtcServer = RtcServer;
+
+_defineProperty(RtcServer, "helpText", 'RTC Server.');
+
+_defineProperty(RtcServer, "useText", '');
 });
 
 ;require.register("tasks/Suffix.js", function(exports, require, module) {
@@ -7755,6 +8210,130 @@ exports.Upper = Upper;
 _defineProperty(Upper, "helpText", 'Transform data from STDIN to uppercase.');
 
 _defineProperty(Upper, "useText", '/something | upper');
+});
+
+;require.register("tasks/WatchImages.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WatchImages = void 0;
+
+var _View = require("curvature/base/View");
+
+var _Task2 = require("../Task");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Accept = Symbol('accept');
+
+var WatchImages = /*#__PURE__*/function (_Task) {
+  _inherits(WatchImages, _Task);
+
+  var _super = _createSuper(WatchImages);
+
+  function WatchImages() {
+    var _this;
+
+    _classCallCheck(this, WatchImages);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "title", 'Watch Images Task');
+
+    return _this;
+  }
+
+  _createClass(WatchImages, [{
+    key: "init",
+    value: function init(channel) {
+      var _this2 = this;
+
+      if (channel === undefined) {
+        this.printErr('Please supply a channel');
+        return;
+      }
+
+      this.socket = this.term.socket;
+      var originalEcho = this.term.localEcho;
+
+      var onMessage = function onMessage(e, m, o, i) {
+        console.log(m, o, i);
+
+        _this2.print("Got one.");
+
+        var blob = new Blob([new Uint8Array(m)]);
+        var url = URL.createObjectURL(blob);
+
+        var view = _View.View.from('<img cv-attr = "src:img" cv-ref = "img:curvature/base/Tag" />');
+
+        view.postRender = function () {
+          var img = view.tags.img.element;
+
+          var imageLoad = function imageLoad(event) {
+            img.removeEventListener('load', imageLoad);
+            URL.revokeObjectURL(url);
+          };
+
+          img.addEventListener('load', imageLoad);
+        };
+
+        console.log(view);
+
+        _this2.term.args.output.push(view);
+
+        view.args.img = url;
+      };
+
+      this["finally"](function () {
+        _this2.socket.unsubscribe("message:".concat(channel), onMessage);
+
+        _this2.term.localEcho = originalEcho;
+      });
+      this.term.localEcho = false;
+      this.socket.subscribe("message:".concat(channel), onMessage);
+      this.print("Listening for images on channel ".concat(channel));
+      return new Promise(function (accept) {
+        _this2[Accept] = accept;
+      });
+    }
+  }]);
+
+  return WatchImages;
+}(_Task2.Task);
+
+exports.WatchImages = WatchImages;
+
+_defineProperty(WatchImages, "helpText", 'Watch a channel for images.');
+
+_defineProperty(WatchImages, "useText", '/images CHAN');
 });
 
 ;require.register("___globals___", function(exports, require, module) {

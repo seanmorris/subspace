@@ -16,11 +16,6 @@ exports.plugins = {
   }
 };
 
-exports.watcher = {
-    awaitWriteFinish: true,
-    usePolling: true
-};
-
 exports.hooks = {
 	preCompile: () => {
 		console.log("About to compile...");

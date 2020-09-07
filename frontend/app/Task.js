@@ -14,12 +14,13 @@ export class Task extends Mixin.with(Target, TaskSignals)
 {
 	title = 'Generic Task';
 
-	constructor(args = [], prev = null)
+	constructor(args = [], prev = null, term = null)
 	{
 		super();
 
 		this.args   = args;
 		this.prev   = prev;
+		this.term   = term;
 		this.status = -1;
 
 		this.thread = new Promise((accept, reject) => {
@@ -59,6 +60,11 @@ export class Task extends Mixin.with(Target, TaskSignals)
 		this.dispatchEvent(new CustomEvent('error', {detail}));
 	}
 
+	write(line)
+	{
+		this.main(line);
+	}
+
 	signal(signalName)
 	{
 		console.log(this, `signal::${signalName}`);
@@ -94,63 +100,53 @@ export class Task extends Mixin.with(Target, TaskSignals)
 
 	[Execute]()
 	{
+		if(prev)
+		{
+			const onOutputEvent = ({detail}) => this.write(detail);
+
+			prev.addEventListener('output', onOutputEvent);
+		}
+
+		console.log(this.title + ' initializing.')
+		
 		let init = this.init(...this.args);
 
 		const prev = this.prev;
-
-		console.log(this.title + ' initialized.');
 
 		if(!(init instanceof Promise))
 		{
 			init = Promise.resolve(init);
 		}
+		else
+		{
+			console.log(this.title + ' continues...');
+		}
 
-		return init.then(() => {
+		if(prev)
+		{
+			prev[Execute]();
 
-			if(prev)
-			{
-				prev[Execute]();
-
-				const onOutputEvent = ({detail}) => this.main(detail);
-
-				prev.addEventListener('output', onOutputEvent);
-
+			return Promise.allSettled([prev, init]).finally(() => {
 				prev.then(r=> this[Accept](r));
 				prev.catch(e=>this[Reject](r));
-				
-				return prev.finally(() => {
-					prev.removeEventListener('output', onOutputEvent);
-					return this.done();
-				});
-			}
-			else
-			{
-				let main = this.main(undefined);
-
-				if(!(main instanceof Promise))
-				{
-					main = Promise.resolve(main);
+				prev.removeEventListener('output', onOutputEvent);
+				return this.done();
+			});
+		}
+		else
+		{
+			return Promise.allSettled([init]).then(() =>{
+				try{
+					this.main(undefined);
+					this[Accept]();
 				}
-				else
-				{
-					console.log(this.title + ' continues...');
+				catch{
+					this[Reject]();
 				}
 
-				main.then(r=>this[Accept](r));
-				main.catch(e=>this[Reject](r));
-
-				return main.then(() => {
-					let done = this.done();
-
-					if(!(done instanceof Promise))
-					{
-						done = Promise.resolve(done);
-					}
-
-					return done;
-				});
-			}
-		});
+				this.done()
+			});
+		}
 	}
 
 	init()

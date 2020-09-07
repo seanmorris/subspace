@@ -11,10 +11,7 @@ export class Countdown extends Task
 	{
 		this.max      = Number(max);
 		this.interval = Number(interval);
-	}
-
-	main()
-	{
+		
 		let count = this.max;
 
 		if(!this.max)
@@ -33,12 +30,9 @@ export class Countdown extends Task
 
 		this.status = 0;
 
-
 		return new Promise((accept, reject) => {
-			
-			this.finally(()=>clearInterval(interval));
-	
-			const interval = setInterval(()=> {
+
+			const timer = setInterval(()=> {
 
 				console.log(this);
 	
@@ -51,6 +45,12 @@ export class Countdown extends Task
 
 			}, this.interval);
 
+			this.finally(()=>clearInterval(timer));
+
 		});
+	}
+
+	main()
+	{
 	}
 }

@@ -50,13 +50,6 @@ export class MeltingText extends BaseView
 			<div cv-bind = "output" class = "melting"></div>
 		`;
 		this.args.input      = `Magic is no more than the art of employing consciously invisible means to produce visible effects. Will, love, and imagination are magic powers that everyone possesses; and whoever knows how to develop them to their fullest extent is a magician. Magic has but one dogma, namely, that the seen is the measure of the unseen
-
-
-
-
-
-
-
 `;
 		// this.args.input      = 'anything'; 
 		this.args.output     = 'uh.'
@@ -64,10 +57,6 @@ export class MeltingText extends BaseView
 		this.maxMaxCorrupt = 50;
 		this.maxCorrupt = 0;
 		this.type       = '';
-
-		// this.args.bindTo('type', (v) => {
-		// 	this.output = this.corrupt(this.type);
-		// });
 
 		this.onFrame(() => {
 			this.typewriter(this.args.input);
@@ -124,13 +113,12 @@ export class MeltingText extends BaseView
 			}
 
 			let charSets = [
-				// this.charDown, this.charDown, this.charUp, 
-				this.charUp,
-				this.charMid,
-				this.charDown,
-				this.charDown,
-				this.charDown,
-				this.charDown,
+				// this.charDown // Melt Slow
+				// this.charDown, this.charMid // Melt
+				// this.charDown, this.charUp,   this.charMid, // Boil 
+				this.charMid, this.charUp, // Burn
+				// this.charMid // Simmer
+				// this.charUp // Rain
 			];
 
 			let charSet = charSets[ random(charSets.length) ];
@@ -145,7 +133,7 @@ export class MeltingText extends BaseView
 				this.corruptors[i].unshift(charSet[ random(charSet.length) ]);				
 			}
 			
-			while(this.corruptors[i].length < this.maxCorrupt)
+			if(this.corruptors[i].length < this.maxCorrupt)
 			{
 				this.corruptors[i].unshift(charSet[ random(charSet.length) ]);				
 			}

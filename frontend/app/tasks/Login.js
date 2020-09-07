@@ -1,17 +1,39 @@
-export class Login
+import { Config } from 'Config';
+import { Socket } from 'subspace-client/Socket';
+import { Task } from '../Task';
+
+const Accept = Symbol('accept');
+
+export class Login extends Task
 {
-	init(terminal)
+	title  = 'Login Task';
+
+	static helpText = 'Login.';
+	// static useText  = '';
+
+	init()
 	{
-		terminal.args.output.push(':: Please type your username');
+		this.print('Please type your username');
+
+		return new Promise(accept => {
+			this[Accept] = accept;
+		});
 	}
 
-	pass(command, terminal)
+	main(command)
 	{
+		const terminal = this.term;
+
 		terminal.args.passwordMode = false;
 
 		if(!this.stack)
 		{
 			this.stack = [];
+		}
+
+		if(!command)
+		{
+			return;
 		}
 
 		this.stack.push(command);
@@ -33,6 +55,8 @@ export class Login
 			terminal.args.output.push(`<< login ${this.stack[0]} [password censored]`);	
 			terminal.socket.send(`login ${this.stack[0]} ${this.stack[1]}`);
 			terminal.args.output.push(':: Checking...');
+
+			this[Accept]();
 		}
 	}
 }

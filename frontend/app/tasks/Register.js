@@ -1,12 +1,29 @@
-export class Register
+import { Config } from 'Config';
+import { Socket } from 'subspace-client/Socket';
+import { Task } from '../Task';
+
+const Accept = Symbol('accept');
+
+export class Register extends Task
 {
-	init(terminal)
+	title  = 'Register Task';
+
+	static helpText = 'Register.';
+	// static useText  = '';
+
+	init()
 	{
-		terminal.args.output.push(':: Please type your username');
+		this.print('Please type your username');
+
+		return new Promise(accept => {
+			this[Accept] = accept;
+		});
 	}
 
-	pass(command, terminal)
+	main(command)
 	{
+		const terminal = this.term;
+
 		terminal.args.passwordMode = false;
 
 		if(!this.stack)
@@ -63,5 +80,7 @@ export class Register
 
 			// terminal.socket.send(`login ${this.stack[0]} ${this.stack[1]}`);
 		}
+
+		this[Accept]();
 	}
 }

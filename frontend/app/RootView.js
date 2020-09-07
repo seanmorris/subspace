@@ -9,11 +9,10 @@ import { TextMessageView } from 'TextMessageView';
 import { ByteView } from 'ByteView';
 import { MeltingText } from 'MeltingText';
 
-import { Login } from 'Login';
-import { Register } from 'Register';
+// import { Login } from 'Login';
+// import { Register } from 'Register';
 import { Cornfield } from 'Cornfield';
 import { Chat } from 'chat/Chat';
-import { Image } from 'Image';
 
 import { Mixin } from 'curvature/base/Mixin';
 
@@ -26,7 +25,8 @@ import { Countdown } from './tasks/Countdown';
 import { Path } from './Path';
 
 export class RootView extends View {
-	constructor(args = {}) {
+	constructor(args = {})
+	{
 		super(args);
 
 		this.routes = {};
@@ -86,6 +86,7 @@ export class RootView extends View {
 				if(this.currentTask)
 				{
 					console.log( Task.KILL );
+					this.currentTask.finally(()=>this.args.output.push(`:: Killed.`));
 					this.currentTask.signal( Task.KILL );
 					this.currentTask.signal('kill');
 				}
@@ -138,85 +139,27 @@ export class RootView extends View {
 				});
 			}
 		});
-
-		// const rtcConfig = {iceServers: [{urls: 'stun:stun.l.google.com:19302'}]};
-		// const rtcConfig = {};
-		const rtcConfig = {iceServers: [
-
-			{urls: 'stun:stun1.l.google.com:19302'},
-			{urls: 'stun:stun2.l.google.com:19302'}
-
-		]};
-
-		this.peerClient = new RTCPeerConnection(rtcConfig);
-		this.peerServer = new RTCPeerConnection(rtcConfig);
-
-		this.peerClient.addEventListener('icecandidate', (event) => {
-			console.log(event.candidate);
-
-			let localDescription = JSON.stringify(
-				this.peerClient.localDescription, null, 4
-			);
-
-			this.args.output.push(':: Client description');
-
-			this.args.output.push(localDescription);
-		});
-
-		this.peerServer.addEventListener('icecandidate', () => {
-			let localDescription = JSON.stringify(
-				this.peerServer.localDescription, null, 4
-			);
-
-			this.args.output.push(':: Server description');
-
-			this.args.output.push(localDescription);
-		});
-
-		this.peerClient.addEventListener('iceconnectionstatechange', () => {
-			let state = this.peerClient.iceConnectionState;
-
-			this.args.output.push(':: Peer client state ' + state + '.');
-		});
-
-		this.peerServer.addEventListener('iceconnectionstatechange', () => {
-			let state = this.peerClient.iceConnectionState;
-
-			this.args.output.push(':: Peer server state ' + state + '.');
-		});
-
-		this.peerServer.addEventListener('datachannel', () => {
-			let state = this.peerClient.iceConnectionState;
-
-			this.args.output.push(':: Peer server state ' + state + '.');
-
-			this.peerServerChannel = e.channel;
-
-			this.peerClientChannel.addEventListener('open', () => {
-				console.log('Remote peer server accepted!');
-			});
-
-			this.peerClientChannel.addEventListener('message', (event) => {
-				console.log('Remote peer server sent message!');
-				console.log(event);
-			});
-
-		});
 	}
 
-	runScript(url) {
+	runScript(url)
+	{
 		fetch(url + '?api=txt').then((response) => {
 			return response.text();
 		}).then((init) => {
 			let lines = init.split("\n");
 
-			for (let i in lines) {
+			for(let i in lines)
+			{
 				let line = lines[i];
 
-				if (line[0] == '!') {
+				if (line[0] == '!')
+				{
 					this.args.output.push(line.substring(1));
-				} else {
-					if (!line) {
+				}
+				else
+				{
+					if(!line)
+					{
 						continue;
 					}
 					this.interpret(line);
@@ -225,7 +168,8 @@ export class RootView extends View {
 		});
 	}
 
-	postRender() {
+	postRender()
+	{
 		this.args.bindTo('passwordMode', (v) => {
 			if (v) {
 				this.tags.input.element.style.display = 'none';
@@ -239,41 +183,8 @@ export class RootView extends View {
 		}, { wait: 0 });
 	}
 
-	fileLoaded(event) {
-		if (this.fileChannel === false) {
-			return;
-		}
-
-		let fileReader = new FileReader();
-		let field = event.target;
-		let file = event.target.files[0];
-
-		fileReader.addEventListener('load', (event) => {
-			this.args.output.push(
-				`:: Sending ${file.name}...`
-			);
-
-			if (this.fileChannel == parseInt(this.fileChannel)) {
-				this.socket.publish(
-					this.fileChannel, event.target.result
-				);
-			} else {
-				console.log(event.target);
-				this.socket.publish(
-					this.fileChannel, (new TextDecoder("utf-8")).decode(
-						event.target.result
-					)
-				);
-			}
-
-			this.fileChannel = false;
-			field.value = '';
-		});
-
-		fileReader.readAsArrayBuffer(file)
-	}
-
-	focus(event) {
+	focus(event)
+	{
 		if (event && event.target.name == 'INPUT') {
 			return;
 		}
@@ -290,13 +201,17 @@ export class RootView extends View {
 		this.tags.input.element.focus();
 	}
 
-	submit(event) {
+	submit(event)
+	{
 		this.interpret(this.args.input);
 	}
 
-	interpret(command) {
-		if (this.localLock) {
-			if (command == '/quit') {
+	interpret(command)
+	{
+		if(this.localLock)
+		{
+			if(command == '/quit')
+			{
 				this.localLock = false;
 				this.args.prompt = '<<';
 				this.args.output.push(`:: Killed.`);
@@ -304,7 +219,8 @@ export class RootView extends View {
 				return;
 			}
 
-			if (this.localLock) {
+			if(this.localLock)
+			{
 				console.log(this.localLock);
 				this.localLock.pass(command, this);
 			}
@@ -315,12 +231,14 @@ export class RootView extends View {
 		this.history.unshift(command);
 		this.historyCursor = -1;
 
-		if (command.substring(0, 1) !== '/') {
+		if(command.substring(0, 1) !== '/')
+		{
 			this.socket.send(command);
 
 			this.args.output.push(`<< ${command}`);
 
-			while (this.args.output.length > this.max) {
+			while(this.args.output.length > this.max)
+			{
 				this.args.output.shift();
 			}
 
@@ -358,51 +276,11 @@ export class RootView extends View {
 
 			if(command in Path)
 			{
-				chained = new Path[command](args, chained);
+				chained = new Path[command](args, chained, this);
 				continue;
 			}
 
 			switch (command) {
-
-				case 'pub':
-					let channel = parseInt(args.shift(), 16);
-					let data = [];
-
-					while (args.length) {
-						data.push(args.shift());
-					}
-
-					let channelBytes = new Uint8Array(
-						new Uint16Array([channel]).buffer
-					);
-
-					let bytes = [];
-
-					for (let i in channelBytes) {
-						bytes[i] = channelBytes[i];
-					}
-
-					for (let i = 0; i < data.length; i++) {
-						bytes[i + 2] = parseInt(data[i], 16);
-					}
-
-					this.socket.send(new Uint8Array(bytes));
-					break;
-
-				case 'login':
-					this.args.output.push(':: Escape to cancel');
-					this.localLock = new Login;
-					this.args.prompt = '::';
-					this.localLock.init(this);
-					this.args.prompt = '::';
-					break;
-
-				case 'register':
-					this.args.output.push(':: Escape to cancel');
-					this.localLock = new Register;
-					this.args.prompt = '::';
-					this.localLock.init(this);
-					break;
 
 				case 'auth':
 					this.auth();
@@ -421,20 +299,6 @@ export class RootView extends View {
 					this.args.output.push(`Echo is ${this.localEcho?'on':'off'}`);
 					break;
 
-				case 'cornfield':
-					this.localLock = new Cornfield(this);
-					this.args.prompt = '::';
-					break;
-
-					// case 'chat':
-					// 	this.localLock = new Chat(this);
-					// 	this.args.prompt = '::';
-					// 	break;
-
-				case 'image':
-					this.localLock = new Image(this, args);
-					this.args.prompt = '::';
-					break;
 
 				case 'light':
 					this.args.inverted = 'inverted';
@@ -444,17 +308,10 @@ export class RootView extends View {
 					this.args.inverted = '';
 					break;
 
-
-				case 'file':
-					if (!args.length) {
-						this.args.output.push(
-							`:: Error: Please supply a channel to publish file.`
-						);
-						break;
-					}
-					this.fileChannel = args[0];
-					this.tags.file.element.click();
-					break;
+				// case 'cornfield':
+				// 	this.localLock = new Cornfield(this);
+				// 	this.args.prompt = '::';
+				// 	break;
 
 				case 'z':
 					this.args.output.push(
@@ -476,73 +333,6 @@ export class RootView extends View {
 					}, null, 4));
 					break;
 
-				case 'offer':
-					this.peerClientChannel = this.peerClient.createDataChannel("chat")
-
-					this.peerClientChannel.addEventListener('open', () => {
-						console.log('Remote peer server accepted!');
-					});
-
-					this.peerClientChannel.addEventListener('message', (event) => {
-						console.log('Remote peer server sent message!');
-						console.log(event);
-					});
-
-					this.peerClient.createOffer().then((offer) => {
-						this.peerClient.setLocalDescription(offer);
-					});
-
-					break;
-
-				case 'answer':
-					if (!args.length) {
-						this.args.output.push(
-							`:: Error: Please supply SDP offer string.`
-						);
-						break;
-					}
-
-					let offer = new RTCSessionDescription(
-						JSON.parse(args.join(' '))
-					);
-
-					this.peerServer.setRemoteDescription(offer);
-
-					this.peerServer.createAnswer(
-						(answer) => {
-							console.log(answer);
-							let answerString = JSON.stringify(
-								answer, null, 4
-							);
-							// this.args.output.push(answerString);
-
-							this.peerServer.setLocalDescription(answer);
-						}, (error) => {
-							console.error(error);
-							this.args.output.push(
-								`:: Error: Unexpected exception.`
-							);
-						}
-					);
-
-					break;
-
-				case 'accept':
-					if (!args.length) {
-						this.args.output.push(
-							`:: Error: Please supply SDP offer string.`
-						);
-						break;
-					}
-
-					let answer = new RTCSessionDescription(
-						JSON.parse(args.join(' '))
-					);
-
-					this.peerClient.setRemoteDescription(answer);
-
-					break;
-
 				case 'connect':
 					this.socket = Socket.get(Config.socketHost, true);
 
@@ -561,7 +351,6 @@ export class RootView extends View {
 								this.runScript('/bounce_rc');
 							});
 						}
-
 					});
 
 					this.socket.subscribe('open', () => {
@@ -696,16 +485,19 @@ export class RootView extends View {
 
 			this.currentTask = chained;
 
+			const output = (event) => this.args.output.push(`:: ${event.detail}`);
+			const error  = (event) => this.args.output.push(`!! ${event.detail}`);
+			
+			chained.addEventListener('output', output);			
+			chained.addEventListener('error', error);			
+			
 			chained.execute().then(exitCode => console.log(exitCode));
 			chained.catch(error  => this.args.output.push(`!! ${error}`));
 			chained.finally(() => this.args.prompt = '<<');
 
-			const output = (event) => this.args.output.push(`:: ${event.detail}`);
-
-			chained.addEventListener('output', output);			
-
 			chained.finally(done => {
 				chained.removeEventListener('output', output);
+				chained.removeEventListener('error', error);
 				this.currentTask = false;
 				this.args.prompt = '<<';
 			});
@@ -714,12 +506,17 @@ export class RootView extends View {
 		this.args.input = '';
 	}
 
-	auth() {
+	auth()
+	{
 		return fetch('/auth?api').then((response) => {
+
 			return response.text();
+		
 		}).then((token) => {
 			// this.args.output.push(`:: /auth`);
+		
 			this.args.output.push('<< auth [token censored]');
+			
 			this.socket.send(`auth ${token}`);
 
 			return true;
@@ -773,6 +570,13 @@ export class RootView extends View {
 				let command = this.args.input;
 				this.args.input = '';
 				this.onTimeout(0, () => {
+
+					if(this.currentTask)
+					{
+						this.currentTask.write(command);
+						return;
+					}
+
 					this.interpret(command);
 				});
 				break;
