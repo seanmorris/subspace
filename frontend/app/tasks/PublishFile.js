@@ -1,6 +1,6 @@
 import { Config } from 'Config';
 import { Socket } from 'subspace-client/Socket';
-import { Task } from '../Task';
+import { Task } from 'subspace-console/Task';
 
 export class PublishFile extends Task
 {
@@ -21,7 +21,7 @@ export class PublishFile extends Task
 
 		fileInput.click();
 
-		// this.term.socket.send(new Uint8Array(bytes));		
+		// this.term.socket.send(new Uint8Array(bytes));
 	}
 
 	main()
@@ -40,7 +40,7 @@ export class PublishFile extends Task
 		let file = event.target.files[0];
 
 		fileReader.addEventListener('load', (event) => {
-			
+
 			this.print(`Sending ${file.name}...`);
 
 			if(this.fileChannel == parseInt(this.fileChannel))

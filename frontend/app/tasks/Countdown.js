@@ -1,4 +1,4 @@
-import { Task } from '../Task';
+import { Task } from 'subspace-console/Task';
 
 export class Countdown extends Task
 {
@@ -11,7 +11,7 @@ export class Countdown extends Task
 	{
 		this.max      = Number(max);
 		this.interval = Number(interval);
-		
+
 		let count = this.max;
 
 		if(!this.max)
@@ -35,7 +35,7 @@ export class Countdown extends Task
 			const timer = setInterval(()=> {
 
 				console.log(this);
-	
+
 				this.print(`${--count} iterations left${count?'...':'.'}`)
 
 				if(count <= 0)

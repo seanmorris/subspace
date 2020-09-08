@@ -1,5 +1,5 @@
 import { View } from 'curvature/base/View';
-import { Task } from '../Task';
+import { Task } from 'subspace-console/Task';
 
 const Accept = Symbol('accept');
 
@@ -24,9 +24,9 @@ export class WatchImages extends Task
 
 		const onMessage = (e,m,o,i)=>{
 			console.log(m,o,i);
-			
+
 			this.print(`Got one.`);
-			
+
 			const blob = new Blob([new Uint8Array(m)]);
 			const url  = URL.createObjectURL(blob);
 			const view = View.from('<img cv-attr = "src:img" cv-ref = "img:curvature/base/Tag" />');

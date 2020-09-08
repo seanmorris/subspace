@@ -1,6 +1,6 @@
 import { Config } from 'Config';
 import { Socket } from 'subspace-client/Socket';
-import { Task } from '../Task';
+import { Task } from 'subspace-console/Task';
 
 const Accept = Symbol('accept');
 
@@ -52,7 +52,7 @@ export class Login extends Task
 			terminal.localLock = false;
 			terminal.args.prompt = '<<';
 
-			terminal.args.output.push(`<< login ${this.stack[0]} [password censored]`);	
+			terminal.args.output.push(`<< login ${this.stack[0]} [password censored]`);
 			terminal.socket.send(`login ${this.stack[0]} ${this.stack[1]}`);
 			terminal.args.output.push(':: Checking...');
 

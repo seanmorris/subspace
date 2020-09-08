@@ -1,0 +1,43 @@
+.terminal, .terminal * {
+	font-family: monospace;
+	font-family: 'Unispace';
+	font-weight: bold;
+	font-size: 9.5pt;
+	line-height: 13pt;
+	text-shadow: 0em 0em 0.25em currentColor;
+}
+
+
+.terminal {
+	background-color: black;
+	color: white;
+	padding: 1em;
+}
+
+.scanlines{
+	pointer-events: none;
+	background-image: url(scanline.png);
+	background-size: auto 20px;
+	opacity: 0.55;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	height: 100%;
+	animation-name: scan;
+	animation-duration: 3s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
+
+.terminal.inverted + .scanlines {
+	opacity: 0.125;
+}
+@keyframes scan {
+	from {
+		background-position: 0px 0px;
+	}
+	to {
+		background-position: 0px -20px;
+	}
+}

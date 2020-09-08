@@ -5,13 +5,14 @@ import { ByteView }          from '../view/ByteView';
 import { TextMessageView }   from '../view/TextMessageView';
 import { BinaryMessageView } from '../view/BinaryMessageView';
 
-import { Task } from '../Task';
+import { Task } from 'subspace-console/Task';
 
 const Accept = Symbol('accept');
 
 export class Connection extends Task
 {
 	title  = 'Websocket Connection Task';
+	prompt = '..';
 
 	static helpText = 'Connect to a websocket.';
 	static useText  = '/connect SERVER';
@@ -21,31 +22,34 @@ export class Connection extends Task
 		this.socket = Socket.get(Config.socketHost, true);
 
 		this.term.socket = this.socket;
-		
-		this.term.env.set('socket', this.socket);		
+
+		this.term.env.set('socket', this.socket);
 
 		this.socket.subscribe('close', (event) => {
-			console.log('Disconnected!');
-			this.args.output.push(`Disconnected!`);
-			this.args.output.push(`Reinitializing in ${Config.reconnect/1000 || 5}s...`);
+			this.term.args.output.push(`Disconnected!`);
+			this.term.args.output.push(`Reinitializing in ${Config.reconnect/1000 || 3}s...`);
 
-			if (this.recon) {
+			if(this.recon)
+			{
 				this.clearTimeout(this.recon);
-
 				this.recon = false;
-			} else {
-				this.recon = this.onTimeout(Config.reconnect || 5000, () => {
-					this.recon = false;
-					this.runScript('/bounce_rc');
-				});
+
+			}
+			else
+			{
+				this.recon = setTimeout(
+					() => {
+						this.recon = false;
+						this.term.runScript('/bounce_rc');
+					}
+					, Config.reconnect || 3000
+				);
 			}
 		});
 
-		this.term.args.prompt = '..';
-
 		this.socket.subscribe('open', () => {
 			this.term.runScript('/open_rc');
-			this.term.args.prompt = '<<<';
+			this.prompt = '<<';
 		});
 
 		this.socket.subscribe('message', (event, message, channel, origin, originId, originalChannel, packet) => {
@@ -54,7 +58,7 @@ export class Connection extends Task
 			{
 				return;
 			}
-			
+
 			if(typeof event.data == 'string')
 			{
 				let received = JSON.parse(event.data);
@@ -69,9 +73,13 @@ export class Connection extends Task
 					received = JSON.stringify(received, null, 4);
 				}
 
-				this.term.args.output.push(
-					new TextMessageView({message: received})
-				);
+				const messageView = new TextMessageView({message: received})
+
+				messageView.preserve = true;
+
+				this.finally(()=>messageView.remove());
+
+				this.term.args.output.push(messageView);
 			}
 			else if (event.data instanceof ArrayBuffer)
 			{
@@ -101,8 +109,6 @@ export class Connection extends Task
 				{
 					headerBytes = [channel.toString(16).padStart(4, '0')];
 					header = `0x${channel.toString(16).padStart(4, '0')}`;
-
-					// let messageIndex = 4;
 				}
 
 				let bytes = Array.from(bytesArray).map(x => {
@@ -123,6 +129,10 @@ export class Connection extends Task
 					})
 				});
 
+				messageView.preserve = true;
+
+				this.finally(()=>messageView.remove());
+
 				this.term.args.output.push(messageView);
 			}
 		});
@@ -139,14 +149,10 @@ export class Connection extends Task
 			return;
 		}
 
-		if(command.substring(0, 1) === '/')
+		if(this.socket)
 		{
-			return this.term.interpret(command);
-		}
-		else
-		{
+			this.prompt = '<<';
 			this.socket.send(command);
-			// this.print(`<< ${command}`);
 			return Promise.resolve();
 		}
 	}

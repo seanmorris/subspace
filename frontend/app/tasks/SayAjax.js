@@ -1,4 +1,4 @@
-import { Task } from '../Task';
+import { Task } from 'subspace-console/Task';
 
 export class SayAjax extends Task
 {
@@ -14,7 +14,7 @@ export class SayAjax extends Task
 			this.print(`Please aquire a POST token first.`);
 			return;
 		}
-		
+
 		this.print(`${this.postToken}`);
 
 		const formData = new FormData();

@@ -4,7 +4,7 @@ class Motd extends \SeanMorris\Theme\View
 {
 }
 __halt_compiler(); ?>
-Message of the Day: 
+Message of the Day:
 
 Welcome to the subspace server, <?=$name ?? 'USER ' . $uid;?>!
 
@@ -23,5 +23,5 @@ Type 'manual' for more detailed info about REMOTE.
 
 Please respect your peers & the server.
 Thank you.
-
 --
+

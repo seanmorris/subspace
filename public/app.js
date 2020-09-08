@@ -281,12 +281,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Bindable = void 0;
 
-function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -298,6 +292,12 @@ function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.it
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -725,7 +725,7 @@ var Bindable = /*#__PURE__*/function () {
             }
 
             var objRef = object instanceof Promise || object instanceof EventTarget || object instanceof MutationObserver || object instanceof IntersectionObserver || object instanceof MutationObserver || object instanceof PerformanceObserver || object instanceof ResizeObserver || object instanceof Map || object instanceof Set ? object : object[Ref];
-            var ret = target[key].apply(objRef || object, providedArgs);
+            var ret = new.target ? _construct(target[key], providedArgs) : target[key].apply(objRef || object, providedArgs);
 
             for (var _i8 in target.___after___) {
               target.___after___[_i8](target, key, target[Stack], object, providedArgs);
@@ -1279,21 +1279,9 @@ var Mixin = /*#__PURE__*/function () {
           _step4;
 
       try {
-        var _loop = function _loop() {
-          var func = _step4.value;
-          console.log(func, cls.prototype[func]);
-          var prev = newClass.prototype[func] || false;
-          var meth = cls.prototype[func].bind(newClass.prototype);
-          console.log(meth);
-
-          newClass.prototype[func] = function () {
-            prev && prev.apply(void 0, arguments);
-            return meth.apply(void 0, arguments);
-          };
-        };
-
         for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-          _loop();
+          var func = _step4.value;
+          newClass.prototype[func] = cls.prototype[func].bind(newClass.prototype);
         }
       } catch (err) {
         _iterator4.e(err);
@@ -1305,19 +1293,9 @@ var Mixin = /*#__PURE__*/function () {
           _step5;
 
       try {
-        var _loop2 = function _loop2() {
-          var func = _step5.value;
-          var prev = newClass.prototype[func] || false;
-          var meth = cls.prototype[func].bind(newClass.prototype);
-
-          newClass.prototype[func] = function () {
-            prev && prev.apply(void 0, arguments);
-            return meth.apply(void 0, arguments);
-          };
-        };
-
         for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-          _loop2();
+          var _func2 = _step5.value;
+          newClass.prototype[_func2] = cls.prototype[_func2].bind(newClass.prototype);
         }
       } catch (err) {
         _iterator5.e(err);
@@ -1329,7 +1307,7 @@ var Mixin = /*#__PURE__*/function () {
           _step6;
 
       try {
-        var _loop3 = function _loop3() {
+        var _loop = function _loop() {
           var func = _step6.value;
 
           if (typeof cls[func] !== 'function') {
@@ -1346,7 +1324,7 @@ var Mixin = /*#__PURE__*/function () {
         };
 
         for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-          var _ret = _loop3();
+          var _ret = _loop();
 
           if (_ret === "continue") continue;
         }
@@ -1360,7 +1338,7 @@ var Mixin = /*#__PURE__*/function () {
           _step7;
 
       try {
-        var _loop4 = function _loop4() {
+        var _loop2 = function _loop2() {
           var func = _step7.value;
 
           if (typeof cls[func] !== 'function') {
@@ -1377,7 +1355,7 @@ var Mixin = /*#__PURE__*/function () {
         };
 
         for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-          var _ret2 = _loop4();
+          var _ret2 = _loop2();
 
           if (_ret2 === "continue") continue;
         }
@@ -1396,7 +1374,7 @@ var Mixin = /*#__PURE__*/function () {
 
       var mixable = _Bindable.Bindable.makeBindable(mixinTo);
 
-      var _loop5 = function _loop5(base) {
+      var _loop3 = function _loop3(base) {
         var instanceNames = Object.getOwnPropertyNames(base.prototype);
         var staticNames = Object.getOwnPropertyNames(base);
         var prefix = /^(before|after)__(.+)/;
@@ -1405,7 +1383,7 @@ var Mixin = /*#__PURE__*/function () {
             _step8;
 
         try {
-          var _loop7 = function _loop7() {
+          var _loop5 = function _loop5() {
             var methodName = _step8.value;
             var match = methodName.match(prefix);
 
@@ -1451,7 +1429,7 @@ var Mixin = /*#__PURE__*/function () {
           };
 
           for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-            var _ret3 = _loop7();
+            var _ret3 = _loop5();
 
             if (_ret3 === "continue") continue;
           }
@@ -1465,7 +1443,7 @@ var Mixin = /*#__PURE__*/function () {
             _step9;
 
         try {
-          var _loop8 = function _loop8() {
+          var _loop6 = function _loop6() {
             var methodName = _step9.value;
             var match = methodName.match(prefix);
 
@@ -1511,7 +1489,7 @@ var Mixin = /*#__PURE__*/function () {
           };
 
           for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-            var _ret4 = _loop8();
+            var _ret4 = _loop6();
 
             if (_ret4 === "continue") continue;
           }
@@ -1523,14 +1501,14 @@ var Mixin = /*#__PURE__*/function () {
       };
 
       for (var base = this; base && base.prototype; base = Object.getPrototypeOf(base)) {
-        _loop5(base);
+        _loop3(base);
       }
 
       for (var methodName in allStatic) {
         mixinTo[methodName] = allStatic[methodName].bind(mixinTo);
       }
 
-      var _loop6 = function _loop6(_methodName) {
+      var _loop4 = function _loop4(_methodName) {
         mixinTo.prototype[_methodName] = function () {
           for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
             args[_key2] = arguments[_key2];
@@ -1541,7 +1519,7 @@ var Mixin = /*#__PURE__*/function () {
       };
 
       for (var _methodName in allInstance) {
-        _loop6(_methodName);
+        _loop4(_methodName);
       }
 
       return mixable;
@@ -2401,7 +2379,7 @@ var View = /*#__PURE__*/function () {
     this.viewList = null;
     this.viewLists = {};
     this.withViews = {};
-    this.tags = _Bindable.Bindable.makeBindable({});
+    this.tags = _Bindable.Bindable.make({});
     this.intervals = [];
     this.timeouts = [];
     this.frames = [];
@@ -2615,8 +2593,6 @@ var View = /*#__PURE__*/function () {
       var parentNode = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
       var insertPoint = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-      var ref = _Bindable.Bindable.make(this);
-
       if (parentNode instanceof View) {
         parentNode = parentNode.firstNode.parentNode;
       }
@@ -2673,7 +2649,7 @@ var View = /*#__PURE__*/function () {
         moveIndex++;
 
         if (toRoot) {
-          ref.attached(rootNode, parentNode);
+          this.attached(rootNode, parentNode);
           var attach = this.attach.items();
 
           for (var i in attach) {
@@ -2851,7 +2827,7 @@ var View = /*#__PURE__*/function () {
         var tag = sourceTag.cloneNode(true);
         var expandProperty = tag.getAttribute('cv-expand');
 
-        var expandArg = _Bindable.Bindable.makeBindable(bindingView.args[expandProperty] || {});
+        var expandArg = _Bindable.Bindable.make(bindingView.args[expandProperty] || {});
 
         tag.removeAttribute('cv-expand');
 
@@ -3410,6 +3386,8 @@ var View = /*#__PURE__*/function () {
           } else {
             proxy[property] = false;
           }
+        } else if (event.target.matches('[contentEditable=true]')) {
+          proxy[property] = event.target.innerHTML;
         } else if (type === 'file' && multi) {
           var files = Array.from(event.target.files);
 
@@ -5086,98 +5064,16 @@ var Socket = exports.Socket = function () {
 }();
   })();
 });
-require.register("Config.js", function(exports, require, module) {
-"use strict";
+
+require.register("subspace-console/Console.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console");
+  (function() {
+    "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Config = void 0;
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Config = function Config() {
-  _classCallCheck(this, Config);
-};
-
-exports.Config = Config;
-Config.title = 'SubSpace 0.2.0a'; // Config.socketHost = `ws://${location.hostname}:9998`;
-
-Config.socketHost = "ws".concat(location.protocol === 'https:' ? 's' : '', "://").concat(location.hostname, ":9998");
-});
-
-require.register("Path.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Path = void 0;
-
-var _Task = require("./Task");
-
-var _Lower = require("./tasks/Lower");
-
-var _Upper = require("./tasks/Upper");
-
-var _Prefix = require("./tasks/Prefix");
-
-var _Suffix = require("./tasks/Suffix");
-
-var _Countdown = require("./tasks/Countdown");
-
-var _Auth = require("./tasks/Auth");
-
-var _Login = require("./tasks/Login");
-
-var _Register = require("./tasks/Register");
-
-var _RtcClient = require("./tasks/RtcClient");
-
-var _RtcServer = require("./tasks/RtcServer");
-
-var _PublishBytes = require("./tasks/PublishBytes");
-
-var _PublishFile = require("./tasks/PublishFile");
-
-var _WatchImages = require("./tasks/WatchImages");
-
-var _PublishAjax = require("./tasks/PublishAjax");
-
-var _Connection = require("./tasks/Connection");
-
-var _Theme = require("./tasks/Theme");
-
-var Path = {
-  countdown: _Countdown.Countdown,
-  upper: _Upper.Upper,
-  lower: _Lower.Lower,
-  prefix: _Prefix.Prefix,
-  suffix: _Suffix.Suffix,
-  auth: _Auth.Auth,
-  pub: _PublishBytes.PublishBytes,
-  pubajax: _PublishAjax.PublishAjax,
-  pubfile: _PublishFile.PublishFile,
-  images: _WatchImages.WatchImages,
-  login: _Login.Login,
-  register: _Register.Register,
-  rtcc: _RtcClient.RtcClient,
-  rtcs: _RtcServer.RtcServer,
-  connect: _Connection.Connection,
-  theme: _Theme.Theme
-};
-exports.Path = Path;
-});
-
-require.register("RootView.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.RootView = void 0;
-
-var _Config = require("Config");
+exports.Console = void 0;
 
 var _View2 = require("curvature/base/View");
 
@@ -5185,27 +5081,17 @@ var _Socket = require("subspace-client/Socket");
 
 var _MeltingText = require("view/MeltingText");
 
-var _Mixin = require("curvature/base/Mixin");
-
 var _Task = require("./Task");
 
-var _Upper = require("./tasks/Upper");
-
-var _Prefix = require("./tasks/Prefix");
-
-var _Suffix = require("./tasks/Suffix");
-
-var _Countdown = require("./tasks/Countdown");
-
 var _Path = require("./Path");
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -5227,68 +5113,112 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var RootView = /*#__PURE__*/function (_View) {
-  _inherits(RootView, _View);
+var Console = /*#__PURE__*/function (_View) {
+  _inherits(Console, _View);
 
-  var _super = _createSuper(RootView);
+  var _super = _createSuper(Console);
 
-  function RootView() {
+  function Console() {
     var _this;
 
-    var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    _classCallCheck(this, RootView);
+    _classCallCheck(this, Console);
 
+    console.log(options.path);
+    console.log(options);
     _this = _super.call(this, args);
-    _this.routes = {};
-    _this.template = require('./root.tmp');
+    var defaults = {
+      init: false,
+      path: _Path.Path
+    };
+    var allOptions = Object.assign({}, defaults, options);
+    console.log(allOptions.path);
+    console.log(allOptions);
+    _this.template = "<div class = \"terminal [[inverted]]\" cv-on = \"click:focus(event)\">\n\t<div class = \"output\" cv-each = \"output:line:l\" cv-ref = \"output:curvature/base/Tag\">\n\t\t<p>[[line]]</p>\n\t</div>\n\t<div class = \"bottom\">\n\t\t<div>[[prompt]]&nbsp;</div>\n\t\t<div>\n\t\t\t<form cv-on = \"submit:cancel(event)\">\n\t\t\t\t<textarea\n\t\t\t\t\tcv-bind = \"input\"\n\t\t\t\t\tcv-on   = \":keydown(event);:keyup(event)\"\n\t\t\t\t\tcv-ref  = \"input:curvature/base/Tag\"\n\t\t\t\t\trow     = \"1\"\n\t\t\t\t></textarea>\n\t\t\t</form>\n\n\t\t\t<form cv-on = \"submit:cancel(event)\">\n\t\t\t\t<input\n\t\t\t\t\tautocomplete = \"one-time-code\"\n\t\t\t\t\tname    = \"pw-input\"\n\t\t\t\t\ttype    = \"password\"\n\t\t\t\t\tcv-bind = \"input\"\n\t\t\t\t\tcv-ref  = \"password:curvature/base/Tag\"\n\t\t\t\t\tcv-on   = \":keydown(event,false);:keyup(event,false)\"\n\t\t\t\t/>\n\t\t\t</form>\n\n\t\t\t<input\n\t\t\t\tcv-on  = \"input:fileLoaded(event)\"\n\t\t\t\tcv-ref = \"file:curvature/base/Tag\"\n\t\t\t\tname   = \"file-input\"\n\t\t\t\ttype   = \"file\"\n\t\t\t\tstyle  = \"display: none\"\n\t\t\t/>\n\t\t</div>\n\t</div>\n</div>\n\n<div class = \"scanlines\"></div>\n";
     _this.args.input = '';
     _this.args.output = [];
     _this.args.inverted = '';
     _this.localEcho = true;
     _this.postToken = null;
-    _this.args.prompt = '<<';
+    _this.args.prompt = '::';
+    _this.routes = {};
     _this.args.passwordMode = false;
     _this.tasks = [];
-    _this.max = 1024;
+    _this.max = 512;
     _this.historyCursor = -1;
     _this.history = [];
     _this.env = new Map();
 
-    args.output.___after(function (t, k, o, a) {
-      if (k === 'push') {
-        _this.onTimeout(16, function () {
-          window.scrollTo({
-            top: document.body.scrollHeight,
-            left: 0,
-            behavior: 'smooth'
-          });
-        });
-
-        _this.onTimeout(48, function () {
-          window.scrollTo({
-            top: document.body.scrollHeight,
-            left: 0,
-            behavior: 'smooth'
-          });
-        });
+    _this.args.output.___after(function (t, k, o, a) {
+      if (k !== 'push') {
+        return;
       }
+
+      if (_this.args.output.length > _this.max) {
+        var removed = _this.args.output.shift();
+
+        if (_typeof(removed) === 'object') {
+          removed.remove();
+        }
+      }
+
+      _this.onNextFrame(function () {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          left: 0,
+          behavior: 'smooth'
+        });
+      });
     });
 
-    _this.runScript('/init_rc');
+    if (allOptions.init) {
+      _this.runScript(allOptions.init);
+    }
 
+    _this.path = allOptions.path || {};
     _this.originalInput = '';
     return _this;
   }
 
-  _createClass(RootView, [{
+  _createClass(Console, [{
     key: "runCommand",
     value: function runCommand(command) {
-      if (this.tasks.length) {
-        return this.tasks[0].write(command) || Promise.resolve();
+      // console.log(command);
+      if (this.historyCursor != 0) {
+        this.history.unshift(command);
       }
 
-      return this.interpret(command) || Promise.resolve();
+      var ret;
+
+      if (command.substring(0, 1) === '/') {
+        if (!this.args.passwordMode) {
+          this.args.output.push(":: ".concat(command));
+        }
+
+        ret = this.interpret(command.substr(1));
+      } else if (this.tasks.length) {
+        if (!this.args.passwordMode) {
+          this.args.output.push("".concat(this.tasks[0].prompt, " ").concat(command));
+        }
+
+        ret = this.tasks[0].write(command) || Promise.resolve();
+      } else {
+        if (!this.args.passwordMode) {
+          this.args.output.push(":: ".concat(command));
+        }
+
+        ret = this.interpret(command);
+      }
+
+      if (!(ret instanceof Promise)) {
+        ret = Promise.resolve(ret);
+      }
+
+      this.historyCursor = -1;
+      this.originalInput = this.args.input = '';
+      return ret;
     }
   }, {
     key: "runScript",
@@ -5328,24 +5258,40 @@ var RootView = /*#__PURE__*/function (_View) {
     value: function postRender() {
       var _this3 = this;
 
+      var inputBox = this.tags.input.element;
+      var passwordBox = this.tags.password.element;
+      this.args.bindTo('input', function (v) {
+        inputBox.style.height = 'auto';
+        inputBox.style.height = inputBox.scrollHeight + 'px';
+      }, {
+        frame: 1
+      });
       this.args.bindTo('passwordMode', function (v) {
         if (v) {
-          _this3.tags.input.element.style.display = 'none';
-          _this3.tags.password.element.style.display = 'unset';
+          inputBox.style.display = 'none';
+          passwordBox.style.display = 'unset';
         } else {
-          _this3.tags.input.element.style.display = 'unset';
-          _this3.tags.password.element.style.display = 'none';
+          inputBox.style.display = 'unset';
+          passwordBox.style.display = 'none';
         }
-
-        _this3.focus();
+      });
+      this.args.bindTo('passwordMode', function (v) {
+        _this3.focus(null, v);
       }, {
-        wait: 0
+        frame: 1
       });
     }
   }, {
     key: "focus",
-    value: function focus(event) {
-      if (event && event.target.name == 'INPUT') {
+    value: function focus() {
+      var event = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var passwordMode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+      if (event) {
+        event.preventDefault();
+      }
+
+      if (event && event.target && event.target.matches('input,textarea')) {
         return;
       }
 
@@ -5353,7 +5299,7 @@ var RootView = /*#__PURE__*/function (_View) {
         return;
       }
 
-      if (this.args.passwordMode) {
+      if (passwordMode || this.args.passwordMode) {
         this.tags.password.element.focus();
         return;
       }
@@ -5361,25 +5307,12 @@ var RootView = /*#__PURE__*/function (_View) {
       this.tags.input.element.focus();
     }
   }, {
-    key: "submit",
-    value: function submit(event) {
-      this.interpret(this.args.input);
-    }
-  }, {
     key: "interpret",
     value: function interpret(command) {
       var _this4 = this;
 
-      this.history.unshift(command);
       this.historyCursor = -1;
-
-      if (command.substring(0, 1) !== '/') {
-        return;
-      }
-
-      command = command.substring(1);
       var commands = command.split(/\s*\|\s*/);
-      this.args.output.push("-- /".concat(command));
       var task = null;
       var topTask = null;
 
@@ -5396,16 +5329,18 @@ var RootView = /*#__PURE__*/function (_View) {
           if (_command.substr(-1) == "?") {
             _command = _command.substr(0, _command.length - 1);
 
-            if (_command in _Path.Path) {
-              this.args.output.push("?? ".concat(_Path.Path[_command].helpText));
-              this.args.output.push("?? ".concat(_Path.Path[_command].useText));
+            if (_command in this.path) {
+              this.args.output.push("?? ".concat(this.path[_command].helpText));
+              this.args.output.push("?? ".concat(this.path[_command].useText));
             }
 
             continue;
           }
 
-          if (_command in _Path.Path) {
-            task = new _Path.Path[_command](args, task, this);
+          if (_command in this.path) {
+            var cmdClass = this.path[_command]; // console.log(cmdClass);
+
+            task = new cmdClass(args, task, this);
           } else {
             switch (_command) {
               case 'clear':
@@ -5419,10 +5354,13 @@ var RootView = /*#__PURE__*/function (_View) {
                 break;
 
               case 'commands':
-                for (var cmd in _Path.Path) {
-                  this.args.output.push("?| ".concat(cmd, " - ").concat(_Path.Path[cmd].helpText));
-                  _Path.Path[cmd].useText && this.args.output.push(" | ".concat(_Path.Path[cmd].useText));
-                  this.args.output.push(" |");
+              case '?':
+                this.args.output.push("   Subspace Console 0.29a \xA92018-2020 Sean Morris");
+
+                for (var cmd in this.path) {
+                  this.args.output.push(" * ".concat(cmd, " - ").concat(this.path[cmd].helpText));
+                  this.path[cmd].useText && this.args.output.push("   ".concat(this.path[cmd].useText));
+                  this.args.output.push("  ");
                 }
 
                 break;
@@ -5439,32 +5377,41 @@ var RootView = /*#__PURE__*/function (_View) {
       }
 
       if (task) {
-        this.args.prompt = '..';
         this.tasks.unshift(task);
 
         var output = function output(event) {
-          return _this4.args.output.push(":: ".concat(event.detail));
+          var prompt = task.prompt || _this4.args.prompt || '::';
+
+          _this4.args.output.push("".concat(prompt, " ").concat(event.detail));
         };
 
         var error = function error(event) {
-          return _this4.args.output.push("!! ".concat(event.detail));
+          var errorPrompt = task.errorPrompt || '!!';
+          _this4.args.prompt = errorPrompt;
+
+          _this4.args.output.push("".concat(errorPrompt, " ").concat(event.detail));
         };
 
         task.addEventListener('output', output);
         task.addEventListener('error', error);
         task.execute();
         task["catch"](function (error) {
-          return console.log(error);
+          return console.error(error);
         });
         task["catch"](function (error) {
           return _this4.args.output.push("!! ".concat(error));
         });
         task["finally"](function (done) {
-          _this4.args.prompt = '<<';
           task.removeEventListener('error', error);
           task.removeEventListener('output', output);
 
           _this4.tasks.shift();
+
+          if (_this4.tasks.length) {
+            _this4.args.prompt = _this4.tasks[0].prompt;
+          } else {
+            _this4.args.prompt = '::';
+          }
         });
       }
 
@@ -5476,7 +5423,18 @@ var RootView = /*#__PURE__*/function (_View) {
     value: function keydown(event, autocomplete) {
       switch (event.key) {
         case 'Tab':
+          if (autocomplete) {
+            break;
+          }
+
           event.preventDefault();
+          break;
+
+        case 'Enter':
+          if (!event.ctrlKey) {
+            event.preventDefault();
+          }
+
           break;
       }
     }
@@ -5533,7 +5491,6 @@ var RootView = /*#__PURE__*/function (_View) {
             this.tasks[0].signal('kill');
           }
 
-          this.args.prompt = '<<';
           this.args.passwordMode = false;
           break;
 
@@ -5546,7 +5503,7 @@ var RootView = /*#__PURE__*/function (_View) {
 
           var search = this.args.input.substr(1);
 
-          for (var cmd in _Path.Path) {
+          for (var cmd in this.path) {
             if (cmd.length < search.length) {
               continue;
             }
@@ -5560,9 +5517,22 @@ var RootView = /*#__PURE__*/function (_View) {
           break;
 
         case 'Enter':
-          var command = this.args.input;
-          this.originalInput = this.args.input = '';
-          this.runCommand(command);
+          if (!event.ctrlKey) {
+            event.preventDefault();
+          } else {
+            return;
+          }
+
+          this.runCommand(this.args.input);
+          break;
+
+        default:
+          this.historyCursor = -1;
+          window.scrollTo({
+            top: document.body.scrollHeight,
+            left: 0,
+            behavior: 'smooth'
+          });
           break;
       }
     }
@@ -5574,14 +5544,36 @@ var RootView = /*#__PURE__*/function (_View) {
     }
   }]);
 
-  return RootView;
+  return Console;
 }(_View2.View);
 
-exports.RootView = RootView;
+exports.Console = Console;
+  })();
 });
 
-;require.register("Task.js", function(exports, require, module) {
-"use strict";
+require.register("subspace-console/Path.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console");
+  (function() {
+    "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Path = void 0;
+
+var _Task = require("subspace-console/Task");
+
+var Path = {
+  task: _Task.Task
+};
+exports.Path = Path;
+  })();
+});
+
+require.register("subspace-console/Task.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console");
+  (function() {
+    "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -5594,7 +5586,7 @@ var _Mixin = require("curvature/base/Mixin");
 
 var _Target = require("./mixin/Target");
 
-var _TaskSignals = require("./TaskSignals");
+var _TaskSignals = require("./mixin/TaskSignals");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -5655,6 +5647,8 @@ var Task = /*#__PURE__*/function (_Mixin$with) {
     _this = _super.call(this);
 
     _defineProperty(_assertThisInitialized(_this), "title", 'Generic Task');
+
+    _defineProperty(_assertThisInitialized(_this), "prompt", '::');
 
     _this.args = args;
     _this.prev = prev;
@@ -5804,10 +5798,56 @@ var Task = /*#__PURE__*/function (_Mixin$with) {
 
 
 exports.Task = Task;
+  })();
 });
 
-require.register("TaskSignals.js", function(exports, require, module) {
-"use strict";
+require.register("subspace-console/mixin/Target.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console");
+  (function() {
+    "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Target = void 0;
+
+var _Mixin = require("curvature/base/Mixin");
+
+var _Target;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var target = Symbol('target');
+var index = 0;
+var Target = (_Target = {}, _defineProperty(_Target, _Mixin.Mixin.constructor, function () {
+  try {
+    this[target] = new EventTarget();
+  } catch (error) {
+    this[target] = document.createDocumentFragment();
+  }
+
+  this[target].x = index++;
+}), _defineProperty(_Target, "dispatchEvent", function dispatchEvent() {
+  var _this$target;
+
+  (_this$target = this[target]).dispatchEvent.apply(_this$target, arguments);
+}), _defineProperty(_Target, "addEventListener", function addEventListener() {
+  var _this$target2;
+
+  (_this$target2 = this[target]).addEventListener.apply(_this$target2, arguments);
+}), _defineProperty(_Target, "removeEventListener", function removeEventListener() {
+  var _this$target3;
+
+  (_this$target3 = this[target]).removeEventListener.apply(_this$target3, arguments);
+}), _Target);
+exports.Target = Target;
+  })();
+});
+
+require.register("subspace-console/mixin/TaskSignals.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console");
+  (function() {
+    "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -5852,9 +5892,92 @@ exports.TaskSignals = TaskSignals;
 _defineProperty(TaskSignals, "KILL", 'kill');
 
 _defineProperty(TaskSignals, "CLOSE", 'close');
+  })();
+});
+require.register("Config.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Config = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var socketProtocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
+
+var Config = function Config() {
+  _classCallCheck(this, Config);
+};
+
+exports.Config = Config;
+;
+Config.title = 'SubSpace 0x29a';
+Config.socketHost = socketProtocol + location.hostname + ':9998';
 });
 
-;require.register("chat/Chat.js", function(exports, require, module) {
+require.register("Path.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Path = void 0;
+
+var _Lower = require("./tasks/Lower");
+
+var _Upper = require("./tasks/Upper");
+
+var _Prefix = require("./tasks/Prefix");
+
+var _Suffix = require("./tasks/Suffix");
+
+var _Countdown = require("./tasks/Countdown");
+
+var _Auth = require("./tasks/Auth");
+
+var _Login = require("./tasks/Login");
+
+var _Register = require("./tasks/Register");
+
+var _RtcClient = require("./tasks/RtcClient");
+
+var _RtcServer = require("./tasks/RtcServer");
+
+var _PublishBytes = require("./tasks/PublishBytes");
+
+var _PublishFile = require("./tasks/PublishFile");
+
+var _WatchImages = require("./tasks/WatchImages");
+
+var _PublishAjax = require("./tasks/PublishAjax");
+
+var _Connection = require("./tasks/Connection");
+
+var _Theme = require("./tasks/Theme");
+
+var Path = {
+  countdown: _Countdown.Countdown,
+  upper: _Upper.Upper,
+  lower: _Lower.Lower,
+  prefix: _Prefix.Prefix,
+  suffix: _Suffix.Suffix,
+  auth: _Auth.Auth,
+  pub: _PublishBytes.PublishBytes,
+  pubajax: _PublishAjax.PublishAjax,
+  pubfile: _PublishFile.PublishFile,
+  images: _WatchImages.WatchImages,
+  login: _Login.Login,
+  register: _Register.Register,
+  rtcc: _RtcClient.RtcClient,
+  rtcs: _RtcServer.RtcServer,
+  connect: _Connection.Connection,
+  theme: _Theme.Theme
+};
+exports.Path = Path;
+});
+
+require.register("chat/Chat.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5952,9 +6075,16 @@ var _RuleSet = require("curvature/base/RuleSet");
 
 var _Router = require("curvature/base/Router");
 
-var _RootView = require("./RootView");
+var _Console = require("subspace-console/Console");
 
-var view = new _RootView.RootView();
+var _Path = require("./Path");
+
+console.log(_Path.Path);
+var view = new _Console.Console({
+  path: _Path.Path,
+  init: '/init_rc'
+});
+console.log(view);
 
 _RuleSet.RuleSet.add('body', view);
 
@@ -6056,8 +6186,52 @@ var Target = (_Target = {}, _defineProperty(_Target, _Mixin.Mixin.constructor, f
 exports.Target = Target;
 });
 
-;require.register("root.tmp.html", function(exports, require, module) {
-module.exports = "<div class = \"main [[inverted]]\" cv-on = \"click:focus(event)\">\n\t<div class = \"top\">\n\t\t<div class = \"menu\"></div>\n\t\t<div class = \"terminal\">\n\t\t\t<div class = \"output\" cv-each = \"output:line:l\" cv-ref = \"output:curvature/base/Tag\">\n\t\t\t\t<p>[[line]]</p>\n\t\t\t</div>\n\t\t\t<div class = \"bottom\">\n\t\t\t\t<div>[[prompt]]&nbsp;</div>\n\t\t\t\t<div>\n\t\t\t\t\t<form cv-on = \"submit:cancel(event)\">\n\t\t\t\t\t\t<input\n\t\t\t\t\t\t\tautocomplete = \"off\"\n\t\t\t\t\t\t\tcv-bind      = \"input\"\n\t\t\t\t\t\t\tcv-on        = \":keydown(event);:keyup(event)\"\n\t\t\t\t\t\t\tcv-ref       = \"input:curvature/base/Tag\"/>\n\t\t\t\t\t</form>\n\n\t\t\t\t\t<form cv-on = \"submit:cancel(event)\">\n\t\t\t\t\t\t<input\n\t\t\t\t\t\t\tautocomplete = \"one-time-code\"\n\t\t\t\t\t\t\tname         = \"pw-input\"\n\t\t\t\t\t\t\ttype         = \"password\"\n\t\t\t\t\t\t\tcv-bind      = \"input\"\n\t\t\t\t\t\t\tcv-ref       = \"password:curvature/base/Tag\"\n\t\t\t\t\t\t\tcv-on        = \"\n\t\t\t\t\t\t\t\t:keydown(event,false);\n\t\t\t\t\t\t\t\t:keyup(event,false)\n\t\t\t\t\t\t\t\"/>\n\t\t\t\t\t</form>\n\n\t\t\t\t\t<input\n\t\t\t\t\t\tname  = \"file-input\"\n\t\t\t\t\t\ttype  = \"file\"\n\t\t\t\t\t\tstyle = \"display: none\"\n\t\t\t\t\t\tcv-on = \"input:fileLoaded(event)\"\n\t\t\t\t\t\tcv-ref = \"file:curvature/base/Tag\"/>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n\n\t<div class = \"scanlines\"></div>\n</div>\n"
+;require.register("mixin/TaskSignals.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.TaskSignals = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var TaskSignals = /*#__PURE__*/function () {
+  function TaskSignals() {
+    _classCallCheck(this, TaskSignals);
+  }
+
+  _createClass(TaskSignals, [{
+    key: 'signal::kill',
+    value: function signalKill() {
+      console.log('KILL!');
+      this.status > 0 ? this[Reject]() : this[Accept]();
+    }
+  }, {
+    key: 'signal::close',
+    value: function signalClose() {
+      if (this.dispatchEvent(new CustomEvent('error', {
+        detail: detail
+      }))) {
+        this.status > 0 ? this[Reject]() : this[Accept]();
+      }
+    }
+  }]);
+
+  return TaskSignals;
+}();
+
+exports.TaskSignals = TaskSignals;
+
+_defineProperty(TaskSignals, "KILL", 'kill');
+
+_defineProperty(TaskSignals, "CLOSE", 'close');
 });
 
 ;require.register("tasks/Auth.js", function(exports, require, module) {
@@ -6068,7 +6242,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Auth = void 0;
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -6112,6 +6286,8 @@ var Auth = /*#__PURE__*/function (_Task) {
 
     _defineProperty(_assertThisInitialized(_this), "title", 'Auth Task');
 
+    _defineProperty(_assertThisInitialized(_this), "prompt", '<<');
+
     return _this;
   }
 
@@ -6123,27 +6299,12 @@ var Auth = /*#__PURE__*/function (_Task) {
       return fetch('/auth?api').then(function (response) {
         return response.text();
       }).then(function (token) {
-        // this.args.output.push(`:: /auth`);
-        // this.print('<< auth [token censored]');			
+        _this2.print('auth [token censored]');
+
         _this2.term.socket.send("auth ".concat(token));
 
         return true;
       });
-    }
-  }, {
-    key: "main",
-    value: function main(command) {
-      if (!command) {
-        return;
-      }
-
-      console.log(command);
-
-      if (command.substring(0, 1) === '/') {
-        this.term.interpret(command);
-      } else {
-        this.term.socket.send(command);
-      }
     }
   }]);
 
@@ -6175,7 +6336,7 @@ var _TextMessageView = require("../view/TextMessageView");
 
 var _BinaryMessageView = require("../view/BinaryMessageView");
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -6221,6 +6382,8 @@ var Connection = /*#__PURE__*/function (_Task) {
 
     _defineProperty(_assertThisInitialized(_this), "title", 'Websocket Connection Task');
 
+    _defineProperty(_assertThisInitialized(_this), "prompt", '..');
+
     return _this;
   }
 
@@ -6233,29 +6396,26 @@ var Connection = /*#__PURE__*/function (_Task) {
       this.term.socket = this.socket;
       this.term.env.set('socket', this.socket);
       this.socket.subscribe('close', function (event) {
-        console.log('Disconnected!');
+        _this2.term.args.output.push("Disconnected!");
 
-        _this2.args.output.push("Disconnected!");
-
-        _this2.args.output.push("Reinitializing in ".concat(_Config.Config.reconnect / 1000 || 5, "s..."));
+        _this2.term.args.output.push("Reinitializing in ".concat(_Config.Config.reconnect / 1000 || 3, "s..."));
 
         if (_this2.recon) {
           _this2.clearTimeout(_this2.recon);
 
           _this2.recon = false;
         } else {
-          _this2.recon = _this2.onTimeout(_Config.Config.reconnect || 5000, function () {
+          _this2.recon = setTimeout(function () {
             _this2.recon = false;
 
-            _this2.runScript('/bounce_rc');
-          });
+            _this2.term.runScript('/bounce_rc');
+          }, _Config.Config.reconnect || 3000);
         }
       });
-      this.term.args.prompt = '..';
       this.socket.subscribe('open', function () {
         _this2.term.runScript('/open_rc');
 
-        _this2.term.args.prompt = '<<<';
+        _this2.prompt = '<<';
       });
       this.socket.subscribe('message', function (event, message, channel, origin, originId, originalChannel, packet) {
         if (!_this2.term.localEcho) {
@@ -6273,9 +6433,16 @@ var Connection = /*#__PURE__*/function (_Task) {
             received = JSON.stringify(received, null, 4);
           }
 
-          _this2.term.args.output.push(new _TextMessageView.TextMessageView({
+          var messageView = new _TextMessageView.TextMessageView({
             message: received
-          }));
+          });
+          messageView.preserve = true;
+
+          _this2["finally"](function () {
+            return messageView.remove();
+          });
+
+          _this2.term.args.output.push(messageView);
         } else if (event.data instanceof ArrayBuffer) {
           var bytesArray = new Uint8Array(event.data);
           var user = originId.toString(16).toUpperCase().padStart(4, '0');
@@ -6286,13 +6453,14 @@ var Connection = /*#__PURE__*/function (_Task) {
 
           if (origin == 'server') {
             headerBytes = [channel.toString(16).padStart(4, '0')];
-            header = "0x".concat(channel.toString(16).padStart(4, '0')); // let messageIndex = 4;
+            header = "0x".concat(channel.toString(16).padStart(4, '0'));
           }
 
           var bytes = Array.from(bytesArray).map(function (x) {
             return x.toString(16).toUpperCase().padStart(2, '0');
           });
-          var messageView = new _BinaryMessageView.BinaryMessageView({
+
+          var _messageView = new _BinaryMessageView.BinaryMessageView({
             header: new _ByteView.ByteView({
               separator: '',
               bytes: headerBytes
@@ -6303,7 +6471,13 @@ var Connection = /*#__PURE__*/function (_Task) {
             })
           });
 
-          _this2.term.args.output.push(messageView);
+          _messageView.preserve = true;
+
+          _this2["finally"](function () {
+            return _messageView.remove();
+          });
+
+          _this2.term.args.output.push(_messageView);
         }
       });
       return new Promise(function (accept) {
@@ -6317,11 +6491,9 @@ var Connection = /*#__PURE__*/function (_Task) {
         return;
       }
 
-      if (command.substring(0, 1) === '/') {
-        return this.term.interpret(command);
-      } else {
-        this.socket.send(command); // this.print(`<< ${command}`);
-
+      if (this.socket) {
+        this.prompt = '<<';
+        this.socket.send(command);
         return Promise.resolve();
       }
     }
@@ -6443,7 +6615,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Countdown = void 0;
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -6552,7 +6724,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Help = void 0;
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -6601,7 +6773,7 @@ var _Config = require("Config");
 
 var _Socket = require("subspace-client/Socket");
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -6712,7 +6884,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Lower = void 0;
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -6786,7 +6958,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Prefix = void 0;
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -6865,7 +7037,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.PublishAjax = void 0;
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -6967,7 +7139,7 @@ var _Config = require("Config");
 
 var _Socket = require("subspace-client/Socket");
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -7062,7 +7234,7 @@ var _Config = require("Config");
 
 var _Socket = require("subspace-client/Socket");
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -7120,7 +7292,7 @@ var PublishFile = /*#__PURE__*/function (_Task) {
       fileInput.addEventListener('input', function () {
         return _this2.fileLoaded(event);
       });
-      fileInput.click(); // this.term.socket.send(new Uint8Array(bytes));		
+      fileInput.click(); // this.term.socket.send(new Uint8Array(bytes));
     }
   }, {
     key: "main",
@@ -7175,7 +7347,7 @@ var _Config = require("Config");
 
 var _Socket = require("subspace-client/Socket");
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -7306,7 +7478,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.RtcClient = void 0;
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -7363,18 +7535,19 @@ var RtcClient = /*#__PURE__*/function (_Task) {
       var _this2 = this;
 
       var rtcConfig = {
-        iceServers: [{
-          urls: 'stun:stun1.l.google.com:19302'
-        }, {
-          urls: 'stun:stun2.l.google.com:19302'
-        }]
+        iceServers: [// 	{urls: 'stun:stun1.l.google.com:19302'},
+          // 	{urls: 'stun:stun2.l.google.com:19302'}
+        ]
       };
       this.peerClient = new RTCPeerConnection(rtcConfig);
       this.peerClient.addEventListener('icecandidate', function (event) {
-        console.log(event.candidate);
-        var localDescription = JSON.stringify(_this2.peerClient.localDescription, null, 4);
+        if (!event.candidate) {
+          return;
+        }
 
-        _this2.print('Client description');
+        var localDescription = JSON.stringify(_this2.peerClient.localDescription);
+
+        _this2.print('Client Offer');
 
         _this2.print(localDescription);
       });
@@ -7430,7 +7603,7 @@ var RtcClient = /*#__PURE__*/function (_Task) {
     key: "accept",
     value: function accept(answerString) {
       if (!answerString) {
-        this.print("Please supply SDP offer string.");
+        this.print("Please supply SDP answer string.");
         return;
       }
 
@@ -7458,7 +7631,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.RtcServer = void 0;
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -7514,18 +7687,20 @@ var RtcServer = /*#__PURE__*/function (_Task) {
     value: function init() {
       var _this2 = this;
 
-      var rtcConfig = {
-        iceServers: [{
-          urls: 'stun:stun1.l.google.com:19302'
-        }, {
-          urls: 'stun:stun2.l.google.com:19302'
-        }]
+      var rtcConfig = {// iceServers: [
+        // 	{urls: 'stun:stun1.l.google.com:19302'},
+        // 	{urls: 'stun:stun2.l.google.com:19302'}
+        // ]
       };
       this.peerServer = new RTCPeerConnection(rtcConfig);
-      this.peerServer.addEventListener('icecandidate', function () {
-        var localDescription = JSON.stringify(_this2.peerServer.localDescription, null, 4);
+      this.peerServer.addEventListener('icecandidate', function (event) {
+        if (!event.candidate) {
+          return;
+        }
 
-        _this2.print('Server description');
+        var localDescription = JSON.stringify(_this2.peerServer.localDescription);
+
+        _this2.print('Server Answer');
 
         _this2.print(localDescription);
       });
@@ -7623,7 +7798,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.SayAjax = void 0;
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -7723,7 +7898,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Suffix = void 0;
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -7794,51 +7969,6 @@ _defineProperty(Suffix, "helpText", 'Append a suffix to lines passed into STDIN.
 _defineProperty(Suffix, "useText", '/something | suffix SUFFIX_TEXT');
 });
 
-;require.register("tasks/Terminal.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Upper = void 0;
-
-var _Task2 = require("../Task");
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-var Upper = /*#__PURE__*/function (_Task) {
-  _inherits(Upper, _Task);
-
-  var _super = _createSuper(Upper);
-
-  function Upper() {
-    _classCallCheck(this, Upper);
-
-    return _super.apply(this, arguments);
-  }
-
-  return Upper;
-}(_Task2.Task);
-
-exports.Upper = Upper;
-});
-
 ;require.register("tasks/Theme.js", function(exports, require, module) {
 "use strict";
 
@@ -7851,7 +7981,7 @@ var _Config = require("Config");
 
 var _Socket = require("subspace-client/Socket");
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -7925,7 +8055,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Upper = void 0;
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -8001,7 +8131,7 @@ exports.WatchImages = void 0;
 
 var _View = require("curvature/base/View");
 
-var _Task2 = require("../Task");
+var _Task2 = require("subspace-console/Task");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -8379,11 +8509,11 @@ var MeltingText = /*#__PURE__*/function (_BaseView) {
     // '\u0356', /*     ͖     */		'\u0359', /*     ͙     */		'\u035a', /*     ͚     */		'\u0323' /*     ̣     */
     ];
     _this.template = "\n\t\t\t<div cv-bind = \"output\" class = \"melting\"></div>\n\t\t";
-    _this.args.input = "Magic is no more than the art of employing consciously invisible means to produce visible effects. Will, love, and imagination are magic powers that everyone possesses; and whoever knows how to develop them to their fullest extent is a magician. Magic has but one dogma, namely, that the seen is the measure of the unseen\n"; // this.args.input      = 'anything'; 
+    _this.args.input = "Magic is no more than the art of employing consciously invisible means to produce visible effects. Will, love, and imagination are magic powers that everyone possesses; and whoever knows how to develop them to their fullest extent is a magician. Magic has but one dogma, namely, that the seen is the measure of the unseen\n"; // this.args.input      = 'anything';
 
     _this.args.output = 'uh.';
     _this.corruptors = [];
-    _this.maxMaxCorrupt = 50;
+    _this.maxMaxCorrupt = 25;
     _this.maxCorrupt = 0;
     _this.type = '';
 
@@ -8391,7 +8521,7 @@ var MeltingText = /*#__PURE__*/function (_BaseView) {
       _this.typewriter(_this.args.input);
     });
 
-    _this.onInterval(40, function () {
+    _this.onInterval(16 * 4, function () {
       var selection = window.getSelection();
 
       if (selection.anchorOffset !== selection.focusOffset) {
@@ -8426,14 +8556,18 @@ var MeltingText = /*#__PURE__*/function (_BaseView) {
   }, {
     key: "corrupt",
     value: function corrupt(v) {
+      if (v.length * 1.15 < this.args.input.length) {
+        return this.type;
+      }
+
       var chars = v.split('');
 
       var random = function random(x) {
         return parseInt(Math.random() * x);
       };
 
-      if (random(2048) < 512 && this.maxCorrupt < this.maxMaxCorrupt) {
-        this.maxCorrupt++;
+      if (random(1024) < 256 && this.maxCorrupt < this.maxMaxCorrupt) {
+        this.maxCorrupt += 5;
       }
 
       for (var _i in chars) {
@@ -8444,16 +8578,13 @@ var MeltingText = /*#__PURE__*/function (_BaseView) {
         }
 
         var charSets = [// this.charDown // Melt Slow
-        // this.charDown, this.charMid // Melt
-        // this.charDown, this.charUp,   this.charMid, // Boil 
-        this.charMid, this.charUp // Burn
+        this.charDown, this.charMid // Melt
+        // this.charDown, this.charUp,   this.charMid, // Boil
+        // this.charMid, this.charUp, // Burn
         // this.charMid // Simmer
         // this.charUp // Rain
         ];
-        var charSet = charSets[random(charSets.length)]; // if(this.corruptors[i].length > this.maxCorrupt)
-        // {
-        // 	this.corruptors[i].shift();
-        // }
+        var charSet = charSets[random(charSets.length)];
 
         if (random(8192) < 1) {
           this.corruptors[_i].unshift(charSet[random(charSet.length)]);
@@ -8468,17 +8599,6 @@ var MeltingText = /*#__PURE__*/function (_BaseView) {
         }
 
         this.corruptors[_i].push(this.corruptors[_i].shift());
-
-        if (this.corruptors[_i].length < this.maxCorrupt) {} else {// this.corruptors[i].unshift(this.corruptors[i].pop());
-        } // if(!(i % 3) && random(1024) < 1)
-        // {
-        // 	this.corruptors.push(this.corruptors.shift());
-        // }
-        // if(random(1024) < 1)
-        // {
-        // 	this.corruptors.unshift(this.corruptors.pop());
-        // }
-
       }
 
       for (var i in chars) {
@@ -8497,7 +8617,9 @@ var MeltingText = /*#__PURE__*/function (_BaseView) {
       if (this.type !== v) {
         this.type += v.substr(this.type.length, 1);
         this.onTimeout(150, function () {
-          if (document.body.scrollHeight > window.scrollY + window.innerHeight) {
+          var max = window.scrollY + window.innerHeight;
+
+          if (document.body.scrollHeight > max) {
             window.scrollTo({
               top: document.body.scrollHeight,
               left: 0,

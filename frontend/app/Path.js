@@ -1,4 +1,3 @@
-import { Task }       from './Task';
 import { Lower }      from './tasks/Lower';
 import { Upper }      from './tasks/Upper';
 import { Prefix }     from './tasks/Prefix';
@@ -24,7 +23,7 @@ export const Path = {
 	, lower:     Lower
 	, prefix:    Prefix
 	, suffix:    Suffix
-	
+
 	, auth:      Auth
 	, pub:       PublishBytes
 	, pubajax:   PublishAjax

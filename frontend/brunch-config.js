@@ -7,8 +7,8 @@ exports.files = {
 
 exports.plugins = {
   babel: {
-  	presets:   ['@babel/preset-env']
-	, plugins: ["@babel/plugin-proposal-class-properties"]
+	plugins: ['@babel/plugin-proposal-class-properties', 'macros'],
+  	presets: ['@babel/preset-env']
   },
   raw: {
     pattern: /\.(html)$/,
@@ -18,9 +18,12 @@ exports.plugins = {
 
 exports.hooks = {
 	preCompile: () => {
-		console.log("About to compile...");
+		console.log('About to compile...');
 		exec(
-			`cd ../curvature-2 && npm link && cd ../frontend && npm link curvature`
+			`cd ../curvature-2 && npm link`
+				+ ` && cd ../subspace-console && npm link`
+				+ ` && cd ../frontend && npm link curvature`
+				+ ` && cd ../frontend && npm link subspace-console`
 			// `cd ../frontend && npm unlink --no-save curvature`
 			// `ls -la`
 			, (err, stdout, stderr)=>{
@@ -33,3 +36,7 @@ exports.hooks = {
 		)
 	}
 };
+
+exports.npm = {styles: {
+	'subspace-console': ['style/layout.css']
+}}

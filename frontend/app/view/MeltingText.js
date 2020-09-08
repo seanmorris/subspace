@@ -3,7 +3,7 @@ import { View as BaseView } from 'curvature/base/View';
 export class MeltingText extends BaseView
 {
 	constructor(args)
-	{		
+	{
 		super(args);
 
 		this.last = this.init = Date.now();
@@ -21,7 +21,7 @@ export class MeltingText extends BaseView
 			// '\u0366', /*     ͦ     */		'\u0367', /*     ͧ     */		'\u0368', /*     ͨ     */		'\u0369', /*     ͩ     */
 			// '\u036a', /*     ͪ     */		'\u036b', /*     ͫ     */		'\u036c', /*     ͬ     */		'\u036d', /*     ͭ     */
 			// '\u036e', /*     ͮ     */		'\u036f', /*     ͯ     */		'\u033e', /*     ̾     */		'\u035b', /*     ͛     */
-			
+
 		];
 
 		this.charMid  = [
@@ -30,7 +30,7 @@ export class MeltingText extends BaseView
 			'\u0328', /*     ̨     */		'\u0334', /*     ̴     */		'\u0335', /*     ̵     */		'\u0336', /*     ̶     */
 			'\u034f', /*     ͏     */		'\u035c', /*     ͜     */		'\u035d', /*     ͝     */		'\u035e', /*     ͞     */
 			'\u035f', /*     ͟     */		'\u0360', /*     ͠     */		/*'\u0362',      ͢     */		'\u0338', /*     ̸     */
-			'\u0337', /*     ̷     */		'\u0361', /*     ͡     */		/*'\u0489'     ҉_     */		
+			'\u0337', /*     ̷     */		'\u0361', /*     ͡     */		/*'\u0489'     ҉_     */
 		];
 
 		this.charDown = [
@@ -51,10 +51,10 @@ export class MeltingText extends BaseView
 		`;
 		this.args.input      = `Magic is no more than the art of employing consciously invisible means to produce visible effects. Will, love, and imagination are magic powers that everyone possesses; and whoever knows how to develop them to their fullest extent is a magician. Magic has but one dogma, namely, that the seen is the measure of the unseen
 `;
-		// this.args.input      = 'anything'; 
+		// this.args.input      = 'anything';
 		this.args.output     = 'uh.'
 		this.corruptors = [];
-		this.maxMaxCorrupt = 50;
+		this.maxMaxCorrupt = 25;
 		this.maxCorrupt = 0;
 		this.type       = '';
 
@@ -62,7 +62,7 @@ export class MeltingText extends BaseView
 			this.typewriter(this.args.input);
 		});
 
-		this.onInterval(40, () => {
+		this.onInterval(16*4, () => {
 
 			let selection = window.getSelection();
 
@@ -96,13 +96,19 @@ export class MeltingText extends BaseView
 		return this.last - Date.now();
 	}
 
-	corrupt(v) {
+	corrupt(v)
+	{
+		if(v.length * 1.15 < this.args.input.length)
+		{
+			return this.type;
+		}
+
 		let chars  = v.split('');
 		let random = (x) => parseInt(Math.random()*x);
 
-		if(random(2048) < 512 && this.maxCorrupt < this.maxMaxCorrupt)
+		if(random(1024) < 256 && this.maxCorrupt < this.maxMaxCorrupt)
 		{
-			this.maxCorrupt++;
+			this.maxCorrupt += 5;
 		}
 
 		for(let i in chars) {
@@ -114,58 +120,35 @@ export class MeltingText extends BaseView
 
 			let charSets = [
 				// this.charDown // Melt Slow
-				// this.charDown, this.charMid // Melt
-				// this.charDown, this.charUp,   this.charMid, // Boil 
-				this.charMid, this.charUp, // Burn
+				this.charDown, this.charMid // Melt
+				// this.charDown, this.charUp,   this.charMid, // Boil
+				// this.charMid, this.charUp, // Burn
 				// this.charMid // Simmer
 				// this.charUp // Rain
 			];
 
 			let charSet = charSets[ random(charSets.length) ];
-			
-			// if(this.corruptors[i].length > this.maxCorrupt)
-			// {
-			// 	this.corruptors[i].shift();
-			// }
 
 			if(random(8192) < 1)
 			{
-				this.corruptors[i].unshift(charSet[ random(charSet.length) ]);				
+				this.corruptors[i].unshift(charSet[ random(charSet.length) ]);
 			}
-			
+
 			if(this.corruptors[i].length < this.maxCorrupt)
 			{
-				this.corruptors[i].unshift(charSet[ random(charSet.length) ]);				
+				this.corruptors[i].unshift(charSet[ random(charSet.length) ]);
 			}
-			
+
 			if(random(2048) < 1 && this.maxCorrupt > 25)
 			{
 				this.corruptors[i].splice(5 * random(5));
 			}
 
 			this.corruptors[i].push(this.corruptors[i].shift());
-			
-			if(this.corruptors[i].length < this.maxCorrupt)
-			{
-			}
-			else
-			{
-				// this.corruptors[i].unshift(this.corruptors[i].pop());
-			}
-
-
-			// if(!(i % 3) && random(1024) < 1)
-			// {
-			// 	this.corruptors.push(this.corruptors.shift());
-			// }
-			
-			// if(random(1024) < 1)
-			// {
-			// 	this.corruptors.unshift(this.corruptors.pop());
-			// }
 		}
-		
-		for(var i in chars) {
+
+		for(var i in chars)
+		{
 			if(this.corruptors[i])
 			{
 				chars[i] += this.corruptors[i].join('');
@@ -175,14 +158,17 @@ export class MeltingText extends BaseView
 		return chars.join('');
 	}
 
-	typewriter(v) {
+	typewriter(v)
+	{
 		this.type = this.type || '';
 
-		if(this.type !== v) {
+		if(this.type !== v)
+		{
 			this.type += v.substr(this.type.length, 1);
 
 			this.onTimeout(150, () => {
-				if(document.body.scrollHeight > window.scrollY + window.innerHeight)
+				const max = window.scrollY + window.innerHeight;
+				if(document.body.scrollHeight > max)
 				{
 					window.scrollTo({
 						top: document.body.scrollHeight
@@ -193,9 +179,11 @@ export class MeltingText extends BaseView
 			});
 
 		}
-		else {
+		else
+		{
 			return true;
 		}
+
 		return false;
 	}
 }

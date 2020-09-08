@@ -1,5 +1,8 @@
-export class Config{}
+const socketProtocol = location.protocol === 'https:'
+	? 'wss://'
+	: 'ws://';
 
-Config.title      = 'SubSpace 0.2.0a';
-// Config.socketHost = `ws://${location.hostname}:9998`;
-Config.socketHost = `ws${location.protocol === 'https:'?'s':''}://${location.hostname}:9998`;
+export class Config {};
+
+Config.title = 'SubSpace 0x29a';
+Config.socketHost = socketProtocol + location.hostname + ':9998';

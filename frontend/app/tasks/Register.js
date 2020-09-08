@@ -1,6 +1,6 @@
 import { Config } from 'Config';
 import { Socket } from 'subspace-client/Socket';
-import { Task } from '../Task';
+import { Task } from 'subspace-console/Task';
 
 const Accept = Symbol('accept');
 
@@ -59,7 +59,7 @@ export class Register extends Task
 		if(this.stack.length == 4)
 		{
 			terminal.args.input = '';
-			
+
 			if(this.stack[2] !== this.stack[3])
 			{
 				terminal.args.output.push(':: Password verification failed.');
@@ -72,7 +72,7 @@ export class Register extends Task
 
 			terminal.args.output.push(`:: Trying to register ${this.stack[0]} <${this.stack[1]}>...`);
 
-			terminal.args.output.push(`<< register ${this.stack[0]} [password censored] ${this.stack[1]}`);	
+			terminal.args.output.push(`<< register ${this.stack[0]} [password censored] ${this.stack[1]}`);
 			terminal.socket.send(`register ${this.stack[0]} ${this.stack[2]} ${this.stack[1]}`);
 
 			terminal.localLock = false;

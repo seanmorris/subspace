@@ -1,0 +1,9 @@
+/*.terminal .output p {
+	flex-wrap: wrap;
+}
+
+.terminal .output p > span {
+	display: contents;
+	text-indent:  0em;
+}
+*/

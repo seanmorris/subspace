@@ -1,4 +1,4 @@
-import { Task } from '../Task';
+import { Task } from 'subspace-console/Task';
 
 const Accept = Symbol('accept');
 
@@ -6,27 +6,30 @@ export class RtcClient extends Task
 {
 	static helpText = 'RTC Client.';
 	static useText  = '';
-	
+
 	title     = 'RTC Client Task';
 	connected = false;
 
 	init()
 	{
-		const rtcConfig = {iceServers: [
-			{urls: 'stun:stun1.l.google.com:19302'},
-			{urls: 'stun:stun2.l.google.com:19302'}
-		]};
+		const rtcConfig = {
+			iceServers: [
+			// 	{urls: 'stun:stun1.l.google.com:19302'},
+			// 	{urls: 'stun:stun2.l.google.com:19302'}
+			]
+		};
 
 		this.peerClient = new RTCPeerConnection(rtcConfig);
 
-		this.peerClient.addEventListener('icecandidate', (event) => {
-			console.log(event.candidate);
+		this.peerClient.addEventListener('icecandidate', event => {
+			if(!event.candidate)
+			{
+				return;
+			}
 
-			let localDescription = JSON.stringify(
-				this.peerClient.localDescription, null, 4
-			);
+			let localDescription = JSON.stringify(this.peerClient.localDescription);
 
-			this.print('Client description');
+			this.print('Client Offer');
 
 			this.print(localDescription);
 		});
@@ -67,7 +70,7 @@ export class RtcClient extends Task
 
 		return new Promise(accept => {
 			this[Accept] = accept;
-		});	
+		});
 	}
 
 	main(input)
@@ -91,7 +94,7 @@ export class RtcClient extends Task
 	{
 		if (!answerString)
 		{
-			this.print(`Please supply SDP offer string.`);
+			this.print(`Please supply SDP answer string.`);
 			return;
 		}
 

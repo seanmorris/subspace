@@ -1,4 +1,4 @@
-import { Task } from '../Task';
+import { Task } from 'subspace-console/Task';
 
 const Accept = Symbol('accept');
 
@@ -12,19 +12,24 @@ export class RtcServer extends Task
 
 	init()
 	{
-		const rtcConfig = {iceServers: [
-			{urls: 'stun:stun1.l.google.com:19302'},
-			{urls: 'stun:stun2.l.google.com:19302'}
-		]};
+		const rtcConfig = {
+			// iceServers: [
+			// 	{urls: 'stun:stun1.l.google.com:19302'},
+			// 	{urls: 'stun:stun2.l.google.com:19302'}
+			// ]
+		};
 
 		this.peerServer = new RTCPeerConnection(rtcConfig);
 
-		this.peerServer.addEventListener('icecandidate', () => {
-			let localDescription = JSON.stringify(
-				this.peerServer.localDescription, null, 4
-			);
+		this.peerServer.addEventListener('icecandidate', event => {
+			if(!event.candidate)
+			{
+				return;
+			}
 
-			this.print('Server description');
+			let localDescription = JSON.stringify(this.peerServer.localDescription);
+
+			this.print('Server Answer');
 
 			this.print(localDescription);
 		});
@@ -70,7 +75,7 @@ export class RtcServer extends Task
 
 		return new Promise(accept => {
 			this[Accept] = accept;
-		});	
+		});
 	}
 
 	main(input)
@@ -98,13 +103,13 @@ export class RtcServer extends Task
 
 		this.peerServer.createAnswer(
 			(answer) => {
-				
+
 				this.peerServer.setLocalDescription(answer);
-			
+
 			}, (error) => {
-				
+
 				console.error(error);
-				
+
 				this.printErr(`Unexpected exception.`);
 
 				this[Accept]();
@@ -114,6 +119,6 @@ export class RtcServer extends Task
 
 	done()
 	{
-		
+
 	}
 }

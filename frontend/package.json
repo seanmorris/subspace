@@ -10,10 +10,11 @@
     "build": "brunch build --production"
   },
   "dependencies": {
-    "curvature": "^0.0.56",
+    "curvature": "^0.0.60",
     "subspace-client": "^0.0.3"
   },
   "devDependencies": {
+    "babel-plugin-macros": "^2.8.0",
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.7",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
@@ -26,6 +27,7 @@
     "clean-css-brunch": "^3",
     "terser-brunch": "^4",
     "raw-brunch": "^1.0.2",
-    "uglify-es-brunch": "^1"
+    "uglify-es-brunch": "^1",
+    "rawquire": "^0.0.0"
   }
 }
