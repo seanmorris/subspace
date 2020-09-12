@@ -87,16 +87,6 @@ body {
 	filter: saturate(250%) brightness(200%);
 }
 
-@keyframes scan {
-	from {
-		background-position: 0px 0px;
-	}
-	to {
-		background-position: 0px -12px;
-	}
-}
-
-
 .nynex.window {
 	background: #c0c0c0;
 	border: 2px #c0c0c0 outset;
@@ -194,7 +184,6 @@ html, body {
 	height: 100%;
 	margin: 0px;
 	box-sizing: border-box;
-	word-break: break-all;
 }
 
 .terminal, .terminal * {
