@@ -8,6 +8,8 @@ import { Path    }  from './Path';
 
 import { rawquire } from 'rawquire/rawquire.macro';
 
+import { Socket }   from 'subspace-client/Socket';
+
 console.log(Path);
 
 const view = new Console({path: Path, init: '/init_rc'});

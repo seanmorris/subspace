@@ -22,8 +22,10 @@ exports.hooks = {
 		exec(
 			`cd ../curvature-2 && npm link`
 				+ ` && cd ../subspace-console && npm link`
+				+ ` && cd ../subspace-client && npm link`
 				+ ` && cd ../frontend && npm link curvature`
 				+ ` && cd ../frontend && npm link subspace-console`
+				+ ` && cd ../frontend && npm link subspace-client`
 			// `cd ../frontend && npm unlink --no-save curvature`
 			// `ls -la`
 			, (err, stdout, stderr)=>{

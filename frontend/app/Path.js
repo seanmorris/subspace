@@ -11,10 +11,12 @@ import { RtcClient }  from './tasks/RtcClient';
 import { RtcServer }  from './tasks/RtcServer';
 
 import { PublishBytes } from './tasks/PublishBytes';
-import { PublishFile }  from './tasks/PublishFile';
-import { WatchImages }  from './tasks/WatchImages';
-import { PublishAjax }  from './tasks/PublishAjax';
-import { Connection }   from './tasks/Connection';
+import { PublishFile  } from './tasks/PublishFile';
+import { SayText      } from './tasks/SayText';
+import { WatchImages  } from './tasks/WatchImages';
+import { PublishAjax  } from './tasks/PublishAjax';
+import { Connection   } from './tasks/Connection';
+
 import { Theme }        from './tasks/Theme';
 
 export const Path = {
@@ -28,6 +30,7 @@ export const Path = {
 	, pub:       PublishBytes
 	, pubajax:   PublishAjax
 	, pubfile:   PublishFile
+	, say:       SayText
 	, images:    WatchImages
 	, login:     Login
 	, register:  Register

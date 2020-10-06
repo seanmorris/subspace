@@ -1,6 +1,6 @@
 import { Config } from 'Config';
 import { Socket } from 'subspace-client/Socket';
-import { Task } from 'subspace-console/Task';
+import { Task   } from 'subspace-console/Task';
 
 export class PublishBytes extends Task
 {

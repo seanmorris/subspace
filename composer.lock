@@ -305,12 +305,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/ids.git",
-                "reference": "d5d046b5f2080cd0c6cd7508a580b38807ba3b59"
+                "reference": "8e07fc8b8b03ab855fc3d19fd21941203c911bbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/ids/zipball/d5d046b5f2080cd0c6cd7508a580b38807ba3b59",
-                "reference": "d5d046b5f2080cd0c6cd7508a580b38807ba3b59",
+                "url": "https://api.github.com/repos/seanmorris/ids/zipball/8e07fc8b8b03ab855fc3d19fd21941203c911bbd",
+                "reference": "8e07fc8b8b03ab855fc3d19fd21941203c911bbd",
                 "shasum": ""
             },
             "require-dev": {
@@ -338,7 +338,7 @@
                 "source": "https://github.com/seanmorris/ids/tree/master",
                 "issues": "https://github.com/seanmorris/ids/issues"
             },
-            "time": "2020-09-05T11:24:58+00:00"
+            "time": "2020-09-23T21:08:26+00:00"
         },
         {
             "name": "seanmorris/kallisti",
@@ -416,12 +416,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/PressKit.git",
-                "reference": "5d5560a713cfcdcd5c6af5eda821cb59c0ab8b80"
+                "reference": "0f2b4c1fd74f3b572d5ea2199fc0e0aa517e01e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/PressKit/zipball/5d5560a713cfcdcd5c6af5eda821cb59c0ab8b80",
-                "reference": "5d5560a713cfcdcd5c6af5eda821cb59c0ab8b80",
+                "url": "https://api.github.com/repos/seanmorris/PressKit/zipball/0f2b4c1fd74f3b572d5ea2199fc0e0aa517e01e5",
+                "reference": "0f2b4c1fd74f3b572d5ea2199fc0e0aa517e01e5",
                 "shasum": ""
             },
             "require": {
@@ -452,7 +452,7 @@
                 "source": "https://github.com/seanmorris/PressKit/tree/master",
                 "issues": "https://github.com/seanmorris/PressKit/issues"
             },
-            "time": "2020-08-29T19:58:38+00:00"
+            "time": "2020-09-26T01:54:35+00:00"
         },
         {
             "name": "seanmorris/subspace",
@@ -544,12 +544,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/simpletest/simpletest.git",
-                "reference": "140876ef9ac9a10f884c3657f022829fc5ce64d2"
+                "reference": "c95c134103987986f1ed022826d531ef3c517465"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simpletest/simpletest/zipball/140876ef9ac9a10f884c3657f022829fc5ce64d2",
-                "reference": "140876ef9ac9a10f884c3657f022829fc5ce64d2",
+                "url": "https://api.github.com/repos/simpletest/simpletest/zipball/c95c134103987986f1ed022826d531ef3c517465",
+                "reference": "c95c134103987986f1ed022826d531ef3c517465",
                 "shasum": ""
             },
             "require": {
@@ -616,7 +616,7 @@
                 "testing",
                 "unit-test"
             ],
-            "time": "2020-04-26T13:57:35+00:00"
+            "time": "2020-09-24T11:38:31+00:00"
         }
     ],
     "aliases": [],
