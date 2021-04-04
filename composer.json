@@ -1,5 +1,5 @@
 {
-    "name": "SeanMorris/SubSpaceTerminal",
+    "name": "seanmorris/subspaceterminal",
     "description": "Kalisti websocket playground.",
     "authors": [
         {
@@ -27,27 +27,27 @@
         }
 	},
 	"repositories": [
-        {   
+        {
             "type": "vcs",
             "url":  "git@github.com:seanmorris/ids.git"
         },
-        {   
+        {
             "type": "vcs",
             "url": "git@github.com:seanmorris/presskit.git"
         },
-        {   
+        {
             "type": "vcs",
             "url": "git@github.com:seanmorris/message.git"
         },
-        {   
+        {
             "type": "vcs",
             "url": "git@github.com:seanmorris/access.git"
         },
-        {   
+        {
             "type": "vcs",
             "url": "git@github.com:seanmorris/kallisti.git"
         },
-        {   
+        {
             "type": "vcs",
             "url": "git@github.com:seanmorris/subspace-server.git"
         }

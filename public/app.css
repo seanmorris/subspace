@@ -52,6 +52,10 @@ body {
 	outline: none;
 }
 
+.terminal input[type=file] {
+	display: none;
+}
+
 .terminal .submit {
 	font-family: inherit;
 	position: fixed;

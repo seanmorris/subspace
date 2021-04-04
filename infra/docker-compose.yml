@@ -27,7 +27,7 @@ services:
       - ../:/app
     depends_on:
       - is.seanmorr.subspace-terminal.database
-    
+
   is.seanmorr.subspace-terminal.database:
     image: mysql:5.7
     restart: always
@@ -53,16 +53,16 @@ services:
     depends_on:
       - is.seanmorr.subspace-terminal.database
 
-  is.seanmorr.subspace-terminal.updater:
-    build:
-      context: ../
-      dockerfile: infra/updater.Dockerfile
-    image: seanmorris/subspace-terminal-updater
-    restart: on-failure
-    volumes:
-      - ../:/app
-    depends_on:
-      - is.seanmorr.subspace-terminal.database
+  # is.seanmorr.subspace-terminal.updater:
+  #   build:
+  #     context: ../
+  #     dockerfile: infra/updater.Dockerfile
+  #   image: seanmorris/subspace-terminal-updater
+  #   restart: on-failure
+  #   volumes:
+  #     - ../:/app
+  #   depends_on:
+  #     - is.seanmorr.subspace-terminal.database
 
   is.seanmorr.subspace-terminal.watcher:
     build:
@@ -89,22 +89,22 @@ services:
     volumes:
       - "../data/global/rabbitMq/enabled_plugins:/etc/rabbitmq/enabled_plugins"
 
-  is.seanmorr.subspace-terminal.composer:
-    build:
-      context: ../
-      dockerfile: infra/composer.Dockerfile
-    image: seanmorris/subspace-terminal-composer
-    restart: on-failure
-    volumes:
-      - ../:/app
-      - ../data/local/composer/:/root/.composer/
-  
-  is.seanmorr.subspace-terminal.certbot:
-    image:   certbot/certbot
-    command: renew
-    volumes:
-      - ../data/local/certbot:/etc/letsencrypt/live/
-  
+  # is.seanmorr.subspace-terminal.composer:
+  #   build:
+  #     context: ../
+  #     dockerfile: infra/composer.Dockerfile
+  #   image: seanmorris/subspace-terminal-composer
+  #   restart: on-failure
+  #   volumes:
+  #     - ../:/app
+  #     - ../data/local/composer/:/root/.composer/
+
+  # is.seanmorr.subspace-terminal.certbot:
+  #   image:   certbot/certbot
+  #   command: renew
+  #   volumes:
+  #     - ../data/local/certbot:/etc/letsencrypt/live/
+
   # is.seanmorr.subspace-terminal.fakecert:
   #   image: vishnunair/docker-mkcert:latest
   #   environment:

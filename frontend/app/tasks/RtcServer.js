@@ -71,7 +71,7 @@ export class RtcServer extends Task
 
 		});
 
-		this.printErr(`Please supply SDP offer string.`);
+		this.printErr(`Waiting for SDP offer string...`);
 
 		return new Promise(accept => {
 			this[Accept] = accept;
