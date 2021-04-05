@@ -498,12 +498,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/kallisti.git",
-                "reference": "d59d9e1457ad132dc6748bbbbdb514dc311e53a9"
+                "reference": "dedc27da64ea0d3395a312399ac1ca14b4c5e540"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/kallisti/zipball/d59d9e1457ad132dc6748bbbbdb514dc311e53a9",
-                "reference": "d59d9e1457ad132dc6748bbbbdb514dc311e53a9",
+                "url": "https://api.github.com/repos/seanmorris/kallisti/zipball/dedc27da64ea0d3395a312399ac1ca14b4c5e540",
+                "reference": "dedc27da64ea0d3395a312399ac1ca14b4c5e540",
                 "shasum": ""
             },
             "require-dev": {
@@ -528,7 +528,7 @@
                 "source": "https://github.com/seanmorris/kallisti/tree/master",
                 "issues": "https://github.com/seanmorris/kallisti/issues"
             },
-            "time": "2019-07-21T23:15:36+00:00"
+            "time": "2021-04-04T12:36:07+00:00"
         },
         {
             "name": "seanmorris/message",
@@ -615,12 +615,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/subspace-server.git",
-                "reference": "e8ab4904df5e38c69a56963b5b01a1e69e821a56"
+                "reference": "c3eb928d069c9af42ed33f0b079bef0dfe926762"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/subspace-server/zipball/e8ab4904df5e38c69a56963b5b01a1e69e821a56",
-                "reference": "e8ab4904df5e38c69a56963b5b01a1e69e821a56",
+                "url": "https://api.github.com/repos/seanmorris/subspace-server/zipball/c3eb928d069c9af42ed33f0b079bef0dfe926762",
+                "reference": "c3eb928d069c9af42ed33f0b079bef0dfe926762",
                 "shasum": ""
             },
             "require": {
@@ -656,7 +656,7 @@
                 "source": "https://github.com/seanmorris/subspace-server/tree/master",
                 "issues": "https://github.com/seanmorris/subspace-server/issues"
             },
-            "time": "2020-10-06T04:26:55+00:00"
+            "time": "2021-04-05T02:47:59+00:00"
         },
         {
             "name": "seanmorris/theme",

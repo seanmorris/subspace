@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8">
+  <meta type="x-build-id" content = "0x29a-{{ _.BUILD_TAG }}">
+  <meta type="x-build-time" content = "{{ _.BUILD_TIME }}">
+  <meta type="x-build-localtime" content = "{{ _.BUILD_LOCALTIME }}">
   <meta name="viewport" content="width=800">
-  <link rel="stylesheet" href="/app.css">
-  <script src="/app.js"></script>
+  <link rel = "stylesheet" href = "/app.css?release={{ _.BUILD_TAG }}-t_{{ _.BUILD_TIME }}">
+  <script src="/vendor.js?release={{ _.BUILD_TAG }}-t_<<< _.BUILD_TIME >>>"></script>
+  <script src="/curvature.js?release={{ _.BUILD_TAG }}-t_((( _.BUILD_TIME )))"></script>
+  <script src="/app.js?release={{ _.BUILD_TAG }}-t_{{ _.BUILD_TIME }}"></script>
   <script>require('initialize');</script>
 </head>
 <body></body>

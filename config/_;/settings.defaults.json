@@ -1,0 +1,26 @@
+{
+	 "entrypoint": "SeanMorris\\SubSpaceTerminal\\WebRoute",
+	 "socketEntryPoint": "SeanMorris\\SubSpaceTerminal\\SocketRoute",
+	 "logLevel": "info",
+	 "public": "/app/public",
+	 "databases": {
+			"main": {
+				 "connection": "mysql:dbname=subspace-terminal;host=database;",
+				 "username": "subspace-terminal",
+				 "password": "password"
+			},
+			"slave": {
+				 "connection": "mysql:dbname=subspace-terminal;host=database;",
+				 "username": "subspace-terminal",
+				 "password": "password"
+			}
+	 },
+	 "rabbitMq": {
+			"default": {
+				 "server": "rabbit",
+				 "port": 5672,
+				 "user": "rabbitmq",
+				 "pass": "rabbitmq"
+			}
+	 }
+}

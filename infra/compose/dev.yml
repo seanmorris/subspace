@@ -1,40 +1,42 @@
 version: '3'
 services:
 
-  is.seanmorr.subspace-terminal.web:
+  web:
     build:
-      context: ../
-      dockerfile: infra/app.Dockerfile
+      context: ../../
+      dockerfile: ${ROOTDIR}/infra/docker/app.Dockerfile
     image: seanmorris/subspace-terminal-web
     restart: always
     ports:
       - "80:80"
     volumes:
-      - ../:/app
+      - ${ROOTDIR}/:/app
       # - ../data/local/certbot:/etc/letsencrypt/live/subspace2.seanmorr.is/
     depends_on:
-      - is.seanmorr.subspace-terminal.database
+      - database
 
-  is.seanmorr.subspace-terminal.socket:
+  socket:
     build:
-      context: ../
-      dockerfile: infra/socket.Dockerfile
+      context: ../../
+      dockerfile: ${ROOTDIR}/infra/docker/socket.Dockerfile
+      args:
+        ROOTDIR: ${OUTROOTDIR}
     image: seanmorris/subspace-terminal-socket
     restart: always
     ports:
       - "9998:9998"
     volumes:
-      - ../:/app
+      - ${ROOTDIR}/:/app
     depends_on:
-      - is.seanmorr.subspace-terminal.database
+      - database
 
-  is.seanmorr.subspace-terminal.database:
+  database:
     image: mysql:5.7
     restart: always
     ports:
       - "9896:3306"
     volumes:
-      - is.seanmorr.subspace-terminal.schema:/var/lib/mysql
+      - schema:/var/lib/mysql
     environment:
       MYSQL_USER:          'subspace-terminal'
       MYSQL_DATABASE:      'subspace-terminal'
@@ -42,40 +44,32 @@ services:
       MYSQL_ROOT_PASSWORD: 'supersecret'
     command: ['mysqld', '--character-set-server=utf8mb4']
 
-  is.seanmorr.subspace-terminal.worker:
+  worker:
     build:
-      context: ../
-      dockerfile: infra/worker.Dockerfile
+      context: ../../
+      dockerfile: ${ROOTDIR}/infra/docker/worker.Dockerfile
     image: seanmorris/subspace-terminal-worker
     restart: on-failure
     volumes:
-      - ../:/app
+      - ${ROOTDIR}/:/app
     depends_on:
-      - is.seanmorr.subspace-terminal.database
+      - database
 
-  # is.seanmorr.subspace-terminal.updater:
-  #   build:
-  #     context: ../
-  #     dockerfile: infra/updater.Dockerfile
-  #   image: seanmorris/subspace-terminal-updater
-  #   restart: on-failure
-  #   volumes:
-  #     - ../:/app
-  #   depends_on:
-  #     - is.seanmorr.subspace-terminal.database
-
-  is.seanmorr.subspace-terminal.watcher:
+  watcher:
     build:
-      context: ../
-      dockerfile: infra/watcher.Dockerfile
+      context: ../../
+      dockerfile: ${ROOTDIR}/infra/docker/watcher.Dockerfile
     image: seanmorris/subspace-terminal-watcher
     ports:
       - "9485:9485"
       - "3333:3333"
     volumes:
-      - ../:/app
+      - ${ROOTDIR}/:/app
+    env_file:
+      - ${ROOTDIR}/.env
+      - ${ROOTDIR}/.lock_env
 
-  is.seanmorr.subspace-terminal.rabbit:
+  rabbit:
     image: "rabbitmq:3-management"
     restart: always
     environment:
@@ -87,25 +81,25 @@ services:
       - "19994:15672"
       - "9994:5672"
     volumes:
-      - "../data/global/rabbitMq/enabled_plugins:/etc/rabbitmq/enabled_plugins"
+      - ${ROOTDIR}/data/global/rabbitMq/enabled_plugins:/etc/rabbitmq/enabled_plugins
 
-  # is.seanmorr.subspace-terminal.composer:
+  # composer:
   #   build:
-  #     context: ../
-  #     dockerfile: infra/composer.Dockerfile
+  #     context: ../../
+  #     dockerfile: ${ROOTDIR}/infra/docker/composer.Dockerfile
   #   image: seanmorris/subspace-terminal-composer
   #   restart: on-failure
   #   volumes:
-  #     - ../:/app
-  #     - ../data/local/composer/:/root/.composer/
+  #     - ${ROOTDIR}/:/app
+  #     - ${ROOTDIR}/data/local/composer/:/root/.composer/
 
-  # is.seanmorr.subspace-terminal.certbot:
+  # certbot:
   #   image:   certbot/certbot
   #   command: renew
   #   volumes:
   #     - ../data/local/certbot:/etc/letsencrypt/live/
 
-  # is.seanmorr.subspace-terminal.fakecert:
+  # fakecert:
   #   image: vishnunair/docker-mkcert:latest
   #   environment:
   #     domain: localhost
@@ -113,5 +107,5 @@ services:
   #     - ../data/local/certbot/subspace2.seanmorr.is:/root/.local/share/mkcert
 
 volumes:
-  is.seanmorr.subspace-terminal.schema:
+  schema:
     driver: "local"

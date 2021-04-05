@@ -1,8 +1,4 @@
-import { Config } from 'Config';
-import { Socket } from 'subspace-client/Socket';
 import { Task } from 'subspace-console/Task';
-
-const Accept = Symbol('accept');
 
 export class Theme extends Task
 {

@@ -1,3 +1,5 @@
+import { Echo }       from './tasks/Echo';
+import { Parse }      from './tasks/Parse';
 import { Lower }      from './tasks/Lower';
 import { Upper }      from './tasks/Upper';
 import { Prefix }     from './tasks/Prefix';
@@ -17,10 +19,14 @@ import { WatchImages  } from './tasks/WatchImages';
 import { PublishAjax  } from './tasks/PublishAjax';
 import { Connection   } from './tasks/Connection';
 
+import { CoTask   }     from './tasks/CoTask';
+
 import { Theme }        from './tasks/Theme';
 
 export const Path = {
 	countdown:   Countdown
+	, echo:      Echo
+	, parse:     Parse
 	, upper:     Upper
 	, lower:     Lower
 	, prefix:    Prefix
@@ -32,10 +38,14 @@ export const Path = {
 	, pubfile:   PublishFile
 	, say:       SayText
 	, images:    WatchImages
+
 	, login:     Login
 	, register:  Register
+
 	, rtcc:      RtcClient
 	, rtcs:      RtcServer
 	, connect:   Connection
 	, theme:     Theme
+
+	, cotask:    CoTask
 };

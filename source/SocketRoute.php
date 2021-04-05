@@ -23,39 +23,6 @@ class SocketRoute extends \SeanMorris\SubSpace\EntryRoute
 		]);
 	}
 
-	// /**
-	//  * Auth via JWT.
-	//  */
-	// public function auth($router)
-	// {
-	// 	$path = clone $router->path();
-	// 	$args = $path->consumeNodes();
-
-	// 	if($tokenContent = \SeanMorris\SubSpace\JwtToken::verify($args[0]))
-	// 	{
-	// 		$tokenContent = json_decode($tokenContent);
-
-	// 		if($tokenContent->uid)
-	// 		{
-	// 			$user = \SeanMorris\Access\User::loadOneByPublicId(
-	// 				$tokenContent->uid
-	// 			);
-
-	// 			if($user)
-	// 			{
-	// 				$router->contextSet('__authed', TRUE);
-	// 				$router->contextSet('__persistent', $user);
-
-	// 				$agent->contextSet('__persistent', $user);
-
-	// 				return 'authed & logged in.';
-	// 			}
-	// 		}
-
-	// 		return parent::auth($router);
-	// 	}
-	// }
-
 	/**
 	 * Roll a 64 bit die.
 	 */
@@ -101,7 +68,7 @@ class SocketRoute extends \SeanMorris\SubSpace\EntryRoute
 		}
 
 		return (int) round(microtime(TRUE) * 1000);
-	}	
+	}
 
 	/**
 	 * Print the help page.
