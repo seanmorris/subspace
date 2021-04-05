@@ -3,9 +3,9 @@ const { exec } = require('child_process');
 exports.files = {
   javascripts: {
 		joinTo: {
-			'app.js': /app\/*/
-			, 'curvature.js': /node_modules\/curvature\/.+/
-			, 'vendor.js': /node_modules\/((?!curvature).)+\/.+?/
+			'app.js': /^app/
+			, 'curvature.js': /^node_modules\/curvature/
+			, 'vendor.js': /^node_modules\/((?!curvature))/
 		}
 	},
 

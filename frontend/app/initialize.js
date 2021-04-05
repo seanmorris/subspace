@@ -1,11 +1,11 @@
-import { Tag      }  from 'curvature/base/Tag';
-import { RuleSet  }  from 'curvature/base/RuleSet';
-import { Router   }  from 'curvature/base/Router';
+import { Tag      } from 'curvature/base/Tag';
+import { RuleSet  } from 'curvature/base/RuleSet';
+import { Router   } from 'curvature/base/Router';
 
-import { Console  }  from 'subspace-console/Console';
-import { Path     }  from './Path';
+import { Console  } from 'subspace-console/Console';
+import { Path     } from './Path';
 import { rawquire } from 'rawquire/rawquire.macro';
-import { Socket   }   from 'subspace-client/Socket';
+import { Socket   } from 'subspace-client/Socket';
 
 const view = new Console({
 	path: Path, init: '/init_rc'

@@ -12,17 +12,13 @@ Welcome to the subspace server, <?=$name ?? 'USER ' . $uid;?>!
 
 <?php endif; ?>
 Reminder!
-LOCAL commands start with a "/". REMOTE commands are
-bare, at least until the connection ends. Hit Esc to
-switch to local-mode.
+LOCAL commands start with a "/". REMOTE commands are bare
+while in REMOTE MODE. Hit Esc to switch to LOCAL MODE.
 
-Type /theme to switch darkmode/lightmode.
-
-Type '/commands' for a list of LOCAL commands.
-
-Type 'commands' for a list of REMOTE commands.
-
-Type 'help' or 'help COMMAND' for help working with REMOTE.
+- Type '/theme' to switch darkmode/lightmode.
+- Type '/commands' for a list of LOCAL commands.
+- Type 'commands' for a list of REMOTE commands.
+- Type 'help' or 'help COMMAND' for help working with REMOTE.
 <? //Type '/help' or '/help COMMAND' for help working with LOCAL. ?>
 
 The shorthand syntax '/COMMAND?' also works for help text.
