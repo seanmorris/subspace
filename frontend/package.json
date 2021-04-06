@@ -1,5 +1,5 @@
 {
-  "name": "subspace-console",
+  "name": "subspace-demo",
   "description": "Subspace Debugging CLI",
   "private": false,
   "author": "Sean Morris",
@@ -10,14 +10,15 @@
     "build": "brunch build --production"
   },
   "dependencies": {
-    "curvature": "^0.0.66",
-    "subspace-client": "^0.0.3"
+    "curvature": "0.0.66-l",
+    "subspace-client": "0.0.8",
+    "subspace-console": "0.0.1-b"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.8.7",
-    "@babel/plugin-proposal-class-properties": "^7.10.4",
-    "@babel/preset-env": "^7.0.0",
+    "@babel/cli": "^7.13.14",
+    "@babel/core": "^7.13.14",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/preset-env": "^7.13.12",
     "auto-reload-brunch": "^2",
     "babel-brunch": "^7.0.1",
     "babel-minify": "^0.5.1",
@@ -25,9 +26,9 @@
     "brunch": "^3",
     "brunch-preval": "^0.0.3",
     "clean-css-brunch": "^3",
-    "terser-brunch": "^4",
     "raw-brunch": "^1.0.2",
-    "uglify-es-brunch": "^1",
-    "rawquire": "^0.0.0"
+    "rawquire": "^0.0.0",
+    "terser-brunch": "^4",
+    "uglify-es-brunch": "^1"
   }
 }
