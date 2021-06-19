@@ -16,10 +16,10 @@ const buildTime = document.querySelector('meta[type="x-build-localtime"]');
 
 view.rendered.then(() => {
 	view.write(
-		'* \\e[2m\\e[33mSubSpace Console - Kallisti Websockets Playground'
+		'\\e[2m\\e[43m\\e[30m* SubSpace Console - Kallisti Websockets Playground'
 		, `* Version: ${ buildId && buildId.getAttribute('content')}`
 		, `* Built ${ buildTime && buildTime.getAttribute('content')}`
-		, '* ©2018-2021 \\e[2m\\e[33m\\e[4mSean Morris'
+		, '* © 2018-2021 \\e[2m\\e[33m\\e[4mSean Morris'
 	);
 });
 

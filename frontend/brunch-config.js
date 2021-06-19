@@ -46,31 +46,6 @@ exports.plugins = {
 	}
 };
 
-exports.hooks = {
-	preCompile: () => {
-		return new Promise(accept => {
-
-			console.log('About to compile...');
-
-			exec(
-				`cd ../subspace-console && npm link;`
-					+ `cd ../sixgram && npm link;`
-					+ `cd ../curvature-2 && npm link;`
-					+` cd ../frontend; npm link subspace-console curvature sixgram`
-				, (err, stdout, stderr)=>{
-					console.log(err);
-					console.log(stdout);
-					console.log(stderr);
-
-					accept();
-				}
-			)
-
-			accept();
-		});
-	}
-};
-
 exports.npm = {styles: {
 	'subspace-console': ['style/layout.css']
 }}
