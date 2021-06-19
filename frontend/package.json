@@ -10,9 +10,9 @@
     "build": "brunch build --production"
   },
   "dependencies": {
-    "curvature": "0.0.66-l",
+    "curvature": "0.0.66-m",
     "subspace-client": "^0.0.8",
-    "subspace-console": "0.0.1-e"
+    "subspace-console": "0.0.1-f"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.14",
