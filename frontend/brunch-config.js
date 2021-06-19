@@ -17,7 +17,8 @@ exports.files = {
 exports.plugins = {
 	babel: {
 		plugins: ['@babel/plugin-proposal-class-properties', 'macros'],
-		presets: ['@babel/preset-env']
+		presets: [['@babel/preset-env', {
+		}]]
 	},
 
 	raw: {
@@ -45,32 +46,30 @@ exports.plugins = {
 	}
 };
 
-// exports.hooks = {
-// 	preCompile: () => {
-// 		return new Promise(accept => {
+exports.hooks = {
+	preCompile: () => {
+		return new Promise(accept => {
 
-// 			console.log('About to compile...');
+			console.log('About to compile...');
 
-// 			exec(
-// 				`cd ../curvature-2 && npm link`
-// 					// + ` && cd ../subspace-console && npm link`
-// 					// + ` && cd ../subspace-client && npm link`
-// 					+ ` && cd ../frontend && npm unlink curvature`
-// 					+ ` && cd ../frontend && npm unlink subspace-console`
-// 					+ ` && cd ../frontend && npm unlink subspace-client`
-// 				, (err, stdout, stderr)=>{
-// 					console.log(err);
-// 					console.log(stdout);
-// 					console.log(stderr);
+			exec(
+				`cd ../subspace-console && npm link;`
+					+ `cd ../sixgram && npm link;`
+					+ `cd ../curvature-2 && npm link;`
+					+` cd ../frontend; npm link subspace-console curvature sixgram`
+				, (err, stdout, stderr)=>{
+					console.log(err);
+					console.log(stdout);
+					console.log(stderr);
 
-// 					accept();
-// 				}
-// 			)
+					accept();
+				}
+			)
 
-// 			accept();
-// 		});
-// 	}
-// };
+			accept();
+		});
+	}
+};
 
 exports.npm = {styles: {
 	'subspace-console': ['style/layout.css']

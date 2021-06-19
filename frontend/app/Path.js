@@ -15,13 +15,26 @@ import { RtcServer }  from './tasks/RtcServer';
 import { PublishBytes } from './tasks/PublishBytes';
 import { PublishFile  } from './tasks/PublishFile';
 import { SayText      } from './tasks/SayText';
+import { Raw          } from './tasks/Raw';
 import { WatchImages  } from './tasks/WatchImages';
 import { PublishAjax  } from './tasks/PublishAjax';
 import { Connection   } from './tasks/Connection';
 
-import { CoTask   }     from './tasks/CoTask';
+import { CoTask    } from './tasks/CoTask';
+import { AudioTask } from './tasks/AudioTask';
 
-import { Theme }        from './tasks/Theme';
+import { Measure } from './tasks/Measure';
+
+import { Theme } from './tasks/Theme';
+
+const PathHandler = class {
+
+	constructor()
+	{
+
+	}
+
+};
 
 export const Path = {
 	countdown:   Countdown
@@ -38,6 +51,7 @@ export const Path = {
 	, pubfile:   PublishFile
 	, say:       SayText
 	, images:    WatchImages
+	, raw:       Raw
 
 	, login:     Login
 	, register:  Register
@@ -47,5 +61,8 @@ export const Path = {
 	, connect:   Connection
 	, theme:     Theme
 
+	, measure:   Measure
+
 	, cotask:    CoTask
+	, audiotask: AudioTask
 };

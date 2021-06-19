@@ -73,13 +73,13 @@ export class Connection extends Task
 					received = JSON.stringify(received, null, 4);
 				}
 
-				const messageView = new TextMessageView({message: received})
+				// const messageView = new TextMessageView({message: received})
 
-				messageView.preserve = true;
+				// messageView.preserve = true;
 
-				this.finally(()=>messageView.remove());
+				// this.finally(()=>messageView.remove());
 
-				this.term.args.output.push(messageView);
+				this.term.write(received);
 			}
 			else if (event.data instanceof ArrayBuffer)
 			{

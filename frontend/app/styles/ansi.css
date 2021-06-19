@@ -1,0 +1,43 @@
+html {
+	--ansiBlink: ansi-blink 2s infinite;
+
+	/*--base-font: 'perfect_dos_vga_437regular';*/
+	--base-font: 'consolas';
+	/*--base-font: 'Unispace';*/
+
+	--alt-font-no-11: 'Unispace';
+	--alt-font-no-12: 'monospace';
+	--alt-font-no-13: 'perfect_dos_vga_437regular';
+	--alt-font-no-14: 'vcr osd mono';
+	--alt-font-no-15: 'glass tty vt2020';
+	--alt-font-no-16: 'press_start_2pregular';
+	--alt-font-no-17: 'w95faregular';
+	--alt-font-no-18: '8bit_wondernominal';
+	--alt-font-no-19: 'dogica_pixelregular';
+
+	--alt-font-fraktur: 'alagardmedium';
+}
+
+.ansi:empty {
+	display: none;
+}
+
+.ansi:not(:empty) {
+	display: inline-block;
+	min-height: 1.5em;
+	line-height: 1.5em;
+	word-break: break-word;
+	white-space: pre-wrap;
+}
+
+@keyframes ansi-blink {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.25;
+	}
+	100% {
+		opacity: 1;
+	}
+}

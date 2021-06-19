@@ -3,3 +3,19 @@ html, body {
 	margin: 0px;
 	box-sizing: border-box;
 }
+
+.terminal .output p {
+	word-break: break-all;
+}
+
+.terminal .output p > span:first-child {
+	white-space: pre;
+}
+
+span.bytes {
+	text-align: justify;
+}
+
+span.ansi {
+	display: inline !important;
+}

@@ -9,4 +9,4 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 
 WORKDIR "/app"
 
-CMD ["composer", "update", "-vvv"]
+CMD ["composer", "info", "-vvv"]

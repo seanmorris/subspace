@@ -28,3 +28,61 @@
 	src:          url('/DejaVuSansMono-webfont.ttf');
 }
 
+/***/
+
+@font-face {
+    font-family: 'alagardmedium';
+    src: url('fonts/alagard-webfont.woff2') format('woff2'),
+         url('fonts/alagard-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'perfect_dos_vga_437regular';
+    src: url('fonts/perfect_dos_vga_437-webfont.woff2') format('woff2'),
+         url('fonts/perfect_dos_vga_437-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'w95faregular';
+    src: url('fonts/w95fa-webfont.woff2') format('woff2'),
+         url('fonts/w95fa-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'press_start_2pregular';
+    src: url('fonts/pressstart2p-webfont.woff2') format('woff2'),
+         url('fonts/pressstart2p-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: '8bit_wondernominal';
+    src: url('fonts/8-bit_wonder-webfont.woff2') format('woff2'),
+         url('fonts/8-bit_wonder-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'dogica_pixelregular';
+    src: url('fonts/dogicapixel-webfont.woff2') format('woff2'),
+         url('fonts/dogicapixel-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'vcr_osd_monoregular';
+    src: url('fonts/vcr_osd_mono_1.001-webfont.woff2') format('woff2'),
+         url('fonts/vcr_osd_mono_1.001-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}

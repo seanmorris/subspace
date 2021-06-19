@@ -66,7 +66,6 @@ export class RtcServer extends Task
 
 			this.peerServerChannel.addEventListener('message', event => {
 				this.print(`> ${event.data}`);
-				console.log(event);
 			});
 
 		});
@@ -97,6 +96,10 @@ export class RtcServer extends Task
 
 	answer(offerString)
 	{
+		offerString = offerString
+			.replace(/\r/g, '\\r')
+			.replace(/\n/g, '\\n');
+
 		const offer = JSON.parse(offerString);
 
 		this.peerServer.setRemoteDescription(offer);

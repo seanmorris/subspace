@@ -8,14 +8,11 @@ export class ByteView extends View
 
 		this.args.separator = this.args.separator || '';
 
-		this.template = `<span
-			cv-each = "bytes:byte:b"
-			cv-carry = "separator"
-			"><span
+		this.template = `<span cv-each = "bytes:byte:b" class = "bytes"><span
 				class  = "byte"
 				cv-on  = "cvDomAttached:color(event, byte, $view)"
 				cv-ref = "byte:curvature/base/Tag"
-				
+
 			>[[byte]][[separator]]</span></span>`;
 	}
 

@@ -209,7 +209,7 @@ class SocketRoute extends \SeanMorris\SubSpace\EntryRoute
 	{
 		\SeanMorris\SubSpaceTerminal\Queue\AjaxMessage::check(
 			function($message) use($hub){
-				\SeanMorris\Ids\Log::debug($message);
+				\SeanMorris\Ids\Log::error($message);
 
 				$hub->publish(
 					$message['channel']

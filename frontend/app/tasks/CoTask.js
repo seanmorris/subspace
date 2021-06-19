@@ -12,9 +12,6 @@ export class CoTask extends Task
 		const source = `(${(context) => {
 
 			importScripts(context.origin + '/app.js');
-
-			console.log( globalThis );
-
 			importScripts(context.origin + '/curvature.js');
 
 			const View = require('curvature/base/View').View;

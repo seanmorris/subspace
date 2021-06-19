@@ -7,6 +7,7 @@ services:
       dockerfile: ${ROOTDIR}/infra/docker/app.Dockerfile
     image: seanmorris/subspace-terminal-web
     restart: always
+    user: "${UID}:${GID}"
     ports:
       - "80:80"
     volumes:
@@ -23,6 +24,7 @@ services:
         ROOTDIR: ${OUTROOTDIR}
     image: seanmorris/subspace-terminal-socket
     restart: always
+    user: "${UID}:${GID}"
     ports:
       - "9998:9998"
     volumes:
@@ -83,15 +85,15 @@ services:
     volumes:
       - ${ROOTDIR}/data/global/rabbitMq/enabled_plugins:/etc/rabbitmq/enabled_plugins
 
-  # composer:
-  #   build:
-  #     context: ../../
-  #     dockerfile: ${ROOTDIR}/infra/docker/composer.Dockerfile
-  #   image: seanmorris/subspace-terminal-composer
-  #   restart: on-failure
-  #   volumes:
-  #     - ${ROOTDIR}/:/app
-  #     - ${ROOTDIR}/data/local/composer/:/root/.composer/
+  composer:
+    build:
+      context: ../../
+      dockerfile: ${ROOTDIR}/infra/docker/composer.Dockerfile
+    image: seanmorris/subspace-terminal-composer
+    restart: on-failure
+    volumes:
+      - ${ROOTDIR}/:/app
+      - ${ROOTDIR}/data/local/composer/:/root/.composer/
 
   # certbot:
   #   image:   certbot/certbot

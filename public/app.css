@@ -18,6 +18,10 @@ body {
 	flex-wrap: nowrap;
 }
 
+.terminal .output p > span:first-child {
+	white-space: pre;
+}
+
 .terminal .output p > span {
 	display: block;
 }
@@ -91,6 +95,10 @@ body {
 	filter: saturate(250%) brightness(200%);
 }
 
+span.text {
+
+}
+
 .nynex.window {
 	background: #c0c0c0;
 	border: 2px #c0c0c0 outset;
@@ -153,6 +161,50 @@ body {
 }
 */
 
+html {
+	--ansiBlink: ansi-blink 2s infinite;
+
+	/*--base-font: 'perfect_dos_vga_437regular';*/
+	--base-font: 'consolas';
+	/*--base-font: 'Unispace';*/
+
+	--alt-font-no-11: 'Unispace';
+	--alt-font-no-12: 'monospace';
+	--alt-font-no-13: 'perfect_dos_vga_437regular';
+	--alt-font-no-14: 'vcr osd mono';
+	--alt-font-no-15: 'glass tty vt2020';
+	--alt-font-no-16: 'press_start_2pregular';
+	--alt-font-no-17: 'w95faregular';
+	--alt-font-no-18: '8bit_wondernominal';
+	--alt-font-no-19: 'dogica_pixelregular';
+
+	--alt-font-fraktur: 'alagardmedium';
+}
+
+.ansi:empty {
+	display: none;
+}
+
+.ansi:not(:empty) {
+	display: inline-block;
+	min-height: 1.5em;
+	line-height: 1.5em;
+	word-break: break-word;
+	white-space: pre-wrap;
+}
+
+@keyframes ansi-blink {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.25;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
 @font-face {
 	font-family: 'Unispace';
 	font-weight:  normal;
@@ -183,6 +235,64 @@ body {
 	src:          url('/DejaVuSansMono-webfont.ttf');
 }
 
+/***/
+
+@font-face {
+    font-family: 'alagardmedium';
+    src: url('fonts/alagard-webfont.woff2') format('woff2'),
+         url('fonts/alagard-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'perfect_dos_vga_437regular';
+    src: url('fonts/perfect_dos_vga_437-webfont.woff2') format('woff2'),
+         url('fonts/perfect_dos_vga_437-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'w95faregular';
+    src: url('fonts/w95fa-webfont.woff2') format('woff2'),
+         url('fonts/w95fa-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'press_start_2pregular';
+    src: url('fonts/pressstart2p-webfont.woff2') format('woff2'),
+         url('fonts/pressstart2p-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: '8bit_wondernominal';
+    src: url('fonts/8-bit_wonder-webfont.woff2') format('woff2'),
+         url('fonts/8-bit_wonder-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'dogica_pixelregular';
+    src: url('fonts/dogicapixel-webfont.woff2') format('woff2'),
+         url('fonts/dogicapixel-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'vcr_osd_monoregular';
+    src: url('fonts/vcr_osd_mono_1.001-webfont.woff2') format('woff2'),
+         url('fonts/vcr_osd_mono_1.001-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
 
 html, body {
 	height: 100%;
@@ -190,20 +300,46 @@ html, body {
 	box-sizing: border-box;
 }
 
-.terminal, .terminal * {
-	font-family: monospace;
-	font-family: 'Unispace';
-	font-weight: bold;
-	font-size: 9.5pt;
-	line-height: 13pt;
-	text-shadow: 0em 0em 0.25em currentColor;
+.terminal .output p {
+	word-break: break-all;
 }
 
+.terminal .output p > span:first-child {
+	white-space: pre;
+}
+
+span.bytes {
+	text-align: justify;
+}
+
+span.ansi {
+	display: inline !important;
+}
+
+.terminal, .terminal * {
+	font-family: DejaVu;
+	/*font-weight: 300;*/
+	font-size: 12.5pt;
+	/*line-height: 18pt;*/
+	/*text-shadow: 0em 0em 0.15em currentColor;*/
+}
+
+.terminal .output > p {
+	min-height: 18pt;
+}
 
 .terminal {
 	background-color: black;
+	--ansi-black: #555;
+	--ansi-black-dark: #333;
+	--ansi-black-light: #777;
+	/*background-color: #002731;*/
 	color: white;
 	padding: 1em;
+}
+
+.terminal.inverted {
+	background-color: #272731;
 }
 
 .scanlines{
@@ -220,11 +356,13 @@ html, body {
 	animation-duration: 3s;
 	animation-iteration-count: infinite;
 	animation-timing-function: linear;
+	opacity: 0.075;
 }
 
 .terminal.inverted + .scanlines {
 	opacity: 0.125;
 }
+
 @keyframes scan {
 	from {
 		background-position: 0px 0px;

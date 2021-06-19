@@ -72,7 +72,11 @@ class WebRoute extends \SeanMorris\SubSpace\WebRoute
 
 		$message = NULL;
 
-		if(!array_key_exists('message', $_POST))
+		if(array_key_exists('message', $_POST))
+		{
+			$message = $_POST['message'];
+		}
+		else
 		{
 			if($_FILES['message'] && file_exists($_FILES['message']['tmp_name']))
 			{

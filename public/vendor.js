@@ -559,17 +559,23 @@ var _Bag = require("curvature/base/Bag");
 
 var _MeltingText = require("./view/MeltingText");
 
+var _EchoMessage = require("./view/EchoMessage");
+
 var _Task = require("./Task");
 
 var _Path = require("./Path");
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+var _Renderer = require("./ansi/Renderer");
+
+var _Parser = require("./ansi/Parser");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -587,7 +593,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -622,7 +628,7 @@ var Console = /*#__PURE__*/function (_View) {
     _this.tasks = [];
     _this.taskList = new _Bag.Bag();
     _this.taskList.type = _Task.Task;
-    _this.max = 512;
+    _this.max = 10;
     _this.historyCursor = -1;
     _this.history = [];
     _this.env = new Map();
@@ -632,15 +638,13 @@ var Console = /*#__PURE__*/function (_View) {
         return;
       }
 
-      if (_this.args.output.length > _this.max) {
-        var removed = _this.args.output.shift();
-
-        if (_typeof(removed) === 'object') {
-          removed.remove();
-        }
-      }
-
-      _this.scrollToBottom();
+      _this.onNextFrame(function () {
+        // if(this.args.output.filter(x=>x).length > this.max)
+        // {
+        // 	this.args.output.shift();
+        // }
+        _this.scrollToBottom();
+      });
     });
 
     if (allOptions.init) {
@@ -667,26 +671,43 @@ var Console = /*#__PURE__*/function (_View) {
 
         if (command.substring(0, 1) === '/') {
           if (!_this2.args.passwordMode) {
-            _this2.args.output.push(":: ".concat(command));
+            var output = new _EchoMessage.EchoMessage({
+              message: command
+            });
+
+            _this2.args.output.push(output);
           }
 
-          task = _this2.interpret(command.substr(1));
+          var unescaped = _this2.unescape(command.substr(1));
+
+          task = _this2.interpret(unescaped);
         } else if (_this2.tasks.length) {
           if (!_this2.args.passwordMode) {
-            _this2.args.output.push("".concat(_this2.tasks[0].prompt, " ").concat(command));
+            var _output = new _EchoMessage.EchoMessage({
+              message: command,
+              prompt: _this2.tasks[0].prompt
+            });
+
+            _this2.args.output.push(_output);
           }
 
-          task = _this2.tasks[0].write(command) || Promise.resolve();
+          var _unescaped = _this2.unescape(command);
+
+          task = _this2.tasks[0].write(_unescaped) || Promise.resolve();
         } else {
           if (!_this2.args.passwordMode) {
             _this2.args.output.push(":: ".concat(command));
           }
 
-          task = _this2.interpret(command);
+          var _unescaped2 = _this2.unescape(command);
+
+          task = _this2.interpret(_unescaped2);
         }
 
         if (!(task instanceof _Task.Task) && !(task instanceof Promise)) {
           task = Promise.resolve(task);
+
+          _this2.args.output.push(":: ".concat(command));
         }
 
         _this2.historyCursor = -1;
@@ -806,15 +827,27 @@ var Console = /*#__PURE__*/function (_View) {
             _this5.tasks.unshift(task);
 
             var output = function output(event) {
-              var prompt = task.outPrompt || task.prompt || _this5.args.prompt || '::';
+              var line = event.detail;
 
-              _this5.args.output.push("".concat(prompt, " ").concat(event.detail));
+              if (_typeof(line) === 'object') {
+                _this5.args.output.push(line);
+              } else {
+                var prompt = task.outPrompt || task.prompt || _this5.args.prompt || '::';
+
+                var rendered = _this5.parseAnsi(line, prompt);
+
+                _this5.args.output.push(rendered);
+              }
             };
 
             var error = function error(event) {
+              console.error(event);
+              var line = event.detail;
               var errorPrompt = task.errorPrompt || '!!';
 
-              _this5.args.output.push("".concat(errorPrompt, " ").concat(event.detail));
+              var rendered = _this5.parseAnsi(line, errorPrompt);
+
+              _this5.args.output.push(rendered);
             };
 
             task.addEventListener('output', output);
@@ -1047,6 +1080,51 @@ var Console = /*#__PURE__*/function (_View) {
         });
       });
     }
+  }, {
+    key: "parseAnsi",
+    value: function parseAnsi(line, prompt) {
+      line = line.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      var renderer = new _Renderer.Renderer();
+
+      var parsed = _Parser.Parser.parse(line);
+
+      var wrapped = renderer.process(parsed);
+
+      if (!prompt) {
+        return _View2.View.from("<span class =\"ansi\">".concat(wrapped, "</span>"));
+      }
+
+      var promptEsc = prompt.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      var rendered = _View2.View.from("".concat(promptEsc, " <span class =\"ansi\">").concat(wrapped, "</span>"));
+
+      return rendered;
+    }
+  }, {
+    key: "unescape",
+    value: function unescape(string) {
+      return string.replace(/\\n/gm, '\n').replace(/\\r/gm, '\r').replace(/\\t/gm, '\t').replace(/\\e/gm, "\x1B").replace(/\\u001b/gm, "\x1B");
+    }
+  }, {
+    key: "write",
+    value: function write() {
+      for (var _len = arguments.length, lines = new Array(_len), _key = 0; _key < _len; _key++) {
+        lines[_key] = arguments[_key];
+      }
+
+      for (var _i = 0, _lines = lines; _i < _lines.length; _i++) {
+        var line = _lines[_i];
+
+        if (typeof line === 'string') {
+          var unescaped = this.unescape(line);
+          var parsed = this.parseAnsi(unescaped);
+          this.args.output.push(parsed);
+          continue;
+        }
+
+        this.args.output.push(line);
+      }
+    }
   }]);
 
   return Console;
@@ -1078,6 +1156,8 @@ require.register("subspace-console/Task.js", function(exports, require, module) 
   (function() {
     "use strict";
 
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -1091,15 +1171,13 @@ var _Target = require("./mixin/Target");
 
 var _TaskSignals = require("./mixin/TaskSignals");
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
@@ -1121,7 +1199,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -1293,6 +1371,1769 @@ exports.Task = Task;
   })();
 });
 
+require.register("subspace-console/ansi/Colors255.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console");
+  (function() {
+    "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Colors255 = void 0;
+var Colors255 = {
+  "0": {
+    "r": 0,
+    "g": 0,
+    "b": 0
+  },
+  "1": {
+    "r": 128,
+    "g": 0,
+    "b": 0
+  },
+  "2": {
+    "r": 0,
+    "g": 128,
+    "b": 0
+  },
+  "3": {
+    "r": 128,
+    "g": 128,
+    "b": 0
+  },
+  "4": {
+    "r": 0,
+    "g": 0,
+    "b": 128
+  },
+  "5": {
+    "r": 128,
+    "g": 0,
+    "b": 128
+  },
+  "6": {
+    "r": 0,
+    "g": 128,
+    "b": 128
+  },
+  "7": {
+    "r": 192,
+    "g": 192,
+    "b": 192
+  },
+  "8": {
+    "r": 128,
+    "g": 128,
+    "b": 128
+  },
+  "9": {
+    "r": 255,
+    "g": 0,
+    "b": 0
+  },
+  "10": {
+    "r": 0,
+    "g": 255,
+    "b": 0
+  },
+  "11": {
+    "r": 255,
+    "g": 255,
+    "b": 0
+  },
+  "12": {
+    "r": 0,
+    "g": 0,
+    "b": 255
+  },
+  "13": {
+    "r": 255,
+    "g": 0,
+    "b": 255
+  },
+  "14": {
+    "r": 0,
+    "g": 255,
+    "b": 255
+  },
+  "15": {
+    "r": 255,
+    "g": 255,
+    "b": 255
+  },
+  "16": {
+    "r": 0,
+    "g": 0,
+    "b": 0
+  },
+  "17": {
+    "r": 0,
+    "g": 0,
+    "b": 95
+  },
+  "18": {
+    "r": 0,
+    "g": 0,
+    "b": 135
+  },
+  "19": {
+    "r": 0,
+    "g": 0,
+    "b": 175
+  },
+  "20": {
+    "r": 0,
+    "g": 0,
+    "b": 215
+  },
+  "21": {
+    "r": 0,
+    "g": 0,
+    "b": 255
+  },
+  "22": {
+    "r": 0,
+    "g": 95,
+    "b": 0
+  },
+  "23": {
+    "r": 0,
+    "g": 95,
+    "b": 95
+  },
+  "24": {
+    "r": 0,
+    "g": 95,
+    "b": 135
+  },
+  "25": {
+    "r": 0,
+    "g": 95,
+    "b": 175
+  },
+  "26": {
+    "r": 0,
+    "g": 95,
+    "b": 215
+  },
+  "27": {
+    "r": 0,
+    "g": 95,
+    "b": 255
+  },
+  "28": {
+    "r": 0,
+    "g": 135,
+    "b": 0
+  },
+  "29": {
+    "r": 0,
+    "g": 135,
+    "b": 95
+  },
+  "30": {
+    "r": 0,
+    "g": 135,
+    "b": 135
+  },
+  "31": {
+    "r": 0,
+    "g": 135,
+    "b": 175
+  },
+  "32": {
+    "r": 0,
+    "g": 135,
+    "b": 215
+  },
+  "33": {
+    "r": 0,
+    "g": 135,
+    "b": 255
+  },
+  "34": {
+    "r": 0,
+    "g": 175,
+    "b": 0
+  },
+  "35": {
+    "r": 0,
+    "g": 175,
+    "b": 95
+  },
+  "36": {
+    "r": 0,
+    "g": 175,
+    "b": 135
+  },
+  "37": {
+    "r": 0,
+    "g": 175,
+    "b": 175
+  },
+  "38": {
+    "r": 0,
+    "g": 175,
+    "b": 215
+  },
+  "39": {
+    "r": 0,
+    "g": 175,
+    "b": 255
+  },
+  "40": {
+    "r": 0,
+    "g": 215,
+    "b": 0
+  },
+  "41": {
+    "r": 0,
+    "g": 215,
+    "b": 95
+  },
+  "42": {
+    "r": 0,
+    "g": 215,
+    "b": 135
+  },
+  "43": {
+    "r": 0,
+    "g": 215,
+    "b": 175
+  },
+  "44": {
+    "r": 0,
+    "g": 215,
+    "b": 215
+  },
+  "45": {
+    "r": 0,
+    "g": 215,
+    "b": 255
+  },
+  "46": {
+    "r": 0,
+    "g": 255,
+    "b": 0
+  },
+  "47": {
+    "r": 0,
+    "g": 255,
+    "b": 95
+  },
+  "48": {
+    "r": 0,
+    "g": 255,
+    "b": 135
+  },
+  "49": {
+    "r": 0,
+    "g": 255,
+    "b": 175
+  },
+  "50": {
+    "r": 0,
+    "g": 255,
+    "b": 215
+  },
+  "51": {
+    "r": 0,
+    "g": 255,
+    "b": 255
+  },
+  "52": {
+    "r": 95,
+    "g": 0,
+    "b": 0
+  },
+  "53": {
+    "r": 95,
+    "g": 0,
+    "b": 95
+  },
+  "54": {
+    "r": 95,
+    "g": 0,
+    "b": 135
+  },
+  "55": {
+    "r": 95,
+    "g": 0,
+    "b": 175
+  },
+  "56": {
+    "r": 95,
+    "g": 0,
+    "b": 215
+  },
+  "57": {
+    "r": 95,
+    "g": 0,
+    "b": 255
+  },
+  "58": {
+    "r": 95,
+    "g": 95,
+    "b": 0
+  },
+  "59": {
+    "r": 95,
+    "g": 95,
+    "b": 95
+  },
+  "60": {
+    "r": 95,
+    "g": 95,
+    "b": 135
+  },
+  "61": {
+    "r": 95,
+    "g": 95,
+    "b": 175
+  },
+  "62": {
+    "r": 95,
+    "g": 95,
+    "b": 215
+  },
+  "63": {
+    "r": 95,
+    "g": 95,
+    "b": 255
+  },
+  "64": {
+    "r": 95,
+    "g": 135,
+    "b": 0
+  },
+  "65": {
+    "r": 95,
+    "g": 135,
+    "b": 95
+  },
+  "66": {
+    "r": 95,
+    "g": 135,
+    "b": 135
+  },
+  "67": {
+    "r": 95,
+    "g": 135,
+    "b": 175
+  },
+  "68": {
+    "r": 95,
+    "g": 135,
+    "b": 215
+  },
+  "69": {
+    "r": 95,
+    "g": 135,
+    "b": 255
+  },
+  "70": {
+    "r": 95,
+    "g": 175,
+    "b": 0
+  },
+  "71": {
+    "r": 95,
+    "g": 175,
+    "b": 95
+  },
+  "72": {
+    "r": 95,
+    "g": 175,
+    "b": 135
+  },
+  "73": {
+    "r": 95,
+    "g": 175,
+    "b": 175
+  },
+  "74": {
+    "r": 95,
+    "g": 175,
+    "b": 215
+  },
+  "75": {
+    "r": 95,
+    "g": 175,
+    "b": 255
+  },
+  "76": {
+    "r": 95,
+    "g": 215,
+    "b": 0
+  },
+  "77": {
+    "r": 95,
+    "g": 215,
+    "b": 95
+  },
+  "78": {
+    "r": 95,
+    "g": 215,
+    "b": 135
+  },
+  "79": {
+    "r": 95,
+    "g": 215,
+    "b": 175
+  },
+  "80": {
+    "r": 95,
+    "g": 215,
+    "b": 215
+  },
+  "81": {
+    "r": 95,
+    "g": 215,
+    "b": 255
+  },
+  "82": {
+    "r": 95,
+    "g": 255,
+    "b": 0
+  },
+  "83": {
+    "r": 95,
+    "g": 255,
+    "b": 95
+  },
+  "84": {
+    "r": 95,
+    "g": 255,
+    "b": 135
+  },
+  "85": {
+    "r": 95,
+    "g": 255,
+    "b": 175
+  },
+  "86": {
+    "r": 95,
+    "g": 255,
+    "b": 215
+  },
+  "87": {
+    "r": 95,
+    "g": 255,
+    "b": 255
+  },
+  "88": {
+    "r": 135,
+    "g": 0,
+    "b": 0
+  },
+  "89": {
+    "r": 135,
+    "g": 0,
+    "b": 95
+  },
+  "90": {
+    "r": 135,
+    "g": 0,
+    "b": 135
+  },
+  "91": {
+    "r": 135,
+    "g": 0,
+    "b": 175
+  },
+  "92": {
+    "r": 135,
+    "g": 0,
+    "b": 215
+  },
+  "93": {
+    "r": 135,
+    "g": 0,
+    "b": 255
+  },
+  "94": {
+    "r": 135,
+    "g": 95,
+    "b": 0
+  },
+  "95": {
+    "r": 135,
+    "g": 95,
+    "b": 95
+  },
+  "96": {
+    "r": 135,
+    "g": 95,
+    "b": 135
+  },
+  "97": {
+    "r": 135,
+    "g": 95,
+    "b": 175
+  },
+  "98": {
+    "r": 135,
+    "g": 95,
+    "b": 215
+  },
+  "99": {
+    "r": 135,
+    "g": 95,
+    "b": 255
+  },
+  "100": {
+    "r": 135,
+    "g": 135,
+    "b": 0
+  },
+  "101": {
+    "r": 135,
+    "g": 135,
+    "b": 95
+  },
+  "102": {
+    "r": 135,
+    "g": 135,
+    "b": 135
+  },
+  "103": {
+    "r": 135,
+    "g": 135,
+    "b": 175
+  },
+  "104": {
+    "r": 135,
+    "g": 135,
+    "b": 215
+  },
+  "105": {
+    "r": 135,
+    "g": 135,
+    "b": 255
+  },
+  "106": {
+    "r": 135,
+    "g": 175,
+    "b": 0
+  },
+  "107": {
+    "r": 135,
+    "g": 175,
+    "b": 95
+  },
+  "108": {
+    "r": 135,
+    "g": 175,
+    "b": 135
+  },
+  "109": {
+    "r": 135,
+    "g": 175,
+    "b": 175
+  },
+  "110": {
+    "r": 135,
+    "g": 175,
+    "b": 215
+  },
+  "111": {
+    "r": 135,
+    "g": 175,
+    "b": 255
+  },
+  "112": {
+    "r": 135,
+    "g": 215,
+    "b": 0
+  },
+  "113": {
+    "r": 135,
+    "g": 215,
+    "b": 95
+  },
+  "114": {
+    "r": 135,
+    "g": 215,
+    "b": 135
+  },
+  "115": {
+    "r": 135,
+    "g": 215,
+    "b": 175
+  },
+  "116": {
+    "r": 135,
+    "g": 215,
+    "b": 215
+  },
+  "117": {
+    "r": 135,
+    "g": 215,
+    "b": 255
+  },
+  "118": {
+    "r": 135,
+    "g": 255,
+    "b": 0
+  },
+  "119": {
+    "r": 135,
+    "g": 255,
+    "b": 95
+  },
+  "120": {
+    "r": 135,
+    "g": 255,
+    "b": 135
+  },
+  "121": {
+    "r": 135,
+    "g": 255,
+    "b": 175
+  },
+  "122": {
+    "r": 135,
+    "g": 255,
+    "b": 215
+  },
+  "123": {
+    "r": 135,
+    "g": 255,
+    "b": 255
+  },
+  "124": {
+    "r": 175,
+    "g": 0,
+    "b": 0
+  },
+  "125": {
+    "r": 175,
+    "g": 0,
+    "b": 95
+  },
+  "126": {
+    "r": 175,
+    "g": 0,
+    "b": 135
+  },
+  "127": {
+    "r": 175,
+    "g": 0,
+    "b": 175
+  },
+  "128": {
+    "r": 175,
+    "g": 0,
+    "b": 215
+  },
+  "129": {
+    "r": 175,
+    "g": 0,
+    "b": 255
+  },
+  "130": {
+    "r": 175,
+    "g": 95,
+    "b": 0
+  },
+  "131": {
+    "r": 175,
+    "g": 95,
+    "b": 95
+  },
+  "132": {
+    "r": 175,
+    "g": 95,
+    "b": 135
+  },
+  "133": {
+    "r": 175,
+    "g": 95,
+    "b": 175
+  },
+  "134": {
+    "r": 175,
+    "g": 95,
+    "b": 215
+  },
+  "135": {
+    "r": 175,
+    "g": 95,
+    "b": 255
+  },
+  "136": {
+    "r": 175,
+    "g": 135,
+    "b": 0
+  },
+  "137": {
+    "r": 175,
+    "g": 135,
+    "b": 95
+  },
+  "138": {
+    "r": 175,
+    "g": 135,
+    "b": 135
+  },
+  "139": {
+    "r": 175,
+    "g": 135,
+    "b": 175
+  },
+  "140": {
+    "r": 175,
+    "g": 135,
+    "b": 215
+  },
+  "141": {
+    "r": 175,
+    "g": 135,
+    "b": 255
+  },
+  "142": {
+    "r": 175,
+    "g": 175,
+    "b": 0
+  },
+  "143": {
+    "r": 175,
+    "g": 175,
+    "b": 95
+  },
+  "144": {
+    "r": 175,
+    "g": 175,
+    "b": 135
+  },
+  "145": {
+    "r": 175,
+    "g": 175,
+    "b": 175
+  },
+  "146": {
+    "r": 175,
+    "g": 175,
+    "b": 215
+  },
+  "147": {
+    "r": 175,
+    "g": 175,
+    "b": 255
+  },
+  "148": {
+    "r": 175,
+    "g": 215,
+    "b": 0
+  },
+  "149": {
+    "r": 175,
+    "g": 215,
+    "b": 95
+  },
+  "150": {
+    "r": 175,
+    "g": 215,
+    "b": 135
+  },
+  "151": {
+    "r": 175,
+    "g": 215,
+    "b": 175
+  },
+  "152": {
+    "r": 175,
+    "g": 215,
+    "b": 215
+  },
+  "153": {
+    "r": 175,
+    "g": 215,
+    "b": 255
+  },
+  "154": {
+    "r": 175,
+    "g": 255,
+    "b": 0
+  },
+  "155": {
+    "r": 175,
+    "g": 255,
+    "b": 95
+  },
+  "156": {
+    "r": 175,
+    "g": 255,
+    "b": 135
+  },
+  "157": {
+    "r": 175,
+    "g": 255,
+    "b": 175
+  },
+  "158": {
+    "r": 175,
+    "g": 255,
+    "b": 215
+  },
+  "159": {
+    "r": 175,
+    "g": 255,
+    "b": 255
+  },
+  "160": {
+    "r": 215,
+    "g": 0,
+    "b": 0
+  },
+  "161": {
+    "r": 215,
+    "g": 0,
+    "b": 95
+  },
+  "162": {
+    "r": 215,
+    "g": 0,
+    "b": 135
+  },
+  "163": {
+    "r": 215,
+    "g": 0,
+    "b": 175
+  },
+  "164": {
+    "r": 215,
+    "g": 0,
+    "b": 215
+  },
+  "165": {
+    "r": 215,
+    "g": 0,
+    "b": 255
+  },
+  "166": {
+    "r": 215,
+    "g": 95,
+    "b": 0
+  },
+  "167": {
+    "r": 215,
+    "g": 95,
+    "b": 95
+  },
+  "168": {
+    "r": 215,
+    "g": 95,
+    "b": 135
+  },
+  "169": {
+    "r": 215,
+    "g": 95,
+    "b": 175
+  },
+  "170": {
+    "r": 215,
+    "g": 95,
+    "b": 215
+  },
+  "171": {
+    "r": 215,
+    "g": 95,
+    "b": 255
+  },
+  "172": {
+    "r": 215,
+    "g": 135,
+    "b": 0
+  },
+  "173": {
+    "r": 215,
+    "g": 135,
+    "b": 95
+  },
+  "174": {
+    "r": 215,
+    "g": 135,
+    "b": 135
+  },
+  "175": {
+    "r": 215,
+    "g": 135,
+    "b": 175
+  },
+  "176": {
+    "r": 215,
+    "g": 135,
+    "b": 215
+  },
+  "177": {
+    "r": 215,
+    "g": 135,
+    "b": 255
+  },
+  "178": {
+    "r": 215,
+    "g": 175,
+    "b": 0
+  },
+  "179": {
+    "r": 215,
+    "g": 175,
+    "b": 95
+  },
+  "180": {
+    "r": 215,
+    "g": 175,
+    "b": 135
+  },
+  "181": {
+    "r": 215,
+    "g": 175,
+    "b": 175
+  },
+  "182": {
+    "r": 215,
+    "g": 175,
+    "b": 215
+  },
+  "183": {
+    "r": 215,
+    "g": 175,
+    "b": 255
+  },
+  "184": {
+    "r": 215,
+    "g": 215,
+    "b": 0
+  },
+  "185": {
+    "r": 215,
+    "g": 215,
+    "b": 95
+  },
+  "186": {
+    "r": 215,
+    "g": 215,
+    "b": 135
+  },
+  "187": {
+    "r": 215,
+    "g": 215,
+    "b": 175
+  },
+  "188": {
+    "r": 215,
+    "g": 215,
+    "b": 215
+  },
+  "189": {
+    "r": 215,
+    "g": 215,
+    "b": 255
+  },
+  "190": {
+    "r": 215,
+    "g": 255,
+    "b": 0
+  },
+  "191": {
+    "r": 215,
+    "g": 255,
+    "b": 95
+  },
+  "192": {
+    "r": 215,
+    "g": 255,
+    "b": 135
+  },
+  "193": {
+    "r": 215,
+    "g": 255,
+    "b": 175
+  },
+  "194": {
+    "r": 215,
+    "g": 255,
+    "b": 215
+  },
+  "195": {
+    "r": 215,
+    "g": 255,
+    "b": 255
+  },
+  "196": {
+    "r": 255,
+    "g": 0,
+    "b": 0
+  },
+  "197": {
+    "r": 255,
+    "g": 0,
+    "b": 95
+  },
+  "198": {
+    "r": 255,
+    "g": 0,
+    "b": 135
+  },
+  "199": {
+    "r": 255,
+    "g": 0,
+    "b": 175
+  },
+  "200": {
+    "r": 255,
+    "g": 0,
+    "b": 215
+  },
+  "201": {
+    "r": 255,
+    "g": 0,
+    "b": 255
+  },
+  "202": {
+    "r": 255,
+    "g": 95,
+    "b": 0
+  },
+  "203": {
+    "r": 255,
+    "g": 95,
+    "b": 95
+  },
+  "204": {
+    "r": 255,
+    "g": 95,
+    "b": 135
+  },
+  "205": {
+    "r": 255,
+    "g": 95,
+    "b": 175
+  },
+  "206": {
+    "r": 255,
+    "g": 95,
+    "b": 215
+  },
+  "207": {
+    "r": 255,
+    "g": 95,
+    "b": 255
+  },
+  "208": {
+    "r": 255,
+    "g": 135,
+    "b": 0
+  },
+  "209": {
+    "r": 255,
+    "g": 135,
+    "b": 95
+  },
+  "210": {
+    "r": 255,
+    "g": 135,
+    "b": 135
+  },
+  "211": {
+    "r": 255,
+    "g": 135,
+    "b": 175
+  },
+  "212": {
+    "r": 255,
+    "g": 135,
+    "b": 215
+  },
+  "213": {
+    "r": 255,
+    "g": 135,
+    "b": 255
+  },
+  "214": {
+    "r": 255,
+    "g": 175,
+    "b": 0
+  },
+  "215": {
+    "r": 255,
+    "g": 175,
+    "b": 95
+  },
+  "216": {
+    "r": 255,
+    "g": 175,
+    "b": 135
+  },
+  "217": {
+    "r": 255,
+    "g": 175,
+    "b": 175
+  },
+  "218": {
+    "r": 255,
+    "g": 175,
+    "b": 215
+  },
+  "219": {
+    "r": 255,
+    "g": 175,
+    "b": 255
+  },
+  "220": {
+    "r": 255,
+    "g": 215,
+    "b": 0
+  },
+  "221": {
+    "r": 255,
+    "g": 215,
+    "b": 95
+  },
+  "222": {
+    "r": 255,
+    "g": 215,
+    "b": 135
+  },
+  "223": {
+    "r": 255,
+    "g": 215,
+    "b": 175
+  },
+  "224": {
+    "r": 255,
+    "g": 215,
+    "b": 215
+  },
+  "225": {
+    "r": 255,
+    "g": 215,
+    "b": 255
+  },
+  "226": {
+    "r": 255,
+    "g": 255,
+    "b": 0
+  },
+  "227": {
+    "r": 255,
+    "g": 255,
+    "b": 95
+  },
+  "228": {
+    "r": 255,
+    "g": 255,
+    "b": 135
+  },
+  "229": {
+    "r": 255,
+    "g": 255,
+    "b": 175
+  },
+  "230": {
+    "r": 255,
+    "g": 255,
+    "b": 215
+  },
+  "231": {
+    "r": 255,
+    "g": 255,
+    "b": 255
+  },
+  "232": {
+    "r": 8,
+    "g": 8,
+    "b": 8
+  },
+  "233": {
+    "r": 18,
+    "g": 18,
+    "b": 18
+  },
+  "234": {
+    "r": 28,
+    "g": 28,
+    "b": 28
+  },
+  "235": {
+    "r": 38,
+    "g": 38,
+    "b": 38
+  },
+  "236": {
+    "r": 48,
+    "g": 48,
+    "b": 48
+  },
+  "237": {
+    "r": 58,
+    "g": 58,
+    "b": 58
+  },
+  "238": {
+    "r": 68,
+    "g": 68,
+    "b": 68
+  },
+  "239": {
+    "r": 78,
+    "g": 78,
+    "b": 78
+  },
+  "240": {
+    "r": 88,
+    "g": 88,
+    "b": 88
+  },
+  "241": {
+    "r": 98,
+    "g": 98,
+    "b": 98
+  },
+  "242": {
+    "r": 108,
+    "g": 108,
+    "b": 108
+  },
+  "243": {
+    "r": 118,
+    "g": 118,
+    "b": 118
+  },
+  "244": {
+    "r": 128,
+    "g": 128,
+    "b": 128
+  },
+  "245": {
+    "r": 138,
+    "g": 138,
+    "b": 138
+  },
+  "246": {
+    "r": 148,
+    "g": 148,
+    "b": 148
+  },
+  "247": {
+    "r": 158,
+    "g": 158,
+    "b": 158
+  },
+  "248": {
+    "r": 168,
+    "g": 168,
+    "b": 168
+  },
+  "249": {
+    "r": 178,
+    "g": 178,
+    "b": 178
+  },
+  "250": {
+    "r": 188,
+    "g": 188,
+    "b": 188
+  },
+  "251": {
+    "r": 198,
+    "g": 198,
+    "b": 198
+  },
+  "252": {
+    "r": 208,
+    "g": 208,
+    "b": 208
+  },
+  "253": {
+    "r": 218,
+    "g": 218,
+    "b": 218
+  },
+  "254": {
+    "r": 228,
+    "g": 228,
+    "b": 228
+  },
+  "255": {
+    "r": 238,
+    "g": 238,
+    "b": 238
+  }
+};
+exports.Colors255 = Colors255;
+  })();
+});
+
+require.register("subspace-console/ansi/Parser.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console");
+  (function() {
+    "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Parser = void 0;
+
+var _Actions = require("sixgram/Actions");
+
+var _Parser = require("sixgram/Parser");
+
+var tokens = {
+  reset: /\u001b\[(0);?m/,
+  graphics: /\u001b\[(\d+);?(\d+)?;?([\d;]*)?./,
+  escaped: /\\([^e])/,
+  characters: /[\s\S]+?(?=\x1B|$)/
+};
+var modes = {
+  normal: {
+    reset: [_Actions.IGNORE, _Actions.ENTER, _Actions.LEAVE],
+    escaped: [_Actions.IGNORE, _Actions.ENTER, _Actions.LEAVE],
+    graphics: [_Actions.IGNORE, _Actions.ENTER, _Actions.LEAVE],
+    characters: [_Actions.INSERT]
+  }
+};
+var Parser = new _Parser.Parser(tokens, modes);
+exports.Parser = Parser;
+  })();
+});
+
+require.register("subspace-console/ansi/Renderer.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console");
+  (function() {
+    "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Renderer = void 0;
+
+var _Renderer = require("sixgram/Renderer");
+
+var _pallete = require("./pallete");
+
+var _Colors = require("./Colors255");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var audio = new AudioContext();
+var gainNode = audio.createGain();
+gainNode.connect(audio.destination);
+gainNode.gain.value = 10 * 0.01;
+
+var Renderer = /*#__PURE__*/function (_BaseRenderer) {
+  _inherits(Renderer, _BaseRenderer);
+
+  var _super = _createSuper(Renderer);
+
+  function Renderer() {
+    var _this;
+
+    _classCallCheck(this, Renderer);
+
+    _this = _super.call(this, {
+      normal: function normal(chunk, parent) {
+        return _this.setGraphicsMode(chunk, parent);
+      }
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "style", {});
+
+    return _this;
+  }
+
+  _createClass(Renderer, [{
+    key: "reset",
+    value: function reset() {
+      for (var _i = 0, _Object$entries = Object.entries(this.style); _i < _Object$entries.length; _i++) {
+        var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 1),
+            k = _Object$entries$_i[0];
+
+        delete this.style[k];
+      }
+    }
+  }, {
+    key: "beep",
+    value: function beep() {
+      var oscillator = audio.createOscillator();
+      oscillator.connect(gainNode);
+      oscillator.frequency.value = 840;
+      oscillator.type = "square";
+      oscillator.start(audio.currentTime);
+      oscillator.stop(audio.currentTime + 200 * 0.001);
+    }
+  }, {
+    key: "setGraphicsMode",
+    value: function setGraphicsMode(chunk, parent) {
+      if (typeof chunk === 'string') {
+        if (chunk === '') {
+          return false;
+        }
+
+        var styleString = '';
+
+        for (var _i2 = 0, _Object$entries2 = Object.entries(this.style); _i2 < _Object$entries2.length; _i2++) {
+          var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
+              key = _Object$entries2$_i[0],
+              val = _Object$entries2$_i[1];
+
+          styleString += "".concat(key, ": ").concat(val, "; ");
+        }
+
+        return "<span class = \"ansi\" style = \"".concat(styleString, "\">").concat(chunk, "</span>");
+      }
+
+      if (_typeof(chunk) === 'object') {
+        if (chunk.type === 'escaped' && chunk.groups[0] === 'a') {
+          this.beep();
+        }
+
+        if (chunk.type === 'graphics' || chunk.type === 'reset') {
+          for (var g = 0; g < chunk.groups.length; g++) {
+            var group = Number(chunk.groups[g]);
+
+            if (chunk.groups[g] === '') {
+              return false;
+            }
+
+            switch (group) {
+              case 0:
+                for (var _key in this.style) {
+                  delete this.style[_key];
+                }
+
+                break;
+
+              case 1:
+                this.style['filter'] = 'contrast(1.25)'; // this.style['text-shadow'] = '1px 1px 1px rgba(0,0,0,0.25), 0px 0px 1px rgba(0,0,0,0.125)';
+
+                this.style['font-weight'] = 'bold';
+                this.style['opacity'] = 1;
+                break;
+
+              case 2:
+                this.style['filter'] = 'brightness(0.85)';
+                this.style['font-weight'] = 'light';
+                this.style['opacity'] = 0.75;
+                break;
+
+              case 3:
+                this.style['font-style'] = 'italic';
+                break;
+
+              case 4:
+                this.style['text-decoration'] = 'underline';
+                break;
+
+              case 5:
+                this.style['animation'] = 'var(--ansiBlink)';
+                break;
+
+              case 7:
+                this.style['filter'] = 'invert(1)';
+                break;
+
+              case 8:
+                this.style['filter'] = 'contrast(0.5)';
+                this.style['opacity'] = 0.1;
+                break;
+
+              case 9:
+                this.style['text-decoration'] = 'line-through';
+                break;
+
+              case 10:
+                this.style['font-family'] = 'var(--base-font))';
+                break;
+
+              case 11:
+              case 12:
+              case 13:
+              case 14:
+              case 15:
+              case 16:
+              case 17:
+              case 18:
+              case 19:
+                this.style['font-family'] = "var(--alt-font-no-".concat(group, ")");
+                break;
+
+              case 20:
+                this.style['font-family'] = 'var(--alt-font-fraktur)';
+                this.style['font-size'] = '1.1rem';
+                break;
+
+              case 21:
+                this.style['font-weight'] = 'initial';
+                break;
+
+              case 22:
+                this.style['font-weight'] = 'initial';
+                break;
+
+              case 23:
+                this.style['font-weight'] = 'initial';
+                this.style['font-style'] = 'initial';
+                break;
+
+              case 24:
+                this.style['text-decoration'] = 'none';
+                this.style['font-family'] = 'sans-serif';
+                this.style['font-size'] = '12pt';
+                break;
+
+              case 25:
+                this.style['animation'] = 'none';
+                break;
+
+              case 26:
+                this.style['text-transform'] = 'full-width';
+                break;
+
+              case 27:
+                this.style['filter'] = 'initial';
+                break;
+
+              case 28:
+                this.style['opacity'] = 'initial';
+                break;
+
+              case 29:
+                this.style['text-decoration'] = 'initial';
+                break;
+
+              case 30:
+                this.style['color'] = _pallete.pallete.black;
+                break;
+
+              case 31:
+                this.style['color'] = _pallete.pallete.red;
+                break;
+
+              case 32:
+                this.style['color'] = _pallete.pallete.green;
+                break;
+
+              case 33:
+                this.style['color'] = _pallete.pallete.yellow;
+                break;
+
+              case 34:
+                this.style['color'] = _pallete.pallete.blue;
+                break;
+
+              case 35:
+                this.style['color'] = _pallete.pallete.magenta;
+                break;
+
+              case 36:
+                this.style['color'] = _pallete.pallete.cyan;
+                break;
+
+              case 37:
+                this.style['color'] = _pallete.pallete.white;
+                break;
+
+              case 38:
+                if (chunk.groups[1 + g] == 2) {
+                  var _chunk$groups$split = chunk.groups[2 + g].split(';'),
+                      _chunk$groups$split2 = _slicedToArray(_chunk$groups$split, 3),
+                      rd = _chunk$groups$split2[0],
+                      gr = _chunk$groups$split2[1],
+                      bl = _chunk$groups$split2[2];
+
+                  this.style['color'] = "rgb(".concat(rd, ",").concat(gr, ",").concat(bl, ")");
+                }
+
+                if (chunk.groups[1 + g] == 5) {
+                  var _Colors255$Number = _Colors.Colors255[Number(chunk.groups[2 + g])],
+                      _rd = _Colors255$Number.r,
+                      _gr = _Colors255$Number.g,
+                      _bl = _Colors255$Number.b;
+
+                  this.style['color'] = "rgb(".concat(_rd, ",").concat(_gr, ",").concat(_bl, ")");
+                }
+
+                g += 2;
+                break;
+
+              case 39:
+                this.style['color'] = 'var(--fgColor)';
+                break;
+
+              case 40:
+                this.style['background-color'] = _pallete.pallete.black;
+                break;
+
+              case 41:
+                this.style['background-color'] = _pallete.pallete.red;
+                break;
+
+              case 42:
+                this.style['background-color'] = _pallete.pallete.green;
+                break;
+
+              case 43:
+                this.style['background-color'] = _pallete.pallete.yellow;
+                break;
+
+              case 44:
+                this.style['background-color'] = _pallete.pallete.blue;
+                break;
+
+              case 45:
+                this.style['background-color'] = _pallete.pallete.magenta;
+                break;
+
+              case 46:
+                this.style['background-color'] = _pallete.pallete.cyan;
+                break;
+
+              case 47:
+                this.style['background-color'] = _pallete.pallete.white;
+                break;
+
+              case 48:
+                if (chunk.groups[1 + g] == 2) {
+                  var _chunk$groups$split3 = chunk.groups[2 + g].split(';'),
+                      _chunk$groups$split4 = _slicedToArray(_chunk$groups$split3, 3),
+                      _rd2 = _chunk$groups$split4[0],
+                      _gr2 = _chunk$groups$split4[1],
+                      _bl2 = _chunk$groups$split4[2];
+
+                  this.style['background-color'] = "rgb(".concat(_rd2, ",").concat(_gr2, ",").concat(_bl2, ")");
+                }
+
+                if (chunk.groups[1 + g] == 5) {
+                  var _Colors255$Number2 = _Colors.Colors255[Number(chunk.groups[2 + g])],
+                      _rd3 = _Colors255$Number2.r,
+                      _gr3 = _Colors255$Number2.g,
+                      _bl3 = _Colors255$Number2.b;
+
+                  this.style['background-color'] = "rgb(".concat(_rd3, ",").concat(_gr3, ",").concat(_bl3, ")");
+                }
+
+                g += 2;
+                break;
+
+              case 49:
+                this.style['background-color'] = 'var(--bgColor)';
+                break;
+
+              case 50:
+                this.style['text-transform'] = 'initial';
+                break;
+
+              case 51:
+                this.style['border'] = '1px solid currentColor';
+                break;
+
+              case 52:
+                this.style['border'] = '1px solid currentColor';
+                this.style['border-radius'] = '1em';
+                break;
+
+              case 53:
+                this.style['text-decoration'] = 'overline';
+                break;
+
+              case 54:
+                this.style['border'] = 'initial';
+                break;
+
+              case 55:
+                this.style['border'] = 'initial';
+                break;
+            }
+          }
+        }
+
+        return false;
+      }
+    }
+  }]);
+
+  return Renderer;
+}(_Renderer.Renderer);
+
+exports.Renderer = Renderer;
+  })();
+});
+
+require.register("subspace-console/ansi/pallete.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console");
+  (function() {
+    "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.pallete = void 0;
+var pallete = {
+  black: 'var(--ansi-black, #000000)',
+  dBlack: 'var(--ansi-black-dark, #343434)',
+  bBlack: 'var(--ansi-black-light, #888888)',
+  red: 'var(--ansi-red, #c0002c)',
+  dRed: 'var(--ansi-red-dark, #4a132b)',
+  bRed: 'var(--ansi-red-light, #ff7869)',
+  green: 'var(--ansi-green, #80a763)',
+  dGreen: 'var(--ansi-green-dark, #326f38)',
+  bGreen: 'var(--ansi-green-light, #93d393)',
+  yellow: 'var(--ansi-yellow, #e3c651)',
+  dYellow: 'var(--ansi-yellow-dark, #baa447)',
+  bYellow: 'var(--ansi-yellow-light, #fdc253)',
+  blue: 'var(--ansi-blue, #5485c0)',
+  dBlue: 'var(--ansi-blue-dark, #38577d)',
+  bBlue: 'var(--ansi-blue-light, #77aff2)',
+  magenta: 'var(--ansi-magenta, #C61B6E)',
+  dMagenta: 'var(--ansi-magenta-dark, #935894)',
+  bMagenta: 'var(--ansi-magenta-light, #bf83c0)',
+  cyan: 'var(--ansi-cyan, #57c2c0)',
+  dCyan: 'var(--ansi-cyan-dark, #2d5695)',
+  bCyan: 'var(--ansi-cyan-light, #cef6f5)',
+  white: 'var(--ansi-cyan, #e0e0e0)',
+  dWhite: 'var(--ansi-cyan-dark, #b0b0b0)',
+  bWhite: 'var(--ansi-cyan-light, #ffffff)'
+};
+exports.pallete = pallete;
+  })();
+});
+
 require.register("subspace-console/mixin/Target.js", function(exports, require, module) {
   require = __makeRelativeRequire(require, {}, "subspace-console");
   (function() {
@@ -1387,10 +3228,318 @@ _defineProperty(TaskSignals, "CLOSE", 'close');
   })();
 });
 
+require.register("subspace-console/node_modules/sixgram/Actions.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console/node_modules/sixgram");
+  (function() {
+    "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.HOME = exports.LEAVE = exports.ENTER = exports.INSERT = exports.IGNORE = void 0;
+var IGNORE = 0;
+exports.IGNORE = IGNORE;
+var INSERT = 1;
+exports.INSERT = INSERT;
+var ENTER = 2;
+exports.ENTER = ENTER;
+var LEAVE = 3;
+exports.LEAVE = LEAVE;
+var HOME = 4;
+exports.HOME = HOME;
+  })();
+});
+
+require.register("subspace-console/node_modules/sixgram/Chunk.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console/node_modules/sixgram");
+  (function() {
+    "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Chunk = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Chunk = function Chunk() {
+  _classCallCheck(this, Chunk);
+
+  this.depth = 0;
+  this.match = null;
+  this.type = 'normal';
+  this.list = [];
+};
+
+exports.Chunk = Chunk;
+  })();
+});
+
+require.register("subspace-console/node_modules/sixgram/Parser.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console/node_modules/sixgram");
+  (function() {
+    "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Parser = void 0;
+
+var _Chunk = require("./Chunk");
+
+var _Actions = require("./Actions");
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Parser = /*#__PURE__*/function () {
+  function Parser(tokens, modes) {
+    _classCallCheck(this, Parser);
+
+    this.tokens = tokens || {};
+    this.modes = modes || {};
+  }
+
+  _createClass(Parser, [{
+    key: "parse",
+    value: function parse(source) {
+      this.index = 0;
+      this.mode = 'normal';
+      this.stack = [];
+
+      if (!(this.mode in this.modes)) {
+        throw new Error("Mode ".concat(this.mode, " does not exist on parser."), this);
+      }
+
+      var chunk = new _Chunk.Chunk();
+      var mode = this.modes[this.mode];
+      chunk.type = this.mode;
+
+      while (this.index < source.length) {
+        var matched = false;
+
+        for (var tokenName in mode) {
+          var token = this.tokens[tokenName];
+          var search = token.exec(source.substr(this.index));
+
+          if (!search || search.index > 0) {
+            continue;
+          }
+
+          if (!mode[tokenName]) {
+            throw new Error("Invalid token type \"".concat(tokenName, "\" found in mode \"").concat(this.mode, "\"."));
+            continue;
+          }
+
+          var value = search[0];
+          var actions = _typeof(mode[tokenName]) === 'object' ? mode[tokenName] : [mode[tokenName]];
+          matched = true;
+          this.index += value.length;
+          var type = 'normal';
+
+          for (var i in actions) {
+            var action = actions[i];
+
+            if (typeof action === 'string') {
+              if (!(action in this.modes)) {
+                throw new Error("Mode \"".concat(action, "\" does not exist."));
+              }
+
+              this.mode = action;
+              mode = this.modes[this.mode];
+              type = action;
+              continue;
+            }
+
+            switch (action) {
+              case _Actions.INSERT:
+                chunk.list.push(value);
+                break;
+
+              case _Actions.ENTER:
+                var newChunk = new _Chunk.Chunk();
+                newChunk.depth = chunk.depth + 1;
+                newChunk.match = value;
+                newChunk.groups = _toConsumableArray(value.match(token)).slice(1);
+                newChunk.mode = type;
+                newChunk.type = tokenName;
+                chunk.list.push(newChunk);
+                this.stack.push(chunk);
+                chunk = newChunk; // this.mode = chunk.type;
+
+                break;
+
+              case _Actions.LEAVE:
+                if (!this.stack.length) {// throw new Warning(`Already at the top of the stack.`)
+                } else {
+                  chunk = this.stack.pop();
+                  this.mode = chunk.type;
+                  mode = this.modes[this.mode];
+                }
+
+                break;
+
+              case _Actions.HOME:
+                this.stack.splice(0);
+                mode = this.modes['normal'];
+                break;
+            }
+          }
+
+          break;
+        }
+
+        if (!matched) {
+          break;
+        }
+      }
+
+      if (this.stack.length) {
+        throw new Error('Did not return to top of stack!');
+      }
+
+      return this.stack.shift() || chunk;
+    }
+  }]);
+
+  return Parser;
+}();
+
+exports.Parser = Parser;
+  })();
+});
+
+require.register("subspace-console/node_modules/sixgram/Renderer.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console/node_modules/sixgram");
+  (function() {
+    "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Renderer = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Renderer = /*#__PURE__*/function () {
+  function Renderer(ops) {
+    _classCallCheck(this, Renderer);
+
+    this.ops = ops || {};
+  }
+
+  _createClass(Renderer, [{
+    key: "process",
+    value: function process(tree) {
+      var output = '';
+
+      for (var i in tree.list) {
+        var chunk = tree.list[i];
+
+        if (this.ops[tree.type]) {
+          var processed = this.ops[tree.type](chunk, tree);
+
+          if (processed !== false) {
+            output += processed;
+          }
+        } else if (chunk !== false) {
+          output += chunk;
+        }
+      }
+
+      return output;
+    }
+  }]);
+
+  return Renderer;
+}();
+
+exports.Renderer = Renderer;
+  })();
+});
+
+require.register("subspace-console/view/EchoMessage.js", function(exports, require, module) {
+  require = __makeRelativeRequire(require, {}, "subspace-console");
+  (function() {
+    "use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.EchoMessage = void 0;
+
+var _View2 = require("curvature/base/View");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var EchoMessage = /*#__PURE__*/function (_View) {
+  _inherits(EchoMessage, _View);
+
+  var _super = _createSuper(EchoMessage);
+
+  function EchoMessage() {
+    var _this;
+
+    var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, EchoMessage);
+
+    _this = _super.call(this, args);
+    _this.args.prompt = _this.args.prompt || '<<';
+    _this.template = "<span>[[prompt]]&nbsp;</span><span class = \"text\">[[message]]</span>";
+    return _this;
+  }
+
+  return EchoMessage;
+}(_View2.View);
+
+exports.EchoMessage = EchoMessage;
+  })();
+});
+
 require.register("subspace-console/view/MeltingText.js", function(exports, require, module) {
   require = __makeRelativeRequire(require, {}, "subspace-console");
   (function() {
     "use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -1398,8 +3547,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.MeltingText = void 0;
 
 var _View = require("curvature/base/View");
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1417,7 +3564,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 

@@ -23,7 +23,7 @@ export class PublishAjax extends Task
 		_formData.append('channel', args.shift());
 		_formData.append('message', args.join(' '));
 
-		console.log(_formData);
+		console.log(args, _formData);
 
 		const options = {method: 'post', body: _formData};
 

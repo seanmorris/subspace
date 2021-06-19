@@ -61,7 +61,6 @@ export class RtcClient extends Task
 
 		this.peerClientChannel.addEventListener('message', event => {
 			this.print(`> ${event.data}`);
-			console.log(event);
 		});
 
 		this.peerClient.createOffer().then(offer => {
@@ -97,6 +96,10 @@ export class RtcClient extends Task
 			this.print(`Please supply SDP answer string.`);
 			return;
 		}
+
+		answerString = answerString
+			.replace(/\r/g, '\\r')
+			.replace(/\n/g, '\\n');
 
 		const answer = JSON.parse(answerString);
 
