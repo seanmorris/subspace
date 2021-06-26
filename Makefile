@@ -3,7 +3,7 @@ MAKEFLAGS += --no-builtin-rules --always-make
 
 SHELL   = /bin/bash
 PROJECT =subspace-playground
-REPO    =seanmorris/subspace-playground
+REPO    =seanmorris
 
 -include vendor/seanmorris/ids/Makefile
 
