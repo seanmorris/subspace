@@ -1,4 +1,4 @@
-FROM seanmorris/subspace-web
+FROM seanmorris/subspace-web:latest
 
 RUN apt update && apt install libyaml-dev -y
 
