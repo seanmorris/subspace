@@ -17,9 +17,9 @@ const buildTime = document.querySelector('meta[type="x-build-localtime"]');
 view.rendered.then(() => {
 	view.write(
 		'\\e[2m\\e[43m\\e[30m* SubSpace Console - Kallisti Websockets Playground'
-		, `* Version: ${ buildId && buildId.getAttribute('content')}`
-		, `* Built ${ buildTime && buildTime.getAttribute('content')}`
-		, '* © 2018-2021 \\e[2m\\e[33m\\e[4mSean Morris'
+		, `\\e[2m\\e[47m\\e[30m* Version: ${ buildId && buildId.getAttribute('content')}`
+		, `\\e[30m* Built ${ buildTime && buildTime.getAttribute('content')}`
+		, '\\e[30m* © 2018-2021 \\e[2m\\e[33m\\e[4mSean Morris'
 	);
 });
 

@@ -11,9 +11,15 @@ Welcome to the subspace server, <?=$name ?? 'USER ' . $uid;?>!
 <?php if($name): ?>You've been assined uid <?=$uid;?>.
 
 <?php endif; ?>
-\e[5mReminder!\e[0m
+\e[4m\e[5mReminder!\e[0m
 LOCAL commands start with a "/". REMOTE commands are bare
 while in REMOTE MODE. Hit Esc to switch to LOCAL MODE.
+
+- \e[5m\e[41m* NEW *\e[0m use ansi codes to add \e[20mformatting!\e[0m
+  Try it with /echo!
+
+- Type '\e[1m\e[40msub \e[32mCHANNEL\e[0m' to subscribe to a channel.
+- Type '\e[1m\e[40mpub \e[32mCHANNEL \e[34mMESSAGE\e[0m' to publish to a channel.
 
 - Type '\e[4m/theme\e[0m' to switch darkmode/lightmode.
 - Type '\e[4m/commands\e[0m' for a list of LOCAL commands.

@@ -188,7 +188,7 @@
             "require": {
                 "ext-mbstring": "*",
                 "ext-sockets": "*",
-                "php": "^7.0|~8.0.0",
+                "php": "^7.0||~8.0.0",
                 "phpseclib/phpseclib": "^2.0|^3.0"
             },
             "conflict": {
@@ -249,22 +249,22 @@
             ],
             "support": {
                 "issues": "https://github.com/php-amqplib/php-amqplib/issues",
-                "source": "https://github.com/php-amqplib/php-amqplib/tree/v3.0.0"
+                "source": "https://github.com/php-amqplib/php-amqplib/tree/master"
             },
-            "time": "2021-03-16T15:00:23+00:00"
+            "time": "2021-05-14T18:16:28+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.6",
+            "version": "3.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "906a5fafabe5e6ba51ef3dc65b2722a677908837"
+                "reference": "a127a5133804ff2f47ae629dd529b129da616ad7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/906a5fafabe5e6ba51ef3dc65b2722a677908837",
-                "reference": "906a5fafabe5e6ba51ef3dc65b2722a677908837",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/a127a5133804ff2f47ae629dd529b129da616ad7",
+                "reference": "a127a5133804ff2f47ae629dd529b129da616ad7",
                 "shasum": ""
             },
             "require": {
@@ -346,7 +346,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.6"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.9"
             },
             "funding": [
                 {
@@ -362,7 +362,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-03-10T13:58:31+00:00"
+            "time": "2021-06-14T06:54:45+00:00"
         },
         {
             "name": "seanmorris/access",
@@ -456,12 +456,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/ids.git",
-                "reference": "d5c9b9a287145c0a7faf99ba96589462e58b67bb"
+                "reference": "730f4dd914291ef50ee1af7af372078249181259"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/ids/zipball/d5c9b9a287145c0a7faf99ba96589462e58b67bb",
-                "reference": "d5c9b9a287145c0a7faf99ba96589462e58b67bb",
+                "url": "https://api.github.com/repos/seanmorris/ids/zipball/730f4dd914291ef50ee1af7af372078249181259",
+                "reference": "730f4dd914291ef50ee1af7af372078249181259",
                 "shasum": ""
             },
             "require-dev": {
@@ -490,7 +490,7 @@
                 "source": "https://github.com/seanmorris/ids/tree/master",
                 "issues": "https://github.com/seanmorris/ids/issues"
             },
-            "time": "2021-03-28T05:38:39+00:00"
+            "time": "2021-06-26T00:35:00+00:00"
         },
         {
             "name": "seanmorris/kallisti",
@@ -498,12 +498,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/kallisti.git",
-                "reference": "dedc27da64ea0d3395a312399ac1ca14b4c5e540"
+                "reference": "5d18a7f4608bf0cd82e47e682d0d8d6ec5d893db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/kallisti/zipball/dedc27da64ea0d3395a312399ac1ca14b4c5e540",
-                "reference": "dedc27da64ea0d3395a312399ac1ca14b4c5e540",
+                "url": "https://api.github.com/repos/seanmorris/kallisti/zipball/5d18a7f4608bf0cd82e47e682d0d8d6ec5d893db",
+                "reference": "5d18a7f4608bf0cd82e47e682d0d8d6ec5d893db",
                 "shasum": ""
             },
             "require-dev": {
@@ -528,7 +528,7 @@
                 "source": "https://github.com/seanmorris/kallisti/tree/master",
                 "issues": "https://github.com/seanmorris/kallisti/issues"
             },
-            "time": "2021-04-04T12:36:07+00:00"
+            "time": "2021-06-26T05:36:34+00:00"
         },
         {
             "name": "seanmorris/message",
@@ -615,12 +615,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/subspace-server.git",
-                "reference": "c3eb928d069c9af42ed33f0b079bef0dfe926762"
+                "reference": "d66ac341ae2114c766d424c83a36a8e55c96c8ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/subspace-server/zipball/c3eb928d069c9af42ed33f0b079bef0dfe926762",
-                "reference": "c3eb928d069c9af42ed33f0b079bef0dfe926762",
+                "url": "https://api.github.com/repos/seanmorris/subspace-server/zipball/d66ac341ae2114c766d424c83a36a8e55c96c8ac",
+                "reference": "d66ac341ae2114c766d424c83a36a8e55c96c8ac",
                 "shasum": ""
             },
             "require": {
@@ -656,7 +656,7 @@
                 "source": "https://github.com/seanmorris/subspace-server/tree/master",
                 "issues": "https://github.com/seanmorris/subspace-server/issues"
             },
-            "time": "2021-04-05T02:47:59+00:00"
+            "time": "2021-06-26T05:32:16+00:00"
         },
         {
             "name": "seanmorris/theme",
@@ -804,5 +804,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
