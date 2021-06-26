@@ -10,6 +10,8 @@ REPO    =seanmorris/subspace-playground
 BASE_FILE?=infra/compose/base.yml
 COMPOSE_TARGET=infra/compose/${TARGET}.yml
 
+build-js:
+	@ ${DCOMPOSE} ${DCOMPOSE_TARGET_STACK} run --rm watcher brunch build -p
 
 # #!make
 # init:

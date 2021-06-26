@@ -29,8 +29,8 @@ channel, data will come in in Binary:
 
 Publish raw bytes to a channel with /pub
 
-<< sub 029A
-<< /pub 029A 04 04 DE AD AF
+<< sub 0x29A
+<< /pub 0x29A 04 04 DE AD AF
 
 Selectors:
 You can subscribe/publish to channels using selectors.
