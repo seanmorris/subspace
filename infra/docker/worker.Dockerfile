@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.1.1-apache
 MAINTAINER Sean Morris <sean@seanmorr.is>
 SHELL ["bash", "-euxo", "pipefail", "-c"]
 
