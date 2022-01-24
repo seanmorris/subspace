@@ -1,4 +1,4 @@
-FROM debian:buster-20200803-slim
+FROM debian:bullseye-20211220-slim
 
 RUN set -euxo; \
 	apt update; \

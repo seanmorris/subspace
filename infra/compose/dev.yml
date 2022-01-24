@@ -9,12 +9,17 @@ services:
     restart: always
     user: "${UID}:${GID}"
     ports:
+      - "443:443"
       - "80:80"
     volumes:
       - ${ROOTDIR}/:/app
-      # - ../data/local/certbot:/etc/letsencrypt/live/subspace2.seanmorr.is/
     depends_on:
       - database
+    env_file:
+      - ${MAIN_DLT}
+      - ${MAIN_ENV}
+      - ${TRGT_DLT}
+      - ${TRGT_ENV}
 
   socket:
     build:
@@ -31,6 +36,11 @@ services:
       - ${ROOTDIR}/:/app
     depends_on:
       - database
+    env_file:
+      - ${MAIN_DLT}
+      - ${MAIN_ENV}
+      - ${TRGT_DLT}
+      - ${TRGT_ENV}
 
   database:
     image: mysql:5.7
@@ -95,11 +105,12 @@ services:
   #     - ${ROOTDIR}/:/app
   #     - ${ROOTDIR}/data/local/composer/:/root/.composer/
 
-  # certbot:
-  #   image:   certbot/certbot
-  #   command: renew
-  #   volumes:
-  #     - ../data/local/certbot:/etc/letsencrypt/live/
+  certbot:
+    user: "${UID}:${GID}"
+    image:   certbot/certbot
+    command: ls
+    volumes:
+      - ../../data/local/certbot:/etc/letsencrypt/
 
   # fakecert:
   #   image: vishnunair/docker-mkcert:latest

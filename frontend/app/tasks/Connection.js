@@ -53,7 +53,6 @@ export class Connection extends Task
 		});
 
 		this.socket.subscribe('message', (event, message, channel, origin, originId, originalChannel, packet) => {
-
 			if(!this.term.localEcho)
 			{
 				return;

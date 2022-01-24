@@ -8,14 +8,14 @@
         }
     ],
     "require": {
-        "seanmorris/ids": "dev-master",
+        "seanmorris/ids": "dev-sm-api-tooling as dev-master",
         "seanmorris/access": "dev-master",
         "seanmorris/form": "dev-master",
         "seanmorris/message": "dev-master",
         "seanmorris/presskit": "dev-master",
         "seanmorris/kallisti": "dev-master",
         "seanmorris/subspace": "dev-master",
-        "php-amqplib/php-amqplib": "dev-master#c0b132eb3d487d30c757e00c8dc52b5b1007744d"
+        "php-amqplib/php-amqplib": "^3.1"
     },
     "require-dev": {
         "simpletest/simpletest": "dev-master"

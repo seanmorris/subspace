@@ -1,9 +1,6 @@
 FROM seanmorris/subspace-web:latest
+MAINTAINER Sean Morris <sean@seanmorr.is>
 
-RUN apt update && apt install libyaml-dev -y
-
-RUN pecl install yaml
-
-RUN docker-php-ext-install bcmath sockets
+RUN docker-php-ext-install pdo pdo_mysql bcmath
 
 CMD ["apache2-foreground"]

@@ -26,7 +26,14 @@
 	"subspace": {
 
 		"address": "0.0.0.0:9998",
-		"messageSizeMax": 512,
+		"messageSizeMax": 2048,
+		"throttle": 8000,
+		"idleTimeout": 0,
+		"pingTimeout": 0,
+		"netTimeout":  5000,
+		"sleep": 500,
+		"deepSleep": 2500,
+		"doze": 25,
 
 		"stored": {
 			"messageTotalMax": 32768,
