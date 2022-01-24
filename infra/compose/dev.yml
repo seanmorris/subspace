@@ -108,7 +108,6 @@ services:
   certbot:
     user: "${UID}:${GID}"
     image:   certbot/certbot
-    command: ls
     volumes:
       - ../../data/local/certbot:/etc/letsencrypt/
 
