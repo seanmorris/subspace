@@ -621,12 +621,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/seanmorris/subspace-server.git",
-                "reference": "433e49f96bfc8ff0572d4519888e4eb7d0e1dcbc"
+                "reference": "f5bb87d64cf9625b469b8396272d3340b93dc2ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/seanmorris/subspace-server/zipball/433e49f96bfc8ff0572d4519888e4eb7d0e1dcbc",
-                "reference": "433e49f96bfc8ff0572d4519888e4eb7d0e1dcbc",
+                "url": "https://api.github.com/repos/seanmorris/subspace-server/zipball/f5bb87d64cf9625b469b8396272d3340b93dc2ac",
+                "reference": "f5bb87d64cf9625b469b8396272d3340b93dc2ac",
                 "shasum": ""
             },
             "require": {
@@ -662,7 +662,7 @@
                 "source": "https://github.com/seanmorris/subspace-server/tree/master",
                 "issues": "https://github.com/seanmorris/subspace-server/issues"
             },
-            "time": "2022-01-24T07:45:55+00:00"
+            "time": "2022-01-24T12:00:43+00:00"
         },
         {
             "name": "seanmorris/theme",
