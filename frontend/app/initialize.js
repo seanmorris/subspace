@@ -20,7 +20,7 @@ view.rendered.then(() => {
 		, `\\e[2m\\e[40m\\e[37m* Version: ${ buildId && buildId.getAttribute('content')}`
 		, `\\e[30m* Built @ ${ buildTime && buildTime.getAttribute('content').split(' GMT')[0]}`
 		, `\\e[30m* GMT${ buildTime && buildTime.getAttribute('content').split(' GMT')[1]}`
-		, '\\e[30m* © 2018-2021 \\e[0m\\e[2mSean Morris'
+		, '\\e[30m* © 2018-2022 \\e[0m\\e[2mSean Morris'
 	);
 });
 

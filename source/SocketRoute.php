@@ -162,7 +162,7 @@ class SocketRoute extends \SeanMorris\SubSpace\EntryRoute
 
 		if(count($args) < 2)
 		{
-			return ['error' => 'Usage: register USERNAME PASSWORD.'];
+			return ['error' => 'Usage: login USERNAME PASSWORD.'];
 		}
 
 		$user = \SeanMorris\Access\User::loadOneByUsername($args[0]);

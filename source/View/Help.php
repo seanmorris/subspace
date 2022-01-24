@@ -5,7 +5,7 @@ class Help extends \SeanMorris\Theme\View
 }
 __halt_compiler(); ?>
 Kallisti Sockets
-©2018-2021 Sean Morris
+©2018-2022 Sean Morris
 
 Type 'commmands' for a list of REMOTE commands.
 
